@@ -519,6 +519,7 @@ class AdvancedSecurity
         }
         if ($userId != null) {
             $this->setSessionUserID($userId);
+            $this->touchLastLogin($userId);
         }
         if ($parentUserId != null) {
             $this->setSessionParentUserID($parentUserId);
@@ -532,6 +533,27 @@ class AdvancedSecurity
         }
         // Set allowed permission
         $this->setAllowedPermissions($permission);
+    }
+
+    // Record a successful login on uac.users.last_login. Best-effort: the
+    // column was never written anywhere in this project, so every user
+    // always showed "Never" in the Users list regardless of real activity.
+    // Guarded against the System Administrator sentinel ID (ADMIN_USER_ID =
+    // -1, not a real row in users) and anything non-numeric/non-positive.
+    private function touchLastLogin($userId)
+    {
+        if (!is_numeric($userId) || (int)$userId <= 0) {
+            return;
+        }
+        try {
+            Execute(
+                "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE user_id = " .
+                QuotedValue((int)$userId, DataType::NUMBER, Config("USER_TABLE_DBID")),
+                Config("USER_TABLE_DBID")
+            );
+        } catch (\Throwable $e) {
+            // Never block login over this.
+        }
     }
 
     // Logout user

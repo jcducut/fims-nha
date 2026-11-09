@@ -32,8 +32,12 @@ services:
         if [ -f /var/www/html/composer.json ] && [ ! -f /var/www/html/vendor/autoload.php ]; then
           echo "[bootstrap] installing composer deps"
           cd /var/www/html && composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader || true
-          chown -R www-data:www-data /var/www/html/vendor 2>/dev/null || true
         fi
+        # Always re-assert ownership, not just on first install: a manual
+        # `composer install`/`require` run as root (e.g. while debugging)
+        # leaves files root-owned forever otherwise, since the block above
+        # only fires once per named volume (autoload.php already exists).
+        chown -R www-data:www-data /var/www/html/vendor 2>/dev/null || true
         chown -R www-data:www-data /var/www/html/temp_uploads 2>/dev/null || true
         chmod -R 775 /var/www/html/temp_uploads 2>/dev/null || true
         exec php-fpm

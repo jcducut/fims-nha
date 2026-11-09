@@ -557,32 +557,138 @@ class Login extends Users
     }
 
     public function pageLoad()
-    {
-        global $Security, $Language;
+        {
+            global $Security, $Language;
 
-        // If already logged in, go straight to the dashboard
-        if ($Security->isLoggedIn()) {
-            $this->terminate('MainDashboard');
-            return;
-        }
+            // If user is already logged in to UAC, check system access and redirect
+            if ($Security->isLoggedIn()) {
+                // Check which systems the user has access to based on database permissions
+                $sql = "SELECT DISTINCT s.system_code, s.url 
+                        FROM " . QuotedName("user_level_assignments", "DB") . " ula
+                        INNER JOIN " . QuotedName("user_levels", "DB") . " ul ON ula.user_level_id = ul.user_level_id
+                        INNER JOIN " . QuotedName("systems", "DB") . " s ON ul.system_id = s.system_id
+                        WHERE ula.user_id = ? AND s.is_active = TRUE
+                        ORDER BY s.system_code";
+                $accessibleSystems = Conn("DB")->executeQuery($sql, [$_SESSION[SESSION_USER_ID]])->fetchAllAssociative();
+                if ($accessibleSystems && count($accessibleSystems) > 0) {
+                    $firstSystemInfo = $accessibleSystems[0];
+                    $systemCode = $firstSystemInfo['system_code'];
+                    $systemUrl = $firstSystemInfo['url'] ?? '/' . $systemCode . '/';
 
-        // Redirect GET requests that are NOT fetch/AJAX calls (direct browser access)
-        // Allow fetch requests to get CSRF tokens for the form at index.php
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            // Check if this is a fetch/AJAX request or direct browser access
-            $isFetchRequest = (
-                !empty($_SERVER['HTTP_SEC_FETCH_MODE']) && $_SERVER['HTTP_SEC_FETCH_MODE'] === 'cors'
-            ) || (
-                !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-                strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'
-            );
+                    // Check if user has access to UAC
+                    if ($systemCode === 'UAC') {
+                        $this->terminate('MainDashboard');
+                    } else {
+                        // Redirect to first accessible system using URL from database
+                        header("Location: " . $systemUrl);
+                        exit;
+                    }
+                } else {
+                    // No system access, logout and show error
+                    $Security->logoutUser();
+                    $_SESSION['flash_failure'] = "You do not have access to any system. Please contact your administrator.";
+                    $this->terminate('/');
+                }
+                return;
+            }
 
-            // If it's a direct browser access (not fetch), redirect to root
-            if (!$isFetchRequest) {
-                $this->terminate('/');
+            // Check for auto-login from other subsystems
+            $username = null;
+
+            // Load subsystems configuration
+            $SYSTEM = require dirname(__DIR__, 1) . "/_shared/system.php";
+            $subsystems = array_filter(array_keys($SYSTEM), fn($key) => $key !== 'UAC');
+
+            // Check for existing session from other subsystems
+            foreach ($subsystems as $subsystem) {
+                $userNameKey = "{$subsystem}_Status_UserName";
+                $userIdKey = "{$subsystem}_Status_UserID";
+                if (!empty($_SESSION[$userNameKey]) && !empty($_SESSION[$userIdKey])) {
+                    $username = $_SESSION[$userNameKey];
+                    break;
+                }
+            }
+            if ($username) {
+                // Validate user in UAC database
+                $sql = "SELECT * FROM " . QuotedName("users", "DB") . "
+                        WHERE " . QuotedName("username", "DB") . " = ?";
+                $rs = Conn("DB")->executeQuery($sql, [$username])->fetchAssociative();
+                if ($rs) {
+                    // Set session variables directly (no form validation)
+                    $_SESSION[SESSION_USER_ID] = $rs['user_id'];
+                    $_SESSION[SESSION_USER_NAME] = $rs['username'];
+                    $_SESSION[SESSION_USER_LEVEL_ID] = $rs['user_level_id'];
+                    $_SESSION[SESSION_PARENT_USER_ID] = $rs['reports_to_user_id'] ?? -1;
+                    $_SESSION[SESSION_STATUS] = "login";
+
+                    // Setup security
+                    $Security->setupUserLevel($rs['user_level_id']);
+
+                    // Audit trail
+                    WriteAuditTrail(
+                        "log",
+                        CurrentDateTime(),
+                        CurrentPageName(),
+                        $rs['user_id'],
+                        "login",
+                        "users",
+                        "user_id",
+                        $rs['user_id'],
+                        "",
+                        "Auto-login from subsystem"
+                    );
+
+                    // User logged in callback
+                    if (method_exists($this, 'userLoggedIn')) {
+                        $this->userLoggedIn($rs['username']);
+                    }
+
+                    // Check system access and redirect accordingly
+                    $sql = "SELECT DISTINCT s.system_code, s.url 
+                            FROM " . QuotedName("user_level_assignments", "DB") . " ula
+                            INNER JOIN " . QuotedName("user_levels", "DB") . " ul ON ula.user_level_id = ul.user_level_id
+                            INNER JOIN " . QuotedName("systems", "DB") . " s ON ul.system_id = s.system_id
+                            WHERE ula.user_id = ? AND s.is_active = TRUE
+                            ORDER BY s.system_code";
+                    $accessibleSystems = Conn("DB")->executeQuery($sql, [$rs['user_id']])->fetchAllAssociative();
+                    if ($accessibleSystems && count($accessibleSystems) > 0) {
+                        $firstSystemInfo = $accessibleSystems[0];
+                        $systemCode = $firstSystemInfo['system_code'];
+                        $systemUrl = $firstSystemInfo['url'] ?? '/' . $systemCode . '/';
+
+                        // Check if user has access to UAC
+                        if ($systemCode === 'UAC') {
+                            $this->terminate('MainDashboard');
+                        } else {
+                            // Redirect to first accessible system using URL from database
+                            header("Location: " . $systemUrl);
+                            exit;
+                        }
+                    } else {
+                        // No system access, show error
+                        $_SESSION['flash_failure'] = "You do not have access to any system. Please contact your administrator.";
+                        $this->terminate('/');
+                    }
+                }
+            }
+
+            // Redirect GET requests that are NOT fetch/AJAX calls (direct browser access)
+            // Allow fetch requests to get CSRF tokens for the form at index.php
+            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+                // Check if this is a fetch/AJAX request or direct browser access
+                $isFetchRequest = (
+                    !empty($_SERVER['HTTP_SEC_FETCH_MODE']) && $_SERVER['HTTP_SEC_FETCH_MODE'] === 'cors'
+                ) || (
+                    !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+                    strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'
+                );
+
+                // If it's a direct browser access (not fetch), redirect to root
+                if (!$isFetchRequest) {
+                    $this->terminate('/');
+                }
             }
         }
-    }
 
     // Page Unload event
     public function pageUnload()

@@ -45,7 +45,8 @@ loadjs.ready(["wrapper", "head"], function () {
             ["_profile", [fields._profile.visible && fields._profile.required ? ew.Validators.required(fields._profile.caption) : null], fields._profile.isInvalid],
             ["position_id", [fields.position_id.visible && fields.position_id.required ? ew.Validators.required(fields.position_id.caption) : null, ew.Validators.integer], fields.position_id.isInvalid],
             ["employee_id", [fields.employee_id.visible && fields.employee_id.required ? ew.Validators.required(fields.employee_id.caption) : null], fields.employee_id.isInvalid],
-            ["must_change_password", [fields.must_change_password.visible && fields.must_change_password.required ? ew.Validators.required(fields.must_change_password.caption) : null], fields.must_change_password.isInvalid]
+            ["must_change_password", [fields.must_change_password.visible && fields.must_change_password.required ? ew.Validators.required(fields.must_change_password.caption) : null], fields.must_change_password.isInvalid],
+            ["rc_id", [fields.rc_id.visible && fields.rc_id.required ? ew.Validators.required(fields.rc_id.caption) : null], fields.rc_id.isInvalid]
         ])
 
         // Form_CustomValidate
@@ -375,6 +376,18 @@ loadjs.ready("fusersedit", function() {
 </div></div>
     </div>
 <?php } ?>
+<?php if ($Page->rc_id->Visible) { // rc_id ?>
+    <div id="r_rc_id"<?= $Page->rc_id->rowAttributes() ?>>
+        <label id="elh_users_rc_id" for="x_rc_id" class="<?= $Page->LeftColumnClass ?>"><?= $Page->rc_id->caption() ?><?= $Page->rc_id->Required ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
+        <div class="<?= $Page->RightColumnClass ?>"><div<?= $Page->rc_id->cellAttributes() ?>>
+<span id="el_users_rc_id">
+<input type="<?= $Page->rc_id->getInputTextType() ?>" name="x_rc_id" id="x_rc_id" data-table="users" data-field="x_rc_id" value="<?= $Page->rc_id->EditValue ?>" size="30" maxlength="10" placeholder="<?= HtmlEncode($Page->rc_id->getPlaceHolder()) ?>" data-format-pattern="<?= HtmlEncode($Page->rc_id->formatPattern()) ?>"<?= $Page->rc_id->editAttributes() ?> aria-describedby="x_rc_id_help">
+<?= $Page->rc_id->getCustomMessage() ?>
+<div class="invalid-feedback"><?= $Page->rc_id->getErrorMessage() ?></div>
+</span>
+</div></div>
+    </div>
+<?php } ?>
 </div><!-- /page* -->
 <span id="el_users__profile">
 <input type="hidden" data-table="users" data-field="x__profile" data-hidden="1" name="x__profile" id="x__profile" value="<?= HtmlEncode($Page->_profile->CurrentValue) ?>">
@@ -386,14 +399,6 @@ loadjs.ready("fusersedit", function() {
 <h4 class="ew-detail-caption"><?= $Language->tablePhrase("user_level_assignments", "TblCaption") ?></h4>
 <?php } ?>
 <?php include_once "UserLevelAssignmentsGrid.php" ?>
-<?php } ?>
-<?php
-    if (in_array("aggregated_audit_logs", explode(",", $Page->getCurrentDetailTable())) && $aggregated_audit_logs->DetailEdit) {
-?>
-<?php if ($Page->getCurrentDetailTable() != "") { ?>
-<h4 class="ew-detail-caption"><?= $Language->tablePhrase("aggregated_audit_logs", "TblCaption") ?></h4>
-<?php } ?>
-<?php include_once "AggregatedAuditLogsGrid.php" ?>
 <?php } ?>
 <?= $Page->IsModal ? '<template class="ew-modal-buttons">' : '<div class="row ew-buttons">' ?><!-- buttons .row -->
     <div class="<?= $Page->OffsetColumnClass ?>"><!-- buttons offset -->

@@ -1,0 +1,1802 @@
+/*
+ * NHA FIMS — REGIONAL Design System
+ * Shared stylesheet for all REGIONAL module pages.
+ *
+ * Usage:
+ *   1. Link this file in your PHP page:
+ *        <link rel="stylesheet" href="/css/nha-fims.css" />
+ *   2. Add the Google Fonts import (once per page):
+ *        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+ *   3. Wrap your page content in:
+ *        <div class="nha-root" id="your-page-root">...</div>
+ *
+ * Class reference:
+ *   Layout      .nha-hdr  .nha-tabs  .nha-panel  .nha-filters  .nha-table-wrap
+ *   Filters     .nha-filter-row  .nha-filter-group[-fixed|-search]  .nha-filter-label
+ *               .nha-filter-input  .nha-filter-select
+ *               .nha-filter-search-wrap  .nha-filter-search-icon  .nha-filter-clear-btn
+ *   Buttons     .nha-btn-hdr (page header)  .nha-btn-{primary|ghost|outline|danger|success}
+ *               .nha-btn-act  .nha-btn-act.view (solid navy)  .nha-icon-btn
+ *   Cards       .nha-sc .nha-sc-{amber|green|red|blue|teal|purple}  .nha-kpi-card  .nha-pi-card
+ *   Badges      .nha-bdg  .nha-bdg-{amber|green|red|blue|teal|purple|gray|navy|orange}
+ *   Table       .nha-tbl  .nha-toolbar (dark)  .nha-table-wrap  .nha-tbl-scroll
+ *   Pagination  .nha-pag-wrap  .nha-pag-info  .nha-pag-btns  .nha-pag-btn[.active|.disabled]
+ *   Modal       .nha-overlay  .nha-modal  .nha-modal-{hdr|body|foot}
+ *   Utils       .nha-mono  .nha-amt  .nha-empty  .nha-error  .nha-sec-hd
+ */
+
+/* ════════════════════════════════════════════════════════════
+   DESIGN TOKENS
+════════════════════════════════════════════════════════════ */
+.nha-root {
+    /* Brand */
+    --navy:        var(--afims-heading, #000E3E);
+    --navy-dk:     var(--afims-heading, #000E3E);
+    --navy-lt:     var(--afims-surface-subtle, #F4F7FA);
+    --navy-bdr:    var(--afims-primary-soft, #E6EBF6);
+    --blue:        var(--afims-heading, #000E3E);
+
+    /* Surface */
+    --card:        var(--afims-surface, #FFFFFF);
+    --surf:        var(--afims-surface-subtle, #F4F7FA);
+    --surf2:       var(--afims-surface-subtle, #F4F7FA);
+
+    /* Border */
+    --bdr:         var(--afims-border, #E4ECF2);
+    --bdr-lt:      var(--afims-surface-subtle, #F4F7FA);
+
+    /* Text */
+    --txt:         var(--afims-text, #1A1B21);
+    --body:        var(--afims-text-muted, #62657E);
+    --sec:         var(--afims-text-muted, #62657E);
+    --subtle:      var(--afims-text-muted, #62657E);
+    --muted:       var(--afims-text-disabled, #A9AAB8);
+
+    /* Accent */
+    --green:       var(--afims-success, #11A752);
+    --green-bg:    var(--afims-success-soft, #DBF2E5);
+    --green-txt:   var(--afims-success-hover, #0C7539);
+    --red:         var(--afims-danger, #DC3545);
+    --red-bg:      var(--afims-danger-soft, #FAE1E3);
+    --red-txt:     var(--afims-danger-text, #8F222D);
+    --amber:       var(--afims-warning, #FCD20F);
+    --amber-bg:    var(--afims-warning-soft, #FFF8DB);
+    --amber-txt:   var(--afims-warning-text, #7E6908);
+    --teal:        var(--afims-success, #11A752);
+    --teal-bg:     var(--afims-success-soft, #DBF2E5);
+    --teal-txt:    var(--afims-success-hover, #0C7539);
+    --blue-bg:     var(--afims-primary-soft, #E6EBF6);
+    --blue-txt:    var(--afims-primary, #0035A9);
+    --purple:      var(--afims-primary, #0035A9);
+    --purple-bg:   var(--afims-surface-subtle, #F4F7FA);
+    --purple-txt:  var(--afims-primary, #0035A9);
+    --orange:      var(--afims-warning-text, #7E6908);
+    --orange-bg:   var(--afims-warning-soft, #FFF8DB);
+    --orange-txt:  var(--afims-warning, #FCD20F);
+
+    /* Typography */
+    --font:        "IBM Plex Sans", system-ui, sans-serif;
+    --mono:        "IBM Plex Mono", "Courier New", monospace;
+
+    /* Radius */
+    --r:           12px;
+    --rs:          7px;
+    --rxs:         5px;
+
+    /* Shadows */
+    --sh-sm:       0 1px 3px rgba(0,0,0,.06);
+    --sh-md:       0 4px 14px rgba(0,0,0,.10);
+    --sh-hdr:      0 1px 4px rgba(0,0,0,.06);
+
+    font-family: var(--font);
+    color: var(--txt);
+    background: var(--page-bg);
+    padding: 20px 0;
+}
+
+/* ════════════════════════════════════════════════════════════
+   LOADING OVERLAY
+════════════════════════════════════════════════════════════ */
+.nha-loader-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 32, 69, .5);
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+.nha-loader-overlay.show,
+.nha-loader-overlay.active { display: flex; }
+
+.nha-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-top-color: var(--afims-pure-white, #FFFFFF);
+    border-radius: 50%;
+    animation: nha-spin .7s linear infinite;
+}
+.nha-spinner-sm {
+    width: 18px;
+    height: 18px;
+    border-width: 2px;
+    border-color: var(--bdr);
+    border-top-color: var(--afims-heading-fill, #000E3E);
+    border-radius: 50%;
+    animation: nha-spin .7s linear infinite;
+}
+@keyframes nha-spin { to { transform: rotate(360deg); } }
+
+/* Inline loader row */
+.nha-root .nha-loader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 24px;
+    justify-content: center;
+    color: var(--sec);
+    font-size: 13px;
+}
+
+/* DataTables processing override — replaces the default blue-dot animation.
+   DT2 renders this as .dt-processing (NOT the DT1 .dataTables_processing
+   class), with our language.processing HTML as the first child and DT's
+   own bouncing-dot spinner appended as the last child — hide that native
+   spinner so only our custom loader box shows. */
+.nha-root .dt-processing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: color-mix(in srgb, var(--afims-surface, #FFFFFF) 92%, transparent);
+    border: 1px solid var(--bdr);
+    border-radius: var(--rs);
+    box-shadow: var(--sh-md);
+    padding: 14px 24px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--sec);
+    white-space: nowrap;
+    width: auto;
+    margin: 0;
+    text-align: left;
+}
+.nha-root .dt-processing > div:last-child { display: none !important; }
+
+/* ════════════════════════════════════════════════════════════
+   DATATABLES 2.x — full integration overrides
+   Targets the dt-container / dt-layout-* / dt-paging-button
+   and sort-indicator classes injected by DataTables 2.
+════════════════════════════════════════════════════════════ */
+
+/* Wrapper — remove any extra margin/padding DT adds */
+.nha-root .dt-container { font-family: var(--font); }
+.nha-root .dt-layout-row.dt-layout-table,
+.nha-root .dt-layout-row.dt-layout-table .dt-layout-cell { margin: 0; padding: 0; }
+
+/* Bottom bar: info (left) + pagination (right) — styled like nha-pag-wrap */
+.nha-root .dt-layout-row:not(.dt-layout-table) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bdr);
+    margin: 0;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.nha-root .dt-layout-row:not(.dt-layout-table) .dt-layout-cell { padding: 0; }
+
+/* Info text */
+.nha-root .dt-info {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+/* Paging container */
+.nha-root .dt-paging { display: flex; gap: 4px; flex-wrap: wrap; }
+
+/* All page buttons (Previous, 1, 2, Next …) */
+.nha-root .dt-paging-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    min-width: 30px;
+    padding: 0 8px;
+    border-radius: 6px;
+    border: 1px solid var(--bdr) !important;
+    background: var(--afims-surface, #FFFFFF) !important;
+    color: var(--txt) !important;
+    font-size: 12px;
+    font-family: var(--font);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+    box-shadow: none !important;
+    outline: none;
+}
+.nha-root .dt-paging-button:hover:not(.disabled) {
+    background: var(--afims-heading-fill, #000E3E) !important;
+    border-color: var(--afims-heading-fill, #000E3E) !important;
+    color: var(--afims-pure-white, #FFFFFF) !important;
+}
+.nha-root .dt-paging-button.current,
+.nha-root .dt-paging-button.current:hover {
+    background: var(--afims-heading-fill, #000E3E) !important;
+    border-color: var(--afims-heading-fill, #000E3E) !important;
+    color: var(--afims-pure-white, #FFFFFF) !important;
+    font-weight: 700;
+}
+.nha-root .dt-paging-button.disabled,
+.nha-root .dt-paging-button.disabled:hover {
+    opacity: .4;
+    cursor: default;
+    background: var(--afims-surface, #FFFFFF) !important;
+    border-color: var(--bdr) !important;
+    color: var(--txt) !important;
+}
+
+/* Sort indicators on dark navy header — make them white/semi-transparent */
+.nha-root .nha-tbl thead th span.dt-column-order,
+.nha-root .nha-tbl thead th span.dt-column-order::before,
+.nha-root .nha-tbl thead th span.dt-column-order::after {
+    color: rgba(255,255,255,.45) !important;
+    opacity: 1;
+}
+.nha-root .nha-tbl thead th.dt-ordering-asc span.dt-column-order::before,
+.nha-root .nha-tbl thead th.dt-ordering-desc span.dt-column-order::after {
+    color: rgba(255,255,255,.9) !important;
+}
+
+/* Remove default DT outline on focused cells */
+.nha-root .nha-tbl thead th:focus { outline: none; }
+
+/* ════════════════════════════════════════════════════════════
+   PAGE HEADER
+════════════════════════════════════════════════════════════ */
+.nha-root .nha-hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--afims-surface, #FFFFFF);
+    border: 1px solid var(--bdr);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--sh-hdr);
+}
+.nha-root .nha-hdr-l {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.nha-root .nha-hdr-ico {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--afims-heading-fill, #000E3E);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--afims-pure-white, #FFFFFF);
+}
+.nha-root .nha-hdr-ico svg { width: 22px; height: 22px; stroke: var(--afims-pure-white, #FFFFFF); fill: none; }
+.nha-root .nha-hdr-tag {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+.nha-root .nha-hdr-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--afims-heading, #000E3E);
+    line-height: 1.2;
+    margin: 0;
+}
+.nha-root .nha-hdr-sub {
+    font-size: 12px;
+    color: var(--sec);
+    margin: 2px 0 0;
+}
+.nha-root .nha-hdr-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 5px;
+    flex-wrap: wrap;
+}
+.nha-root .nha-hdr-meta-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--sec);
+    background: var(--surf2);
+    border: 1px solid var(--bdr);
+    border-radius: 20px;
+    padding: 2px 8px;
+}
+.nha-root .nha-hdr-r {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+/* ════════════════════════════════════════════════════════════
+   BUTTONS
+════════════════════════════════════════════════════════════ */
+.nha-root .nha-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: var(--font);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity .15s, background .15s, color .15s, border-color .15s;
+}
+.nha-root .nha-btn svg { width: 14px; height: 14px; stroke: currentColor; flex-shrink: 0; }
+.nha-root .nha-btn:hover { opacity: .88; }
+
+/* Primary — solid navy */
+.nha-root .nha-btn-primary { background: var(--afims-heading-fill, #000E3E); color: var(--afims-pure-white, #FFFFFF); }
+
+/* Ghost — transparent with border */
+.nha-root .nha-btn-ghost {
+    background: transparent;
+    color: var(--sec);
+    border: 1px solid var(--bdr);
+}
+.nha-root .nha-btn-ghost:hover { background: var(--surf2); opacity: 1; }
+
+/* Outline — navy border */
+.nha-root .nha-btn-outline {
+    background: var(--afims-surface, #FFFFFF);
+    color: var(--afims-heading, #000E3E);
+    border: 1px solid var(--afims-heading-fill, #000E3E);
+}
+.nha-root .nha-btn-outline:hover { background: var(--navy-lt); opacity: 1; }
+
+/* Danger */
+.nha-root .nha-btn-danger { background: var(--red); color: var(--afims-pure-white, #FFFFFF); }
+
+/* Success */
+.nha-root .nha-btn-success { background: var(--green); color: var(--afims-pure-white, #FFFFFF); }
+
+/* Sizes */
+.nha-root .nha-btn-sm { padding: 5px 10px; font-size: 12px; }
+.nha-root .nha-btn-xs { padding: 3px 8px; font-size: 11px; border-radius: 6px; }
+
+/* Page header action buttons — solid navy, icon + label, matches image */
+.nha-root .nha-btn-hdr {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: none;
+    background: var(--afims-heading-fill, #000E3E);
+    color: var(--afims-pure-white, #FFFFFF);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: opacity .15s;
+}
+.nha-root .nha-btn-hdr:hover { opacity: .85; }
+.nha-root .nha-btn-hdr.loading { opacity: .6; pointer-events: none; }
+.nha-root .nha-btn-hdr svg { width: 13px; height: 13px; stroke: currentColor; flex-shrink: 0; fill: none; }
+
+/* Header-context button (appears on dark toolbar) */
+.nha-root .nha-btn-hdr-ghost {
+    background: color-mix(in srgb, var(--afims-surface, #FFFFFF) 12%, transparent);
+    color: var(--afims-pure-white, #FFFFFF);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 7px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: background .15s;
+    white-space: nowrap;
+}
+.nha-root .nha-btn-hdr-ghost:hover { background: color-mix(in srgb, var(--afims-surface, #FFFFFF) 22%, transparent); border-color: rgba(255,255,255,.5); }
+.nha-root .nha-btn-hdr-white { background: var(--afims-surface, #FFFFFF); color: var(--afims-heading, #000E3E); border: none; }
+.nha-root .nha-btn-hdr-white:hover { opacity: .9; }
+
+/* ── Table-row action buttons ──────────────────────────────
+   Base (ghost): secondary actions like Edit, Print, Details
+   .view (solid navy): primary action — matches image exactly
+   ---------------------------------------------------------- */
+.nha-root .nha-btn-act {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--bdr);
+    background: var(--afims-surface, #FFFFFF);
+    color: var(--sec);
+    font-size: 12px;
+    font-family: var(--font);
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background .12s, color .12s, border-color .12s;
+}
+.nha-root .nha-btn-act svg { width: 12px; height: 12px; stroke: currentColor; flex-shrink: 0; }
+.nha-root .nha-btn-act:hover         { background: var(--afims-heading-fill, #000E3E); border-color: var(--afims-heading-fill, #000E3E); color: var(--afims-pure-white, #FFFFFF); }
+
+/* .view — solid navy by default (primary action, image shows this style) */
+.nha-root .nha-btn-act.view {
+    background: var(--afims-heading-fill, #000E3E);
+    border-color: var(--afims-heading-fill, #000E3E);
+    color: var(--afims-pure-white, #FFFFFF);
+}
+.nha-root .nha-btn-act.view:hover { opacity: .85; background: var(--afims-heading-fill, #000E3E); }
+
+/* Secondary modifier variants (hover-only color change) */
+.nha-root .nha-btn-act.edit:hover    { background: var(--amber);  border-color: var(--amber);  color: var(--afims-pure-white, #FFFFFF); }
+.nha-root .nha-btn-act.danger:hover  { background: var(--red);    border-color: var(--red);    color: var(--afims-pure-white, #FFFFFF); }
+.nha-root .nha-btn-act.success:hover { background: var(--green);  border-color: var(--green);  color: var(--afims-pure-white, #FFFFFF); }
+.nha-root .nha-btn-act.approve:hover { background: var(--green);  border-color: var(--green);  color: var(--afims-pure-white, #FFFFFF); }
+.nha-root .nha-btn-act.reject:hover  { background: var(--red);    border-color: var(--red);    color: var(--afims-pure-white, #FFFFFF); }
+
+/* Icon-only action button */
+.nha-root .nha-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--bdr);
+    background: var(--afims-surface, #FFFFFF);
+    cursor: pointer;
+    color: var(--sec);
+    transition: all .15s;
+    padding: 0;
+    text-decoration: none;
+}
+.nha-root .nha-icon-btn svg { width: 14px; height: 14px; stroke: currentColor; }
+.nha-root .nha-icon-btn:hover         { background: var(--afims-heading-fill, #000E3E); color: var(--afims-pure-white, #FFFFFF); border-color: var(--afims-heading-fill, #000E3E); }
+.nha-root .nha-icon-btn.danger:hover  { background: var(--red); border-color: var(--red); color: var(--afims-pure-white, #FFFFFF); }
+.nha-root .nha-icon-btn.success:hover { background: var(--green); border-color: var(--green); color: var(--afims-pure-white, #FFFFFF); }
+
+/* ════════════════════════════════════════════════════════════
+   SECTION HEADING
+════════════════════════════════════════════════════════════ */
+.nha-root .nha-sec-hd {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--sec);
+    margin-bottom: 12px;
+}
+.nha-root .nha-sec-hd-line { flex: 1; height: 1px; background: var(--bdr); }
+
+/* ════════════════════════════════════════════════════════════
+   KPI / SUMMARY CARDS
+════════════════════════════════════════════════════════════ */
+/* 4-column summary row (Cash-Advance style) */
+.nha-root .nha-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+@media (max-width: 900px) {
+    .nha-root .nha-summary { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Flexible KPI grid (auto-fit) */
+.nha-root .nha-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+}
+@media (max-width: 600px) {
+    .nha-root .nha-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Base card */
+.nha-root .nha-sc,
+.nha-root .nha-kpi-card {
+    background: var(--afims-surface, #FFFFFF);
+    border: 1px solid var(--bdr);
+    border-radius: var(--r);
+    padding: 16px 18px;
+    box-shadow: var(--sh-sm);
+    border-left: 3px solid var(--bdr);
+    transition: box-shadow .18s, transform .18s;
+}
+.nha-root .nha-kpi-card:hover { box-shadow: var(--sh-md); transform: translateY(-1px); }
+
+/* Accent borders */
+.nha-root .nha-sc-amber,  .nha-root .nha-kpi-amber  { border-left-color: var(--amber); }
+.nha-root .nha-sc-green,  .nha-root .nha-kpi-green  { border-left-color: var(--green); }
+.nha-root .nha-sc-red,    .nha-root .nha-kpi-red    { border-left-color: var(--red); }
+.nha-root .nha-sc-blue,   .nha-root .nha-kpi-blue   { border-left-color: var(--afims-primary, #0035A9); }
+.nha-root .nha-sc-teal,   .nha-root .nha-kpi-teal   { border-left-color: var(--teal); }
+.nha-root .nha-sc-purple, .nha-root .nha-kpi-purple { border-left-color: var(--purple); }
+.nha-root .nha-sc-navy,   .nha-root .nha-kpi-navy   { border-left-color: var(--afims-heading-fill, #000E3E); }
+.nha-root .nha-sc-gray,   .nha-root .nha-kpi-gray   { border-left-color: var(--afims-text-disabled, #A9AAB8); }
+.nha-root .nha-sc-indigo, .nha-root .nha-kpi-indigo { border-left-color: var(--afims-primary, #0035A9); }
+.nha-root .nha-sc-orange, .nha-root .nha-kpi-orange { border-left-color: var(--orange); }
+
+/* Card internals — layout mirrors the reference image:
+   .nha-sc-top  →  [ label ]  [ icon-box ]   (space-between)
+   .nha-sc-val  →  big number below
+*/
+.nha-root .nha-sc-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+/* Small uppercase label above the value (e.g. "TOTAL OUTSTANDING") */
+.nha-root .nha-sc-label,
+.nha-root .nha-kpi-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--sec);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin: 0 0 8px;
+}
+
+/* Large bold value (e.g. "₱0.00" / "0") */
+.nha-root .nha-sc-val,
+.nha-root .nha-kpi-val {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--afims-heading, #000E3E);
+    line-height: 1;
+    margin: 0;
+}
+.nha-root .nha-kpi-val { font-size: 30px; }
+.nha-root .nha-kpi-red .nha-kpi-val    { color: var(--red); }
+.nha-root .nha-kpi-green .nha-kpi-val  { color: var(--green); }
+
+.nha-root .nha-kpi-sub {
+    font-size: 11px;
+    color: var(--sec);
+    margin: 6px 0 0;
+}
+/* Icon box — top-right of each KPI card */
+.nha-root .nha-sc-ico {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 17px;
+}
+.nha-root .nha-sc-ico svg { width: 18px; height: 18px; }
+/* Icon bg tints */
+.nha-root .nha-ico-amber  { background: var(--amber-bg); }
+.nha-root .nha-ico-green  { background: var(--green-bg); }
+.nha-root .nha-ico-red    { background: var(--red-bg); }
+.nha-root .nha-ico-blue   { background: var(--blue-bg); }
+.nha-root .nha-ico-teal   { background: var(--teal-bg); }
+.nha-root .nha-ico-purple { background: var(--purple-bg); }
+.nha-root .nha-ico-navy   { background: var(--navy-lt); }
+
+/* Dot indicator */
+.nha-root .nha-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-right: 4px;
+}
+.nha-root .nha-dot-green  { background: var(--green); }
+.nha-root .nha-dot-red    { background: var(--red); }
+.nha-root .nha-dot-amber  { background: var(--amber); }
+.nha-root .nha-dot-gray   { background: var(--muted); }
+
+/* ── Pending-items cards ── */
+.nha-root .nha-pending-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+}
+.nha-root .nha-pi-card {
+    background: var(--afims-surface, #FFFFFF);
+    border: 1px solid var(--bdr);
+    border-radius: var(--r);
+    padding: 14px 16px;
+    box-shadow: var(--sh-sm);
+}
+.nha-root .nha-pi-hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.nha-root .nha-pi-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--sec);
+}
+.nha-root .nha-pi-count {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--afims-heading, #000E3E);
+    line-height: 1;
+}
+.nha-root .nha-pi-count.urgent { color: var(--red); }
+.nha-root .nha-pi-list { list-style: none; margin: 0; padding: 0; }
+.nha-root .nha-pi-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--bdr);
+    font-size: 11px;
+    color: var(--sec);
+}
+.nha-root .nha-pi-list li:last-child { border-bottom: none; }
+.nha-root .nha-pi-empty { font-size: 11px; color: var(--muted); font-style: italic; }
+
+/* ════════════════════════════════════════════════════════════
+   TAB NAVIGATION
+   Matches image: all tabs equal width inside a white pill bar,
+   active tab = full solid navy background, white text.
+════════════════════════════════════════════════════════════ */
+.nha-root .nha-tabs {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 16px;
+    background: var(--afims-surface, #FFFFFF);
+    border: 1px solid var(--bdr);
+    border-radius: 10px;
+    padding: 4px;
+    box-shadow: var(--sh-sm);
+}
+.nha-root .nha-tab {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    background: transparent;
+    color: var(--sec);
+    font-family: var(--font);
+    white-space: nowrap;
+    transition: background .15s, color .15s;
+}
+.nha-root .nha-tab svg { width: 13px; height: 13px; stroke: currentColor; flex-shrink: 0; }
+.nha-root .nha-tab:hover { color: var(--afims-heading, #000E3E); background: var(--afims-surface-subtle, #F4F7FA); }
+.nha-root .nha-tab.active { background: var(--afims-heading-fill, #000E3E); color: var(--afims-pure-white, #FFFFFF); }
+.nha-root .nha-tab.active svg { stroke: var(--afims-pure-white, #FFFFFF); }
+
+/* Count badge on tab */
+.nha-root .nha-tab-cnt {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: var(--red);
+    color: var(--afims-pure-white, #FFFFFF);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+}
+.nha-root .nha-tab-cnt.zero { background: var(--muted); }
+
+/* Tab panels */
+.nha-root .nha-panel { display: none; }
+.nha-root .nha-panel.active { display: block; }
+
+/* ════════════════════════════════════════════════════════════
+   FILTER BAR
+   Matches the reference layout: one flat row, labels above each
+   control, no Apply/Reset buttons (filters fire on change),
+   search field is last + widest with icon-left and ×-right.
+
+   HTML structure:
+   ┌──────────────────────────────────────────────────────────┐
+   │ <div class="nha-filters">                                │
+   │   <div class="nha-filter-row">                           │
+   │     <div class="nha-filter-group">                       │
+   │       <label class="nha-filter-label">Date From</label>  │
+   │       <input type="date" class="nha-filter-input">       │
+   │     </div>                                               │
+   │     <div class="nha-filter-group">                       │
+   │       <label class="nha-filter-label">Date To</label>    │
+   │       <input type="date" class="nha-filter-input">       │
+   │     </div>                                               │
+   │     <div class="nha-filter-group">                       │
+   │       <label class="nha-filter-label">Status</label>     │
+   │       <select class="nha-filter-select">...</select>     │
+   │     </div>                                               │
+   │     <!-- Search is always last, use nha-filter-group-search -->
+   │     <div class="nha-filter-group nha-filter-group-search">
+   │       <label class="nha-filter-label">Search</label>     │
+   │       <div class="nha-filter-search-wrap">               │
+   │         <svg class="nha-filter-search-icon">...</svg>    │
+   │         <input type="text" class="nha-filter-input"      │
+   │                placeholder="Voucher #, Check #…">        │
+   │         <button class="nha-filter-clear-btn" hidden>×</button>
+   │       </div>                                             │
+   │     </div>                                               │
+   │   </div>                                                 │
+   │ </div>                                                   │
+   └──────────────────────────────────────────────────────────┘
+════════════════════════════════════════════════════════════ */
+
+/* Card wrapper */
+.nha-root .nha-filters {
+    background: var(--afims-surface, #FFFFFF);
+    border: 1px solid var(--bdr);
+    border-radius: var(--r);
+    padding: 14px 16px;
+    box-shadow: var(--sh-sm);
+    margin-bottom: 16px;
+}
+
+/* Optional second-row divider */
+.nha-root .nha-filters .nha-filter-divider {
+    height: 1px;
+    background: var(--bdr-lt);
+    margin: 12px 0;
+}
+
+/* ── Single horizontal row ── */
+.nha-root .nha-filter-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;   /* bottoms of all controls line up */
+    flex-wrap: wrap;
+}
+
+/* ── Individual group: label stacked above control ── */
+.nha-root .nha-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 130px;
+}
+
+/* Fixed-width group — does not grow (e.g. a short date) */
+.nha-root .nha-filter-group-fixed {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+/* Action buttons group — horizontal row, aligned to bottom of filter bar */
+.nha-root .nha-filter-group-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* Search group — takes 2× the space of regular groups, always last */
+.nha-root .nha-filter-group-search {
+    flex: 2;
+    min-width: 200px;
+}
+
+/* Constrained-width filter groups */
+.nha-root .nha-filter-group-sm { max-width: 150px; }
+.nha-root .nha-filter-group-md { max-width: 180px; }
+.nha-root .nha-filter-group-lg { max-width: 200px; }
+.nha-root .nha-filter-group-xl { max-width: 300px; }
+
+/* ── Label above each control ── */
+.nha-root .nha-filter-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--sec);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    white-space: nowrap;
+}
+
+/* ── Date / text inputs and selects ── */
+.nha-root .nha-filter-input,
+.nha-root .nha-filter-select {
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid var(--bdr);
+    border-radius: var(--rs);
+    font-size: 13px;
+    font-family: var(--font);
+    color: var(--txt);
+    background: var(--afims-surface, #FFFFFF);
+    outline: none;
+    box-sizing: border-box;
+    appearance: auto;
+    width: 100%;
+    transition: border-color .15s, box-shadow .15s;
+}
+.nha-root .nha-filter-input:focus,
+.nha-root .nha-filter-select:focus {
+    border-color: var(--afims-heading-fill, #000E3E);
+    box-shadow: 0 0 0 3px rgba(30,58,110,.1);
+}
+.nha-root .nha-filter-input::placeholder { color: var(--muted); }
+
+/* ── Search field: icon left + × clear button right ──
+   The wrapper is position:relative; the icon and clear button
+   are absolutely positioned inside the input's padding area.   */
+.nha-root .nha-filter-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Magnifier icon — left side */
+.nha-root .nha-filter-search-wrap .nha-filter-search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px !important;
+    height: 14px !important;
+    max-width: 14px;
+    max-height: 14px;
+    color: var(--muted);
+    pointer-events: none;
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+/* The text input inside the search wrapper */
+.nha-root .nha-filter-search-wrap .nha-filter-input {
+    padding-left: 32px;   /* room for icon */
+    padding-right: 30px;  /* room for × button */
+}
+
+/* × clear button — right side, hidden until there is text */
+.nha-root .nha-filter-clear-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: none;
+    background: var(--muted);
+    color: var(--afims-pure-white, #FFFFFF);
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    opacity: .7;
+    transition: opacity .15s, background .15s;
+    z-index: 1;
+}
+.nha-root .nha-filter-clear-btn:hover { opacity: 1; background: var(--sec); }
+/* Hide when input is empty — JS adds/removes [hidden] attribute */
+.nha-root .nha-filter-clear-btn[hidden] { display: none; }
+
+/* ════════════════════════════════════════════════════════════
+   TABLE PANEL  (card wrapper + optional dark toolbar)
+════════════════════════════════════════════════════════════ */
+.nha-root .nha-table-wrap {
+    background: var(--afims-surface, #FFFFFF);
+    border: 1px solid var(--bdr);
+    border-radius: var(--r);
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: var(--sh-sm);
+}
+
+/* Dark toolbar (matches FtlaPrepation / FMD style) */
+.nha-root .nha-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: var(--afims-heading-fill, #000E3E);
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.nha-root .nha-toolbar-l h2,
+.nha-root .nha-toolbar-l .nha-toolbar-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--afims-pure-white, #FFFFFF);
+    margin: 0;
+}
+.nha-root .nha-toolbar-l p,
+.nha-root .nha-toolbar-l .nha-toolbar-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,.65);
+    margin: 2px 0 0;
+}
+.nha-root .nha-toolbar-r {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* Dark toolbar input / select */
+.nha-root .nha-toolbar .nha-t-input,
+.nha-root .nha-toolbar .nha-t-select {
+    padding: 6px 10px;
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: var(--rs);
+    background: color-mix(in srgb, var(--afims-surface, #FFFFFF) 12%, transparent);
+    color: var(--afims-pure-white, #FFFFFF);
+    font-size: 12px;
+    outline: none;
+    font-family: var(--font);
+}
+.nha-root .nha-toolbar .nha-t-input::placeholder { color: rgba(255,255,255,.6); }
+.nha-root .nha-toolbar .nha-t-select option { background: var(--afims-heading-fill, #000E3E); color: var(--afims-pure-white, #FFFFFF); }
+
+/* Search wrapper with icon */
+.nha-root .nha-toolbar .nha-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.nha-root .nha-toolbar .nha-search-wrap svg {
+    position: absolute;
+    left: 8px;
+    width: 13px !important;
+    height: 13px !important;
+    max-width: 13px;
+    max-height: 13px;
+    color: rgba(255,255,255,.6);
+    pointer-events: none;
+}
+.nha-root .nha-toolbar .nha-search-wrap .nha-t-input { padding-left: 26px; }
+
+/* ════════════════════════════════════════════════════════════
+   DATA TABLE
+════════════════════════════════════════════════════════════ */
+.nha-root .nha-tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.nha-root .nha-tbl thead tr { background: var(--afims-heading-fill, #000E3E); }
+.nha-root .nha-tbl thead th {
+    padding: 11px 12px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--afims-pure-white, #FFFFFF);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+}
+.nha-root .nha-tbl thead th.text-right { text-align: right; }
+.nha-root .nha-tbl thead th.text-center { text-align: center; }
+.nha-root .nha-tbl tbody tr { border-bottom: 1px solid var(--bdr); transition: background .12s; }
+.nha-root .nha-tbl tbody tr:last-child { border-bottom: none; }
+.nha-root .nha-tbl tbody tr:hover td { background: var(--afims-surface-subtle, #F4F7FA); }
+.nha-root .nha-tbl td {
+    padding: 10px 12px;
+    vertical-align: middle;
+    font-size: 12px;
+    color: var(--txt);
+}
+.nha-root .nha-tbl td.text-right { text-align: right; }
+.nha-root .nha-tbl td.text-center { text-align: center; }
+.nha-root .nha-tbl td.amt-cell {
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 12px;
+}
+.nha-root .nha-tbl-link {
+    color: var(--blue);
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+}
+.nha-root .nha-tbl-link:hover { text-decoration: underline; }
+.nha-root .nha-td-tools { display: inline-flex; gap: 4px; }
+
+/* Table cell utility classes */
+.nha-root .nha-td-seq     { color: var(--muted); font-size: 11px; }
+.nha-root .nha-td-date    { color: var(--sec); font-size: 11px; white-space: nowrap; }
+.nha-root .nha-td-sub     { font-size: 12px; color: var(--sec); }
+.nha-root .nha-td-xs      { font-size: 11px; color: var(--sec); }
+.nha-root .nha-td-bold    { font-weight: 500; }
+.nha-root .nha-td-purpose { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; color: var(--sec); }
+.nha-root .nha-tr-expired  > td { background: var(--afims-danger-soft, #FAE1E3); }
+.nha-root .nha-tr-expiring > td { background: var(--afims-warning-soft, #FFF8DB); }
+
+/* Inline code/monospace chip */
+.nha-root .nha-code {
+    font-size: 11px;
+    background: var(--surf);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--bdr);
+    font-family: var(--mono);
+}
+
+/* Badge size modifier */
+.nha-root .nha-bdg-xs { font-size: 10px; }
+
+/* Bond status indicators (modal) */
+.nha-root .nha-bond-ok  { color: var(--green); font-size: 12px; }
+.nha-root .nha-bond-err { color: var(--red);   font-size: 12px; }
+
+/* Readonly / display-only form input */
+.nha-root .nha-input-ro { background: var(--surf); }
+
+/* Table scroll wrapper */
+.nha-root .nha-tbl-scroll { overflow-x: auto; }
+
+/* ════════════════════════════════════════════════════════════
+   PAGINATION  —  matches image exactly:
+   left:  "Showing 1 to 5 of 5"  (muted small text)
+   right: [ Previous ]  [ 1 ]  [ Next ]  (page buttons)
+
+   HTML:
+   <div class="nha-pag-wrap">
+     <span class="nha-pag-info">Showing 1 to 5 of 5</span>
+     <div class="nha-pag-btns">
+       <button class="nha-pag-btn">Previous</button>
+       <button class="nha-pag-btn active">1</button>
+       <button class="nha-pag-btn">Next</button>
+     </div>
+   </div>
+════════════════════════════════════════════════════════════ */
+.nha-root .nha-pag-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bdr);
+}
+
+/* "Showing X to Y of Z" — left side */
+.nha-root .nha-pag-info {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--font);
+}
+
+/* Button group — right side */
+.nha-root .nha-pag-btns {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Individual page button: Previous, 1 2 3…, Next */
+.nha-root .nha-pag-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    min-width: 30px;
+    padding: 0 10px;
+    border-radius: var(--rs);
+    border: 1px solid var(--bdr);
+    background: var(--afims-surface, #FFFFFF);
+    color: var(--txt);
+    font-size: 12px;
+    font-family: var(--font);
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background .15s, border-color .15s, color .15s;
+}
+.nha-root .nha-pag-btn:hover    { background: var(--afims-heading-fill, #000E3E); border-color: var(--afims-heading-fill, #000E3E); color: var(--afims-pure-white, #FFFFFF); }
+/* Active page number — solid navy, like the "1" in the image */
+.nha-root .nha-pag-btn.active   { background: var(--afims-heading-fill, #000E3E); border-color: var(--afims-heading-fill, #000E3E); color: var(--afims-pure-white, #FFFFFF); font-weight: 700; }
+/* Disabled Previous/Next when on first/last page */
+.nha-root .nha-pag-btn.disabled { opacity: .4; cursor: default; pointer-events: none; }
+
+/* ════════════════════════════════════════════════════════════
+   STATUS BADGES
+════════════════════════════════════════════════════════════ */
+.nha-root .nha-bdg {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.nha-root .nha-bdg-amber   { background: var(--amber-bg);  color: var(--amber-txt); }
+.nha-root .nha-bdg-green   { background: var(--green-bg);  color: var(--green-txt); }
+.nha-root .nha-bdg-red     { background: var(--red-bg);    color: var(--red-txt); }
+.nha-root .nha-bdg-blue    { background: var(--blue-bg);   color: var(--afims-primary-text, #0035A9); }
+.nha-root .nha-bdg-teal    { background: var(--teal-bg);   color: var(--teal-txt); }
+.nha-root .nha-bdg-purple  { background: var(--purple-bg); color: var(--afims-primary-text, #0035A9); }
+.nha-root .nha-bdg-orange  { background: var(--orange-bg); color: var(--orange-txt); }
+.nha-root .nha-bdg-gray    { background: var(--afims-surface-subtle, #F4F7FA);          color: var(--afims-text-muted, #62657E); }
+.nha-root .nha-bdg-navy    { background: var(--navy-lt);   color: var(--afims-primary-text, #0035A9); }
+
+/* Solid (label-style) badge */
+.nha-root .nha-tbdg {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.nha-root .nha-tbdg-rfa    { background: var(--blue-bg);   color: var(--afims-primary-text, #0035A9); }
+.nha-root .nha-tbdg-cba    { background: var(--green-bg);  color: var(--green-txt); }
+.nha-root .nha-tbdg-laa    { background: var(--teal-bg);   color: var(--teal-txt); }
+.nha-root .nha-tbdg-oo     { background: var(--amber-bg);  color: var(--amber-txt); }
+.nha-root .nha-tbdg-ca     { background: var(--purple-bg); color: var(--afims-primary-text, #0035A9); }
+.nha-root .nha-tbdg-fb     { background: var(--teal-bg);   color: var(--teal-txt); }
+
+/* ════════════════════════════════════════════════════════════
+   EMPTY STATE
+════════════════════════════════════════════════════════════ */
+.nha-root .nha-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--muted);
+}
+.nha-root .nha-empty svg { width: 32px; height: 32px; stroke: var(--muted); display: block; margin: 0 auto 12px; }
+.nha-root .nha-empty-title { font-size: 14px; font-weight: 600; color: var(--sec); margin-top: 12px; }
+.nha-root .nha-empty-text  { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* ════════════════════════════════════════════════════════════
+   ERROR BANNER
+════════════════════════════════════════════════════════════ */
+#fmd-error-banner { display: none; }
+#fmd-error-banner.show { display: flex; }
+
+.nha-root .nha-error {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--afims-danger-soft, #FAE1E3);
+    border: 1px solid var(--afims-danger-soft, #FAE1E3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--afims-danger, #DC3545);
+    margin-bottom: 14px;
+}
+.nha-root .nha-error svg { width: 16px; height: 16px; stroke: var(--afims-danger, #DC3545); flex-shrink: 0; }
+
+/* ════════════════════════════════════════════════════════════
+   MODALS  (Bootstrap 5 compatible + custom overlay)
+════════════════════════════════════════════════════════════ */
+
+/* Bootstrap 5 modal overrides */
+.modal { display: none; position: fixed; inset: 0; z-index: 9000; }
+.modal.show { display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.45); }
+.modal-dialog { width: 90%; max-width: 900px; }
+.modal-dialog.modal-xl { max-width: 1100px; }
+.modal-dialog.modal-lg { max-width: 700px; }
+.modal-dialog.modal-sm { max-width: 480px; }
+.modal-content {
+    background: var(--afims-surface, #FFFFFF);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font, "IBM Plex Sans", sans-serif);
+}
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: var(--afims-heading-fill, #000E3E);
+    flex-shrink: 0;
+}
+.modal-title { font-size: 14px; font-weight: 700; color: var(--afims-pure-white, #FFFFFF); }
+.btn-close {
+    background: color-mix(in srgb, var(--afims-surface, #FFFFFF) 15%, transparent);
+    border: 1px solid rgba(255,255,255,.25);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--afims-pure-white, #FFFFFF);
+    font-size: 14px;
+    line-height: 1;
+}
+.btn-close::before { content: '×'; font-size: 18px; }
+.modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+.modal-footer {
+    padding: 14px 20px;
+    border-top: 1px solid var(--afims-border, #E4ECF2);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* Custom overlay (non-Bootstrap) */
+.nha-root .nha-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9050;
+    background: rgba(15,32,69,.55);
+    backdrop-filter: blur(3px);
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+.nha-root .nha-overlay.open { display: flex; }
+
+.nha-root .nha-modal {
+    background: var(--afims-surface, #FFFFFF);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 680px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0,0,0,.22);
+    animation: nha-modal-in .18s ease;
+}
+.nha-root .nha-modal-lg  { max-width: 900px; }
+.nha-root .nha-modal-xl  { max-width: 1100px; }
+.nha-root .nha-modal-sm  { max-width: 480px; }
+@keyframes nha-modal-in { from { opacity:0; transform: translateY(14px) scale(.98); } to { opacity:1; transform: none; } }
+
+.nha-root .nha-modal-hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: var(--afims-heading-fill, #000E3E);
+    flex-shrink: 0;
+}
+.nha-root .nha-modal-hdr h3,
+.nha-root .nha-modal-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--afims-pure-white, #FFFFFF);
+}
+.nha-root .nha-modal-close {
+    background: color-mix(in srgb, var(--afims-surface, #FFFFFF) 15%, transparent);
+    border: 1px solid rgba(255,255,255,.25);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--afims-pure-white, #FFFFFF);
+    font-size: 18px;
+    line-height: 1;
+    opacity: .8;
+}
+.nha-root .nha-modal-close:hover { opacity: 1; }
+.nha-root .nha-modal-body  { padding: 20px; overflow-y: auto; flex: 1; }
+.nha-root .nha-modal-foot {
+    padding: 14px 20px;
+    border-top: 1px solid var(--bdr);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* ════════════════════════════════════════════════════════════
+   FORM CONTROLS  (Bootstrap 5 overrides)
+════════════════════════════════════════════════════════════ */
+.form-control,
+.form-select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--afims-border, #E4ECF2);
+    border-radius: 7px;
+    font-size: 13px;
+    font-family: "IBM Plex Sans", sans-serif;
+    color: var(--afims-text, #1A1B21);
+    outline: none;
+    box-sizing: border-box;
+    background: var(--afims-surface, #FFFFFF);
+    appearance: auto;
+}
+.form-control:focus,
+.form-select:focus { border-color: var(--afims-heading-fill, #000E3E); box-shadow: 0 0 0 3px rgba(30,58,110,.1); }
+.form-control[readonly] { background: var(--afims-surface-subtle, #F4F7FA); }
+.form-label { display: block; font-size: 12px; font-weight: 600; color: var(--afims-text-muted, #62657E); margin-bottom: 4px; }
+.form-label.required-field::after { content: ' *'; color: var(--afims-danger, #DC3545); }
+
+/* Modal form group */
+.nha-root .nha-fg { margin-bottom: 14px; }
+.nha-root .nha-fg label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--sec);
+    margin-bottom: 5px;
+}
+.nha-root .nha-fg input,
+.nha-root .nha-fg select,
+.nha-root .nha-fg textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--bdr);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--txt);
+    background: var(--afims-surface, #FFFFFF);
+    font-family: var(--font);
+    box-sizing: border-box;
+    transition: border-color .15s, box-shadow .15s;
+}
+.nha-root .nha-fg input:focus,
+.nha-root .nha-fg select:focus,
+.nha-root .nha-fg textarea:focus {
+    outline: none;
+    border-color: var(--afims-heading-fill, #000E3E);
+    box-shadow: 0 0 0 3px rgba(15,32,69,.1);
+}
+.nha-root .nha-fg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.nha-root .nha-req { color: var(--red); }
+
+/* Detail row in view modal */
+.nha-root .nha-dr {
+    display: flex;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--bdr);
+    font-size: 13px;
+}
+.nha-root .nha-dr:last-child { border-bottom: none; }
+.nha-root .nha-dr-l { min-width: 170px; font-weight: 600; color: var(--sec); font-size: 12px; }
+.nha-root .nha-dr-v { color: var(--txt); }
+
+/* ════════════════════════════════════════════════════════════
+   BOOTSTRAP COMPONENT OVERRIDES  (card, table, alert, btn)
+════════════════════════════════════════════════════════════ */
+.card { background: var(--afims-surface, #FFFFFF); border: 1px solid var(--afims-border, #E4ECF2); border-radius: 10px; margin-bottom: 14px; overflow: hidden; }
+.card-header { background: var(--afims-surface-subtle, #F4F7FA) !important; padding: 10px 14px; border-bottom: 1px solid var(--afims-border, #E4ECF2); }
+.card-body { padding: 14px; }
+
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table thead { background: var(--afims-surface-subtle, #F4F7FA); }
+.table th { padding: 9px 10px; text-align: left; font-weight: 700; font-size: 11px; color: var(--afims-text-muted, #62657E); border-bottom: 1px solid var(--afims-border, #E4ECF2); }
+.table td { padding: 9px 10px; border-bottom: 1px solid var(--afims-surface-subtle, #F4F7FA); }
+.table-responsive { overflow-x: auto; }
+.table-bordered { border: 1px solid var(--afims-border, #E4ECF2); }
+.table-bordered th, .table-bordered td { border: 1px solid var(--afims-border, #E4ECF2); }
+
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; font-family: "IBM Plex Sans", sans-serif; }
+.btn-primary { background: var(--afims-heading-fill, #000E3E); color: var(--afims-pure-white, #FFFFFF); }
+.btn-primary:hover { opacity: .88; }
+.btn-success { background: var(--afims-success, #11A752); color: var(--afims-pure-white, #FFFFFF); }
+.btn-success.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-link { background: none; color: var(--afims-text-muted, #62657E); text-decoration: none; border: 1px solid var(--afims-border, #E4ECF2); }
+.btn-info { background: var(--afims-primary, #0035A9); color: var(--afims-pure-white, #FFFFFF); }
+.btn-info:hover { opacity: .88; }
+.btn-danger { background: var(--afims-danger, #DC3545); color: var(--afims-pure-white, #FFFFFF); }
+.btn-secondary { background: var(--afims-text-muted, #62657E); color: var(--afims-pure-white, #FFFFFF); }
+.btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
+
+.alert { padding: 12px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 0; }
+.alert-info { background: var(--afims-primary-soft, #E6EBF6); border: 1px solid var(--afims-primary-soft, #E6EBF6); color: var(--afims-primary-text, #0035A9); }
+.alert-success { background: var(--afims-success-soft, #DBF2E5); border: 1px solid var(--afims-success-soft-hover, #C4E9D4); color: var(--afims-success-hover, #0C7539); }
+.alert-warning { background: var(--afims-warning-soft, #FFF8DB); border: 1px solid var(--afims-warning-soft, #FFF8DB); color: var(--afims-warning-text, #7E6908); }
+.alert-danger { background: var(--afims-danger-soft, #FAE1E3); border: 1px solid var(--afims-danger-soft, #FAE1E3); color: var(--afims-danger-text, #8F222D); }
+.alert-heading { font-weight: 700; margin-bottom: 6px; }
+
+/* ════════════════════════════════════════════════════════════
+   DATATABLES INTEGRATION
+════════════════════════════════════════════════════════════ */
+.nha-root .dt-length   { display: none !important; }
+.nha-root .dt-search   { display: none !important; }
+.nha-root .dt-info     { font-size: 12px; color: var(--muted); padding: 10px 0 0 8px; }
+.nha-root .dt-paging   { padding: 8px 0 0; text-align: right; }
+.nha-root .dt-paging .dt-paging-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    margin: 0 2px;
+    border-radius: 8px;
+    border: 1px solid var(--bdr);
+    background: var(--afims-surface, #FFFFFF);
+    color: var(--txt);
+    font-size: 12px;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+}
+.nha-root .dt-paging .dt-paging-button:hover:not(.disabled) { background: var(--afims-heading-fill, #000E3E); border-color: var(--afims-heading-fill, #000E3E); color: var(--afims-pure-white, #FFFFFF); }
+.nha-root .dt-paging .dt-paging-button.current,
+.nha-root .dt-paging .dt-paging-button.current:hover { background: var(--afims-heading-fill, #000E3E); border-color: var(--afims-heading-fill, #000E3E); color: var(--afims-pure-white, #FFFFFF) !important; font-weight: 600; }
+.nha-root .dt-paging .dt-paging-button.disabled { opacity: .35; cursor: default; }
+.nha-root .dt-layout-row   { display: flex; align-items: center; }
+.nha-root .dt-layout-start { flex: 1; }
+.nha-root .dt-layout-end   { flex: 1; display: flex; justify-content: flex-end; }
+.nha-root .dt-buttons { display: inline-flex; gap: 6px; padding: 8px; }
+.nha-root .dt-buttons .dt-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--bdr);
+    background: var(--afims-surface, #FFFFFF);
+    color: var(--txt);
+    font-size: 12px;
+    font-family: var(--font);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .15s;
+}
+.nha-root .dt-buttons .dt-button:hover { background: var(--afims-heading-fill, #000E3E); border-color: var(--afims-heading-fill, #000E3E); color: var(--afims-pure-white, #FFFFFF); }
+
+/* ════════════════════════════════════════════════════════════
+   BOOTSTRAP GRID / UTILITY  (minimal subset for modals)
+════════════════════════════════════════════════════════════ */
+.d-flex { display: flex; }
+.justify-content-between { justify-content: space-between; }
+.align-items-center { align-items: center; }
+.p-0 { padding: 0; }
+.mb-0 { margin-bottom: 0 !important; }
+.mb-3 { margin-bottom: 16px; }
+.mt-2 { margin-top: 10px; }
+.mt-3 { margin-top: 14px; }
+.fw-bold { font-weight: 700; }
+.text-danger  { color: var(--afims-danger, #DC3545); }
+.text-success { color: var(--afims-success-hover, #0C7539); }
+.text-warning { color: var(--afims-warning-text, #7E6908); }
+.text-muted   { color: var(--afims-text-disabled, #A9AAB8); }
+.text-end { text-align: right; }
+.col-md-6  { flex: 0 0 50%; padding: 4px; }
+.col-md-4  { flex: 0 0 33.333%; padding: 4px; }
+.col-md-8  { flex: 0 0 66.666%; padding: 4px; }
+.row.g-3   { display: flex; flex-wrap: wrap; margin: -4px; }
+.row.g-3.mt-2 { margin-top: 8px; }
+@media (max-width: 768px) {
+    .col-md-6, .col-md-4, .col-md-8 { flex: 0 0 100%; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+════════════════════════════════════════════════════════════ */
+.nha-root .nha-mono {
+    font-family: var(--mono);
+    font-size: 12px;
+}
+.nha-root .nha-mono-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--surf2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+.nha-root .nha-amt {
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 12px;
+}
+.nha-root .nha-text-muted   { color: var(--muted); }
+.nha-root .nha-text-success { color: var(--green); }
+.nha-root .nha-text-warning { color: var(--amber); }
+.nha-root .nha-text-danger  { color: var(--red); }
+.nha-root .nha-text-navy    { color: var(--afims-heading, #000E3E); }
+
+/* ════════════════════════════════════════════════════════════
+   ANIMATIONS
+════════════════════════════════════════════════════════════ */
+.fade-up { animation: nha-fadeup .2s ease; }
+@keyframes nha-fadeup { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ════════════════════════════════════════════════════════════
+   PRINT
+════════════════════════════════════════════════════════════ */
+@media print {
+    .nha-root .no-print { display: none !important; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   PAGE HEADER — timestamp
+════════════════════════════════════════════════════════════ */
+.nha-root .nha-hdr-upd {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+/* ════════════════════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .nha-root .nha-hdr { padding: 14px 16px; }
+    .nha-root .nha-hdr-title { font-size: 15px; }
+    .nha-root .nha-tabs .nha-tab { font-size: 12px; padding: 8px 10px; }
+    .nha-root .nha-filter-group { min-width: 120px; }
+    .nha-root .nha-fg-row { grid-template-columns: 1fr; }
+    .nha-root .nha-modal { max-width: 100%; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   FTLA — Fund Transfer Letter of Advice
+   Page-specific components: stepper, timeline, detail grid,
+   attachment zone, form helpers.
+════════════════════════════════════════════════════════════ */
+
+/* Modal subtitle (below nha-modal-title in dark header) */
+.nha-root .fims-modal-subtitle {
+    font-size: 12px;
+    color: rgba(255,255,255,.65);
+    margin-top: 2px;
+}
+
+/* Form grid (CSS Grid layout helper inside modal forms) */
+.nha-root .fims-form-grid { display: grid; }
+
+/* Attachment drop-zone */
+.nha-root .fims-att-zone {
+    border: 2px dashed var(--bdr);
+    border-radius: 8px;
+    padding: 12px 16px;
+    min-height: 56px;
+}
+
+/* Attachment file chip */
+.nha-root .fims-att-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--surf2);
+    border: 1px solid var(--bdr);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 12px;
+}
+
+/* Inner panel (card-equivalent inside modals) */
+.nha-root .fims-panel {
+    background: var(--afims-surface, #FFFFFF);
+    border: 1px solid var(--bdr);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.nha-root .fims-panel-title { font-size: 12px; font-weight: 600; color: var(--txt); }
+
+/* Detail summary grid (FTLA status tracker) */
+.nha-root .fims-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+}
+.nha-root .fims-detail-item { display: flex; flex-direction: column; gap: 2px; }
+.nha-root .fims-detail-item.span-2 { grid-column: span 2; }
+.nha-root .fims-detail-label { font-size: 11px; color: var(--muted); font-weight: 500; }
+.nha-root .fims-detail-value { font-size: 13px; font-weight: 600; color: var(--txt); }
+
+/* Status timeline */
+.nha-root .fims-timeline { display: flex; flex-direction: column; }
+.nha-root .fims-timeline-step { display: flex; gap: 12px; padding: 8px 0; position: relative; }
+.nha-root .fims-timeline-step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 28px;
+    bottom: -8px;
+    width: 2px;
+    background: var(--bdr);
+}
+.nha-root .fims-timeline-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--surf2);
+    border: 2px solid var(--bdr);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+.nha-root .fims-timeline-step.done    .fims-timeline-dot { background: var(--green); border-color: var(--green); color: var(--afims-pure-white, #FFFFFF); }
+.nha-root .fims-timeline-step.current .fims-timeline-dot { background: var(--afims-heading-fill, #000E3E);  border-color: var(--afims-heading-fill, #000E3E);  color: var(--afims-pure-white, #FFFFFF); }
+.nha-root .fims-timeline-content { flex: 1; }
+.nha-root .fims-timeline-label { font-size: 13px; font-weight: 500; color: var(--txt); }
+.nha-root .fims-timeline-date  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* Truncated purpose column */
+.nha-root .fims-col-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 220px;
+}
+
+/* Multi-step form stepper */
+.nha-root .ftla-stepper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--bdr);
+    background: var(--surf);
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+.nha-root .ftla-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    flex: 1;
+}
+.nha-root .ftla-step-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--afims-surface, #FFFFFF);
+    border: 2px solid var(--bdr);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    position: relative;
+    z-index: 1;
+}
+.nha-root .ftla-step.active .ftla-step-circle,
+.nha-root .ftla-step.done   .ftla-step-circle {
+    background: var(--afims-heading-fill, #000E3E);
+    border-color: var(--afims-heading-fill, #000E3E);
+    color: var(--afims-pure-white, #FFFFFF);
+}
+.nha-root .ftla-step-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-top: 5px;
+    white-space: nowrap;
+    text-align: center;
+}
+.nha-root .ftla-step.active .ftla-step-label { color: var(--afims-heading, #000E3E); font-weight: 600; }
+.nha-root .ftla-step-connector {
+    position: absolute;
+    top: 14px;
+    left: calc(50% + 15px);
+    right: calc(-50% + 15px);
+    height: 2px;
+    background: var(--bdr);
+}
+.nha-root .ftla-step.done .ftla-step-connector { background: var(--afims-heading-fill, #000E3E); }
+.nha-root .ftla-step:last-child .ftla-step-connector { display: none; }
+
+/* Step content panels */
+.nha-root .ftla-panel            { display: none; }
+.nha-root .ftla-panel.ftla-active { display: block; }
+/* ── FTLA layout utilities (added during inline-style cleanup) ── */
+
+/* KPI grid modifiers */
+.nha-root .nha-kpi-grid-4    { grid-template-columns: repeat(4, 1fr); }
+.nha-root .nha-kpi-static    { cursor: default; }
+.nha-root .nha-kpi-val-md    { font-size: 16px; }
+
+/* Table helpers */
+.nha-root .nha-th-actions    { width: 110px; }
+.nha-root .nha-td-type       { font-size: 10px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.nha-root .nha-td-acts       { display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; }
+.nha-root .nha-pag-ellipsis  { padding: 0 4px; color: var(--muted); }
+.nha-root .ftla-bank-name    { font-size: 12px; font-weight: 600; }
+.nha-root .ftla-docs-badge   { background: var(--afims-heading-fill, #000E3E); color: var(--afims-pure-white, #FFFFFF); border-radius: 10px; padding: 0 5px; font-size: 10px; font-weight: 700; }
+.nha-root .ftla-error-msg    { color: var(--red) !important; }
+
+/* FTLA main modal — wide split layout */
+.nha-root .nha-modal-ftla         { max-width: min(98vw, 1400px); width: min(98vw, 1400px); }
+.nha-root .nha-modal-md           { max-width: 560px; }
+.nha-root .nha-modal-body-split   { padding: 0; display: flex; overflow: hidden; max-height: calc(100vh - 175px); }
+.nha-root .nha-modal-foot.split   { justify-content: space-between; align-items: center; }
+.nha-root .ftla-form-panel        { width: 460px; flex-shrink: 0; overflow-y: auto; padding: 20px 24px; border-right: 1px solid var(--bdr); }
+
+/* Preview pane */
+.nha-root .ftla-preview-panel       { flex: 1; overflow-y: auto; background: var(--afims-surface-subtle, #F4F7FA); padding: 16px 20px; min-width: 0; }
+.nha-root .ftla-preview-label       { font-size: 10px; font-weight: 700; letter-spacing: .08em; color: var(--muted); margin-bottom: 12px; text-transform: uppercase; }
+.nha-root .ftla-preview-wrap        { width: 100%; position: relative; }
+.nha-root .ftla-preview-inner       { transform-origin: top left; background: var(--afims-surface, #FFFFFF); box-shadow: 0 2px 12px rgba(0,0,0,.13); }
+.nha-root .ftla-preview-placeholder { padding: 60px 40px; text-align: center; color: var(--afims-border-strong, #A9AAB8); font-size: 13px; }
+
+/* Modal step counter / status */
+.nha-root .ftla-step-info { font-size: 11px; color: var(--muted); }
+.nha-root .nha-pag-btns-lg { gap: 8px; }
+
+/* Form helpers */
+.nha-root .ftla-check-label { display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 12px; white-space: nowrap; color: var(--sec); }
+.nha-root .ftla-dv-row      { display: flex; gap: 6px; align-items: center; }
+.nha-root .ftla-dv-input    { flex: 1; font-size: 12px; }
+.nha-root .ftla-dv-remove   { color: var(--red) !important; padding: 4px 6px !important; flex-shrink: 0; }
+
+/* fims-form-grid column presets */
+.nha-root .fims-form-grid-2      { grid-template-columns: 1fr 1fr; gap: 10px; }
+.nha-root .fims-form-grid-amount { grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
+.nha-root .fims-form-grid-att    { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+
+/* Readonly/disabled select */
+.form-control-static { pointer-events: none !important; background: var(--afims-border, #E4ECF2) !important; color: var(--afims-text-muted, #62657E) !important; }
+
+/* Spacing utilities (extend existing mt/mb set) */
+.mt-0 { margin-top: 0 !important; }
+.mt-1 { margin-top: 6px; }
+/* nha-empty size variants */
+.nha-root .nha-empty-sm { padding: 24px 0; }
+.nha-root .nha-empty-md { padding: 32px 0; }
+/* Attachment content flex cell */
+.nha-root .nha-dr-content { flex: 1; overflow: hidden; }
+/* Subtle no-file label */
+.nha-root .nha-no-file { font-size: 11px; color: var(--subtle); }

@@ -149,6 +149,7 @@ class UsersEdit extends Users
         $this->position_id->setVisibility();
         $this->employee_id->setVisibility();
         $this->must_change_password->setVisibility();
+        $this->rc_id->setVisibility();
     }
 
     // Constructor
@@ -922,6 +923,16 @@ class UsersEdit extends Users
                 $this->must_change_password->setFormValue($val);
             }
         }
+
+        // Check field name 'rc_id' first before field var 'x_rc_id'
+        $val = $CurrentForm->hasValue("rc_id") ? $CurrentForm->getValue("rc_id") : $CurrentForm->getValue("x_rc_id");
+        if (!$this->rc_id->IsDetailKey) {
+            if (IsApi() && $val === null) {
+                $this->rc_id->Visible = false; // Disable update for API request
+            } else {
+                $this->rc_id->setFormValue($val);
+            }
+        }
 		$this->photo->OldUploadPath = $this->photo->getUploadPath(); // PHP
 		$this->photo->UploadPath = $this->photo->OldUploadPath;
         $this->getUploadFiles(); // Get upload files
@@ -949,6 +960,7 @@ class UsersEdit extends Users
         $this->position_id->CurrentValue = $this->position_id->FormValue;
         $this->employee_id->CurrentValue = $this->employee_id->FormValue;
         $this->must_change_password->CurrentValue = $this->must_change_password->FormValue;
+        $this->rc_id->CurrentValue = $this->rc_id->FormValue;
     }
 
     /**
@@ -1019,6 +1031,7 @@ class UsersEdit extends Users
         $this->position_id->setDbValue($row['position_id']);
         $this->employee_id->setDbValue($row['employee_id']);
         $this->must_change_password->setDbValue((ConvertToBool($row['must_change_password']) ? "1" : "0"));
+        $this->rc_id->setDbValue($row['rc_id']);
     }
 
     // Return a row with default values
@@ -1045,6 +1058,7 @@ class UsersEdit extends Users
         $row['position_id'] = $this->position_id->DefaultValue;
         $row['employee_id'] = $this->employee_id->DefaultValue;
         $row['must_change_password'] = $this->must_change_password->DefaultValue;
+        $row['rc_id'] = $this->rc_id->DefaultValue;
         return $row;
     }
 
@@ -1138,6 +1152,9 @@ class UsersEdit extends Users
 
         // must_change_password
         $this->must_change_password->RowCssClass = "row";
+
+        // rc_id
+        $this->rc_id->RowCssClass = "row";
 
         // View row
         if ($this->RowType == RowType::VIEW) {
@@ -1270,6 +1287,9 @@ class UsersEdit extends Users
                 $this->must_change_password->ViewValue = $this->must_change_password->tagCaption(2) != "" ? $this->must_change_password->tagCaption(2) : "No";
             }
 
+            // rc_id
+            $this->rc_id->ViewValue = $this->rc_id->CurrentValue;
+
             // user_id
             $this->user_id->HrefValue = "";
 
@@ -1324,6 +1344,9 @@ class UsersEdit extends Users
 
             // must_change_password
             $this->must_change_password->HrefValue = "";
+
+            // rc_id
+            $this->rc_id->HrefValue = "";
         } elseif ($this->RowType == RowType::EDIT) {
             // user_id
             $this->user_id->setupEditAttributes();
@@ -1476,6 +1499,14 @@ class UsersEdit extends Users
             $this->must_change_password->EditValue = $this->must_change_password->options(false);
             $this->must_change_password->PlaceHolder = RemoveHtml($this->must_change_password->caption());
 
+            // rc_id
+            $this->rc_id->setupEditAttributes();
+            if (!$this->rc_id->Raw) {
+                $this->rc_id->CurrentValue = HtmlDecode($this->rc_id->CurrentValue);
+            }
+            $this->rc_id->EditValue = HtmlEncode($this->rc_id->CurrentValue);
+            $this->rc_id->PlaceHolder = RemoveHtml($this->rc_id->caption());
+
             // Edit refer script
 
             // user_id
@@ -1532,6 +1563,9 @@ class UsersEdit extends Users
 
             // must_change_password
             $this->must_change_password->HrefValue = "";
+
+            // rc_id
+            $this->rc_id->HrefValue = "";
         }
         if ($this->RowType == RowType::ADD || $this->RowType == RowType::EDIT || $this->RowType == RowType::SEARCH) { // Add/Edit/Search row
             $this->setupFieldTitles();
@@ -1658,16 +1692,16 @@ class UsersEdit extends Users
                     $this->must_change_password->addErrorMessage(str_replace("%s", $this->must_change_password->caption(), $this->must_change_password->RequiredErrorMessage));
                 }
             }
+            if ($this->rc_id->Visible && $this->rc_id->Required) {
+                if (!$this->rc_id->IsDetailKey && EmptyValue($this->rc_id->FormValue)) {
+                    $this->rc_id->addErrorMessage(str_replace("%s", $this->rc_id->caption(), $this->rc_id->RequiredErrorMessage));
+                }
+            }
 
         // Validate detail grid
         $detailTblVar = explode(",", $this->getCurrentDetailTable());
         $detailPage = Container("UserLevelAssignmentsGrid");
         if (in_array("user_level_assignments", $detailTblVar) && $detailPage->DetailEdit) {
-            $detailPage->run();
-            $validateForm = $validateForm && $detailPage->validateGridForm();
-        }
-        $detailPage = Container("AggregatedAuditLogsGrid");
-        if (in_array("aggregated_audit_logs", $detailTblVar) && $detailPage->DetailEdit) {
             $detailPage->run();
             $validateForm = $validateForm && $detailPage->validateGridForm();
         }
@@ -1784,12 +1818,6 @@ class UsersEdit extends Users
             $detailPage = Container("UserLevelAssignmentsGrid");
             if (in_array("user_level_assignments", $detailTblVar) && $detailPage->DetailEdit && $editRow) {
                 $Security->loadCurrentUserLevel($this->ProjectID . "user_level_assignments"); // Load user level of detail table
-                $editRow = $detailPage->gridUpdate();
-                $Security->loadCurrentUserLevel($this->ProjectID . $this->TableName); // Restore user level of master table
-            }
-            $detailPage = Container("AggregatedAuditLogsGrid");
-            if (in_array("aggregated_audit_logs", $detailTblVar) && $detailPage->DetailEdit && $editRow) {
-                $Security->loadCurrentUserLevel($this->ProjectID . "aggregated_audit_logs"); // Load user level of detail table
                 $editRow = $detailPage->gridUpdate();
                 $Security->loadCurrentUserLevel($this->ProjectID . $this->TableName); // Restore user level of master table
             }
@@ -1916,6 +1944,9 @@ class UsersEdit extends Users
             $tmpBool = !empty($tmpBool) ? "1" : "0";
         }
         $this->must_change_password->setDbValueDef($rsnew, $tmpBool, $this->must_change_password->ReadOnly);
+
+        // rc_id
+        $this->rc_id->setDbValueDef($rsnew, $this->rc_id->CurrentValue, $this->rc_id->ReadOnly);
         return $rsnew;
     }
 
@@ -1975,6 +2006,9 @@ class UsersEdit extends Users
         }
         if (isset($row['must_change_password'])) { // must_change_password
             $this->must_change_password->CurrentValue = $row['must_change_password'];
+        }
+        if (isset($row['rc_id'])) { // rc_id
+            $this->rc_id->CurrentValue = $row['rc_id'];
         }
     }
 
@@ -2088,21 +2122,6 @@ class UsersEdit extends Users
                     $detailPageObj->user_id->setSessionValue($detailPageObj->user_id->CurrentValue);
                     $detailPageObj->system_id->setSessionValue(""); // Clear session key
                     $detailPageObj->user_level_id->setSessionValue(""); // Clear session key
-                }
-            }
-            if (in_array("aggregated_audit_logs", $detailTblVar)) {
-                $detailPageObj = Container("AggregatedAuditLogsGrid");
-                if ($detailPageObj->DetailEdit) {
-                    $detailPageObj->EventCancelled = $this->EventCancelled;
-                    $detailPageObj->CurrentMode = "edit";
-                    $detailPageObj->CurrentAction = "gridedit";
-
-                    // Save current master table to detail table
-                    $detailPageObj->setCurrentMasterTable($this->TableVar);
-                    $detailPageObj->setStartRecordNumber(1);
-                    $detailPageObj->user->IsDetailKey = true;
-                    $detailPageObj->user->CurrentValue = $this->user_id->CurrentValue;
-                    $detailPageObj->user->setSessionValue($detailPageObj->user->CurrentValue);
                 }
             }
         }

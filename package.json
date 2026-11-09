@@ -1,10 +1,21 @@
+
 {
     "name": "fims",
     "version": "24.16.2",
     "description": "fims",
     "license": "SEE LICENSE IN LICENSE.md",
     "private": true,
-    "dependencies": {},
+    "scripts": {
+        "install-system": "node install_system.js",
+        "sql": "node install_system.js --sql-only",
+        "sql-consolidated": "node install_system.js --sql-only --consolidated",
+        "sql-reset": "node install_system.js --reset-only"
+    },
+    "dependencies": {
+        "chalk": "^4.1.2",
+        "fs-extra": "^11.2.0",
+        "inquirer": "^8.2.6"
+    },
     "engines": {
         "node": ">=18"
     }

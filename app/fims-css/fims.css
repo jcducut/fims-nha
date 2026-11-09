@@ -1,0 +1,1132 @@
+/* ──────────────────────────────────────────────────────────────
+   user-access.php — design tokens
+   Single source of truth for the flat-minimalist palette/spacing
+   used across this page (stat cards, tables, modals, buttons).
+   ────────────────────────────────────────────────────────────── */
+:root {
+    /* Matches this app's own brand theme (_shared/css/nha-fims.css:
+       --afims-heading-fill / --afims-primary) instead of Bootstrap's
+       default blue, so this page reads as part of the same dark-blue
+       theme as the rest of the system. */
+    --app-accent: #000e3e;
+    --app-accent-hover: #0035a9;
+    --app-success: #198754;
+    --app-success-soft-bg: #e6f7ec;
+    --app-success-soft-fg: #1e7e42;
+    --app-danger: #c0382b;
+    --app-danger-soft-bg: #fdeceb;
+    --app-danger-soft-fg: #c0382b;
+    --app-info-soft-bg: #e6ebf6;
+    --app-info-soft-fg: #0035a9;
+    --app-warning-soft-bg: #fff8e1;
+    --app-warning-soft-fg: #a9790b;
+    --app-text: #1a1d21;
+    --app-text-muted: #868e96;
+    --app-border: #eef0f2;
+    --app-surface-sunken: #f9fafb;
+    --app-radius: 0.5rem;
+    --app-radius-lg: 0.75rem;
+}
+
+/* ── Stat cards (dashboard KPI row) ── */
+.app-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    background: #fff;
+    border: 1px solid var(--app-border);
+    border-radius: var(--app-radius-lg);
+    padding: 1rem 1.1rem;
+    margin-bottom: 1rem;
+}
+.app-stat-icon {
+    flex: 0 0 auto;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+.app-stat-icon.is-info { background: var(--app-info-soft-bg); color: var(--app-info-soft-fg); }
+.app-stat-icon.is-success { background: var(--app-success-soft-bg); color: var(--app-success-soft-fg); }
+.app-stat-icon.is-warning { background: var(--app-warning-soft-bg); color: var(--app-warning-soft-fg); }
+.app-stat-icon.is-danger { background: var(--app-danger-soft-bg); color: var(--app-danger-soft-fg); }
+.app-stat-content {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+}
+.app-stat-number {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--app-text);
+}
+.app-stat-label {
+    font-size: 0.78rem;
+    color: var(--app-text-muted);
+}
+
+/* ── Role Access panel ── */
+.app-role-access-selected {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--app-info-soft-bg, #e6ebf6);
+    color: var(--app-info-soft-fg, #0035a9);
+    border-radius: var(--app-radius, 0.5rem);
+    padding: 0.55rem 0.8rem;
+    font-size: 0.85rem;
+    margin-bottom: 1.1rem;
+}
+.app-role-access-selected i {
+    font-size: 0.8rem;
+}
+.app-role-access-list {
+    margin-bottom: 1.1rem;
+}
+.app-role-access-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.55rem 0.1rem;
+    border-bottom: 1px solid var(--app-border, #eef0f2);
+    font-size: 0.85rem;
+}
+.app-role-access-list-item:last-child {
+    border-bottom: none;
+}
+.app-role-access-list-item .app-table-action-btn {
+    color: var(--app-danger-soft-fg, #c0382b);
+    background: var(--app-danger-soft-bg, #fdeceb);
+}
+.app-role-access-list-item .app-table-action-btn:hover {
+    background: #f9d9d6;
+}
+
+/* Role Access card: flex column so the role list (the item most likely to
+   have room to grow) can stretch into whatever vertical space is left next
+   to the taller Users list, instead of the card just ending in dead space. */
+.app-role-access-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.app-role-list-search {
+    max-width: none;
+}
+.app-role-list-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+.app-role-list {
+    flex: 1 1 auto;
+    min-height: 16rem;
+    max-height: 34rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.2rem 0.5rem 0.2rem 0.2rem;
+    border: 1px solid var(--app-border, #eef0f2);
+    border-radius: var(--app-radius, 0.5rem);
+    background: var(--app-surface-sunken, #f9fafb);
+    margin-bottom: 1rem;
+    scrollbar-width: thin;
+    scrollbar-color: #c3cad3 transparent;
+}
+.app-role-list::-webkit-scrollbar {
+    width: 0.45rem;
+}
+.app-role-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.app-role-list::-webkit-scrollbar-thumb {
+    background-color: #c3cad3;
+    border-radius: 999px;
+}
+.app-role-list::-webkit-scrollbar-thumb:hover {
+    background-color: var(--app-accent, #000e3e);
+}
+.app-role-list-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    background: #fff;
+    border: 1px solid transparent;
+    border-radius: 0.45rem;
+    padding: 0.55rem 0.7rem;
+    font-size: 0.85rem;
+    text-align: left;
+    color: var(--app-text, #1a1d21);
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.app-role-list-item:hover {
+    border-color: var(--app-border, #eef0f2);
+    box-shadow: 0 1px 4px rgba(16, 24, 40, 0.06);
+}
+.app-role-list-item-icon {
+    flex: 0 0 auto;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--app-info-soft-bg, #e6ebf6);
+    color: var(--app-info-soft-fg, #0035a9);
+    font-size: 0.75rem;
+}
+.app-role-list-item-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.35;
+}
+.app-role-list-item-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+}
+.app-role-list-item-system {
+    flex: 0 0 auto;
+    font-size: 0.7rem;
+    color: var(--app-text-muted, #868e96);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+.app-role-list-item-edit {
+    flex: 0 0 auto;
+    width: 1.6rem;
+    height: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    color: var(--app-text-muted, #868e96);
+    border-radius: 0.35rem;
+    opacity: 0;
+    transition: opacity 0.12s ease, background 0.12s ease, color 0.12s ease;
+}
+.app-role-list-item:hover .app-role-list-item-edit,
+.app-role-list-item.is-active .app-role-list-item-edit {
+    opacity: 1;
+}
+.app-role-list-item-edit:hover {
+    background: var(--app-info-soft-bg, #e6ebf6);
+    color: var(--app-info-soft-fg, #0035a9);
+}
+.app-role-list-item-check {
+    flex: 0 0 auto;
+    width: 1.3rem;
+    height: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.68rem;
+    color: #fff;
+    background: var(--app-accent, #000e3e);
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+}
+.app-role-list-item.is-active {
+    border-color: var(--app-info-soft-bg, #e6ebf6);
+    box-shadow: 0 0 0 1px var(--app-info-soft-bg, #e6ebf6) inset;
+}
+.app-role-list-item.is-active .app-role-list-item-icon {
+    background: var(--app-accent, #000e3e);
+    color: #fff;
+}
+.app-role-list-item.is-active .app-role-list-item-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ── Accessible focus ring for interactive elements this page adds ── */
+.app-table-action-btn:focus-visible,
+.app-table-pager-btn:focus-visible,
+.app-table-page-btn:focus-visible,
+.app-table-toolbar-btn:focus-visible,
+.edit-module-caption-btn:focus-visible,
+.restore-module-btn:focus-visible {
+    outline: 2px solid var(--app-accent);
+    outline-offset: 2px;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   user-access.php — Users table & Permissions Management table
+   (modern minimalist redesign: flat rows, soft pill badges,
+   ghost action buttons, flat pager)
+   ────────────────────────────────────────────────────────────── */
+
+.app-table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+.app-table thead th {
+    border: none;
+    border-bottom: 2px solid #eef0f2;
+    background: #fff;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #868e96;
+    vertical-align: middle;
+}
+.app-table tbody td {
+    border: none;
+    border-bottom: 1px solid #f1f3f5;
+    padding: 0.65rem 0.9rem;
+    vertical-align: middle;
+    font-size: 0.88rem;
+    color: #1a1d21;
+}
+.app-table tbody tr:hover {
+    background-color: #f8f9fb;
+}
+.app-table.table-striped tbody tr:nth-of-type(odd) {
+    background-color: transparent;
+}
+
+/* Users list: each user is 2 lines instead of 1 dense row. A single-line
+   layout (table or one-row grid) forces every field — name, dept, office,
+   access badges, status, login, actions — to fight for the same horizontal
+   space, which is what got cramped/overlapping once this card started
+   sharing a row with Role Access. Splitting into a primary line (who +
+   status + actions) and a secondary line (everything else, self-labeled
+   and free to wrap) gives each piece of information real room. */
+.app-user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.app-user-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    grid-template-areas:
+        "user   status  actions"
+        "meta   meta    meta";
+    align-items: center;
+    column-gap: 0.75rem;
+    row-gap: 0.55rem;
+    padding: 0.85rem 0.9rem;
+    border: 1px solid var(--app-border, #eef0f2);
+    border-radius: var(--app-radius, 0.5rem);
+    background: #fff;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.app-user-row:hover {
+    border-color: #dde3ea;
+    box-shadow: 0 2px 8px rgba(16, 24, 40, 0.06);
+}
+.app-user-col-user {
+    grid-area: user;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-width: 0;
+}
+.app-user-col-status {
+    grid-area: status;
+}
+.app-user-col-actions {
+    grid-area: actions;
+    display: flex;
+    gap: 0.15rem;
+    justify-content: flex-end;
+}
+.app-user-col-meta {
+    grid-area: meta;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 0.35rem;
+    column-gap: 1.1rem;
+    padding-top: 0.55rem;
+    padding-left: calc(2rem + 0.65rem);
+    border-top: 1px solid var(--app-border, #eef0f2);
+}
+.app-user-meta-field {
+    font-size: 0.8rem;
+    color: #6c757d;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+}
+.app-user-meta-field--access {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.app-user-meta-field--login {
+    margin-left: auto;
+}
+.app-user-meta-icon {
+    font-size: 0.72rem;
+    color: #c7cdd4;
+    width: 0.9rem;
+    text-align: center;
+}
+.app-user-meta-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--app-info-soft-fg, #0035a9);
+}
+
+.app-table-avatar {
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: #e6ebf6;
+    color: var(--app-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+.app-table-user-cell-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+    min-width: 0;
+}
+.app-table-user-cell-name {
+    font-weight: 600;
+    color: #1a1d21;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+.app-table-user-cell-sub {
+    font-size: 0.78rem;
+    color: #adb5bd;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* Status badge gets a small solid dot instead of relying on text/color alone */
+.app-status-dot {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+.app-status-dot::before {
+    content: "";
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* Soft pill badges (status / access summary) */
+.app-table .badge,
+.app-user-list .badge {
+    font-weight: 500;
+    font-size: 0.72rem;
+    padding: 0.35em 0.7em;
+    border-radius: 999px;
+}
+.app-table .badge-success,
+.app-user-list .badge-success { background: #e6f7ec; color: #1e7e42; }
+.app-table .badge-danger,
+.app-user-list .badge-danger { background: #fdeceb; color: #c0382b; }
+.app-table .badge-info,
+.app-user-list .badge-info { background: #e6ebf6; color: #0035a9; }
+.app-table .badge-secondary,
+.app-user-list .badge-secondary { background: #f1f3f5; color: #6c757d; }
+
+/* Icon action buttons (edit / manage access) — color-coded per action
+   instead of a single neutral gray, so the two are easier to tell apart
+   at a glance in a dense list. */
+.app-table-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f3f5;
+    border: none;
+    color: #868e96;
+    border-radius: 0.4rem;
+    padding: 0.35rem 0.55rem;
+    text-decoration: none;
+}
+.app-table-action-btn:hover {
+    text-decoration: none;
+}
+.app-table-action-btn:hover {
+    background: #e9ecef;
+    color: #1a1d21;
+}
+.app-table-action-btn + .app-table-action-btn {
+    margin-left: 0.15rem;
+}
+.app-table-action-btn.edit-user-btn {
+    background: var(--app-info-soft-bg, #e6ebf6);
+    color: var(--app-info-soft-fg, #0035a9);
+}
+.app-table-action-btn.edit-user-btn:hover {
+    background: #dbe3f5;
+    color: var(--app-accent, var(--app-accent));
+}
+.app-table-action-btn.manage-access-btn {
+    background: #f1e9fd;
+    color: #7c3aed;
+}
+.app-table-action-btn.manage-access-btn:hover {
+    background: #e5d6fb;
+    color: #6225d6;
+}
+
+/* Flat search input (table toolbar) */
+.app-table-search {
+    position: relative;
+    max-width: 350px;
+}
+.app-table-search .form-control {
+    padding-left: 2.25rem !important;
+    border-radius: 0.5rem;
+    background: #f9fafb;
+    border: 1px solid #e4e6e9;
+}
+.app-table-search .form-control:focus {
+    background: #fff;
+    border-color: var(--app-accent);
+    box-shadow: none;
+}
+.app-table-search-icon {
+    position: absolute;
+    top: 50%;
+    left: 0.85rem;
+    transform: translateY(-50%);
+    color: #adb5bd;
+    font-size: 0.8rem;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Flat pagination */
+.app-table-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+}
+.app-table-pagination-controls {
+    gap: 0.25rem;
+}
+.app-table-pager-btn,
+.app-table-page-btn {
+    border: 1px solid #e4e6e9;
+    background: #fff;
+    color: #495057;
+    border-radius: 0.4rem;
+    font-size: 0.82rem;
+    padding: 0.3rem 0.65rem;
+    line-height: 1.2;
+}
+.app-table-pager-btn:hover,
+.app-table-page-btn:hover {
+    background: #f1f3f5;
+}
+.app-table-pager-btn:disabled {
+    opacity: 0.4;
+}
+.app-table-page-btn.is-active {
+    background: var(--app-accent);
+    border-color: var(--app-accent);
+    color: #fff;
+}
+
+/* ── Permissions Management: toolbar ── */
+.app-table-toolbar-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #868e96;
+}
+.app-table-toolbar-btn {
+    border: 1px solid #e4e6e9;
+    background: #fff;
+    color: #495057;
+    border-radius: 0.4rem;
+    font-size: 0.78rem;
+    padding: 0.35rem 0.7rem;
+}
+.app-table-toolbar-btn:hover:not(:disabled) {
+    background: #f1f3f5;
+    color: #1a1d21;
+}
+.app-table-toolbar-btn:disabled {
+    opacity: 0.45;
+}
+.app-table-toolbar-btn.is-success {
+    color: #198754;
+    border-color: #cdebd9;
+}
+.app-table-toolbar-btn.is-success:hover:not(:disabled) {
+    background: #e6f7ec;
+}
+.app-table-toolbar-btn.is-danger {
+    color: #c0382b;
+    border-color: #f6d4d0;
+}
+.app-table-toolbar-btn.is-danger:hover:not(:disabled) {
+    background: #fdeceb;
+}
+
+/* ── Permissions Management: toolbar (search + bulk actions on one line,
+   the L/V/A/E/D/S/Ex/Lk key on its own line below) ── */
+.app-table-permissions-toolbar {
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #eef0f2;
+}
+.app-table-permissions-toolbar-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+}
+.app-table-permissions-toolbar .app-table-search {
+    margin-bottom: 0;
+    flex: 1 1 220px;
+    max-width: 280px;
+}
+.app-table-permissions-toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    flex: 0 0 auto;
+}
+.app-checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #495057;
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+/* ── Permissions Management: matrix table ── */
+/* Fixed layout + narrow, abbreviated permission columns (full words live in
+   the legend above + a tooltip) so the whole matrix fits the card width
+   without a horizontal scrollbar. overflow-x:auto is a safety net so any
+   overflow scrolls contained here instead of bleeding into the page. */
+.app-table-permissions-wrap {
+    overflow-x: auto;
+}
+.app-table-permissions {
+    table-layout: fixed !important;
+    width: 100% !important;
+}
+.app-table-permissions th:first-child {
+    width: 3.6rem;
+}
+.app-table-permissions th:last-child {
+    width: 2.6rem;
+}
+.app-table-permissions th:nth-child(2) {
+    /* Capped, not auto — otherwise this column eats 100% of whatever
+       space the fixed-width columns don't use, pushing the permission
+       checkboxes far to the right with a big dead gap in between. */
+    width: 26%;
+}
+.app-table-permissions th:nth-child(3),
+.app-table-permissions th:nth-child(4),
+.app-table-permissions th:nth-child(5),
+.app-table-permissions th:nth-child(6),
+.app-table-permissions th:nth-child(7),
+.app-table-permissions th:nth-child(8),
+.app-table-permissions th:nth-child(9),
+.app-table-permissions th:nth-child(10) {
+    /* Checkbox + label now sit side by side (was stacked), so columns need
+       to be wide enough for the longest label ("Delete"/"Search"/"Export")
+       plus the checkbox, not just a single letter or a wrapped word.
+       !important because something elsewhere keeps winning this fight
+       despite lower specificity. */
+    width: 5.6rem !important;
+    padding-left: 0.3rem !important;
+    padding-right: 0.3rem !important;
+}
+.app-table-permissions td.app-table-permissions-divider,
+.app-table-permissions th.app-table-permissions-divider {
+    white-space: normal;
+    word-break: break-word;
+}
+.app-table-permissions th.app-table-permissions-divider {
+    font-size: 0.7rem !important;
+}
+.app-table-permissions thead th {
+    text-align: center;
+}
+.app-table-permissions thead th.text-left {
+    text-align: left;
+}
+/* Visually separate the Del/All toggle columns from the page name, and the
+   page name from the 8 permission-type columns — reduces column crowding. */
+.app-table-permissions-divider {
+    border-right: 1px solid #eef0f2;
+}
+/* Rename/restore icons live in their own fixed-width Actions column so they
+   line up in a straight column instead of trailing variable-length captions.
+   (table-layout:fixed means width is literal, not "shrink to content" —
+   needs real room for two ~27px icon buttons, not 1px.) */
+.app-table-permissions-divider-left {
+    border-left: 1px solid #eef0f2;
+    width: 3.4rem;
+    white-space: nowrap;
+}
+/* Custom checkbox: native rendering is too small/pale to read reliably in a
+   dense matrix, especially across browsers — draw our own checked state.
+   .app-checkbox is the same treatment for one-off checkboxes outside the
+   matrix (e.g. "Show hidden"). */
+.app-table-permissions input[type="checkbox"],
+.app-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 1.2rem;
+    height: 1.2rem;
+    margin: 0;
+    border: 1.5px solid #ced4da;
+    border-radius: 0.3rem;
+    background: #fff;
+    cursor: pointer;
+    position: relative;
+    vertical-align: middle;
+    flex-shrink: 0;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+.app-table-permissions input[type="checkbox"]:hover:not(:disabled),
+.app-checkbox:hover:not(:disabled) {
+    border-color: var(--app-accent);
+}
+.app-table-permissions input[type="checkbox"]:checked,
+.app-checkbox:checked {
+    background: var(--app-accent);
+    border-color: var(--app-accent);
+}
+.app-table-permissions input[type="checkbox"]:checked::after,
+.app-checkbox:checked::after {
+    content: "";
+    position: absolute;
+    left: 0.35rem;
+    top: 0.12rem;
+    width: 0.3rem;
+    height: 0.55rem;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+.app-table-permissions input[type="checkbox"]:disabled,
+.app-checkbox:disabled {
+    background: #f1f3f5;
+    border-color: #e9ecef;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+.app-table-permissions input[type="checkbox"]:disabled:checked,
+.app-checkbox:disabled:checked {
+    background: #8e9bc2;
+    border-color: #8e9bc2;
+}
+.app-table-permissions input[type="checkbox"]:focus-visible,
+.app-checkbox:focus-visible {
+    outline: 2px solid var(--app-accent);
+    outline-offset: 2px;
+}
+/* Checkbox + label side by side in the header (was stacked via <br>, which
+   wasted vertical space and visually disconnected the label from its box).
+   The checkbox itself stays centered in the th — same spot a bare checkbox
+   in the matching tbody <td> centers to — by keeping it the only element
+   in normal flow and floating the label out via position:absolute, so the
+   two checkbox columns (header + every body row) line up vertically. */
+.app-table-th-check {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+.app-table-th-check span {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
+    margin-left: 0.35rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #6c757d;
+    white-space: nowrap;
+}
+/* The "All" checkbox sits directly against the left-aligned "Page" column
+   with no horizontal gap to float a label into (unlike the 8 permission
+   columns, which have empty space on both sides) — so its label stays
+   stacked below instead of colliding with "Page". */
+.app-table-th-check .app-table-th-sublabel {
+    position: static;
+    display: block;
+    top: auto;
+    left: auto;
+    transform: none;
+    margin-left: 0;
+    margin-top: 0.2rem;
+    text-align: center;
+}
+.app-table-th-sublabel {
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #adb5bd;
+}
+.app-table-permissions tbody tr.text-muted {
+    background: #fbfbfc;
+}
+.app-table-permissions .badge {
+    vertical-align: middle;
+}
+.app-table-permissions .edit-module-caption-btn,
+.app-table-permissions .restore-module-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    width: 1.7rem !important;
+    height: 1.7rem !important;
+    padding: 0 !important;
+    border-radius: 0.4rem !important;
+    background: transparent !important;
+    border: none !important;
+    color: #adb5bd !important;
+    text-decoration: none !important;
+}
+.app-table-permissions .edit-module-caption-btn:hover {
+    background: #f1f3f5 !important;
+    color: #1a1d21 !important;
+}
+.app-table-permissions .restore-module-btn {
+    color: #198754 !important;
+}
+.app-table-permissions .restore-module-btn:hover {
+    background: #e6f7ec !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   user-access.php — Add User modal
+   ────────────────────────────────────────────────────────────── */
+
+/* ── Labels always stack above their field (never inline beside it) ── */
+.form-group > label {
+    display: block;
+    width: 100%;
+}
+
+/* ── Modal overlay: always centers the modal, both axes ── */
+.user-modal-overlay {
+    display: none; /* JS toggles this to 'flex' when opening, 'none' when closing */
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    align-items: center;
+    justify-content: center;
+    padding: 2vh 1rem;
+}
+
+/* ── Modal shell / card layout ── */
+.add-user-modal-shell {
+    width: 100%;
+    max-width: 750px;
+    max-height: 92vh;
+    background: #fff;
+    border-radius: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+.add-user-modal-card {
+    min-height: 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    border-radius: 0.75rem;
+    border: none;
+}
+.add-user-modal-form {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* ── Add User modal: modern minimalist chrome ── */
+.user-modal-overlay .card-header {
+    flex: 0 0 auto;
+    background: #fff;
+    border-bottom: 1px solid #eef0f2;
+    padding: 1.25rem 1.75rem;
+    border-radius: 0.75rem 0.75rem 0 0;
+}
+.user-modal-overlay .card-header .card-title {
+    color: #1a1d21;
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+.user-modal-overlay .card-header .btn-tool {
+    color: #adb5bd;
+}
+.user-modal-overlay .card-header .btn-tool:hover {
+    color: #1a1d21;
+}
+.user-modal-overlay .card-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 1.75rem;
+}
+.user-modal-overlay .card-footer {
+    flex: 0 0 auto;
+    gap: 0.5rem;
+    background: #fff;
+    border-top: 1px solid #eef0f2;
+    border-radius: 0 0 0.75rem 0.75rem;
+    padding: 1rem 1.75rem;
+}
+.user-modal-overlay label,
+.app-flat-form label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #6c757d;
+    margin-bottom: 0.4rem;
+}
+.user-modal-overlay .form-control,
+.app-flat-form .form-control {
+    box-sizing: border-box;
+    height: 2.5rem;
+    border: 1px solid #e4e6e9;
+    background: #f9fafb;
+    border-radius: 0.5rem;
+    padding: 0.55rem 0.8rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+.user-modal-overlay .form-control::placeholder,
+.app-flat-form .form-control::placeholder {
+    color: #c3c8cd;
+}
+.user-modal-overlay .form-control:focus,
+.app-flat-form .form-control:focus {
+    background: #fff;
+    border-color: var(--app-accent);
+    box-shadow: none;
+}
+/* Native <select> chrome varies by browser/OS — flatten it to match text inputs exactly */
+.user-modal-overlay select.form-control,
+.app-flat-form select.form-control {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23adb5bd' d='M4 6l4 4 4-4H4z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 14px 14px;
+    padding-right: 2.1rem;
+}
+.user-modal-overlay .custom-control-label,
+.app-flat-form .custom-control-label {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #1a1d21;
+    text-transform: none;
+}
+.user-modal-overlay .btn,
+.app-flat-form .btn {
+    border-radius: 0.5rem;
+    font-size: 0.88rem;
+    padding: 0.45rem 1.15rem;
+    box-shadow: none !important;
+}
+.user-modal-overlay .btn-primary,
+.app-flat-form .btn-primary {
+    background: var(--app-accent);
+    border-color: var(--app-accent);
+}
+.user-modal-overlay .btn-primary:hover,
+.app-flat-form .btn-primary:hover {
+    background: var(--app-accent-hover);
+    border-color: var(--app-accent-hover);
+}
+.user-modal-overlay .btn-light,
+.app-flat-form .btn-light {
+    background: #f1f3f5;
+    border-color: #f1f3f5;
+    color: #495057;
+}
+.user-modal-overlay .btn-light:hover,
+.app-flat-form .btn-light:hover {
+    background: #e9ecef;
+}
+.user-modal-overlay .btn-link,
+.app-flat-form .btn-link {
+    text-decoration: none;
+}
+.user-modal-overlay .btn-link:hover,
+.app-flat-form .btn-link:hover {
+    color: #1a1d21 !important;
+    text-decoration: none;
+}
+
+/* Minimal icon-input: plain fields, icon only where it adds function (password reveal) */
+.icon-input { position: relative; }
+.user-modal-overlay .icon-input .form-control.has-suffix,
+.app-flat-form .icon-input .form-control.has-suffix {
+    padding-right: 2.5rem;
+}
+.icon-input-suffix-btn {
+    position: absolute;
+    top: 50%;
+    right: 0.25rem;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #adb5bd;
+    padding: 0.4rem 0.6rem;
+    line-height: 1;
+    z-index: 2;
+}
+.icon-input-suffix-btn:hover { color: #495057; }
+.icon-input-suffix-btn:focus { outline: none; color: var(--app-accent); }
+
+.user-modal-overlay .add-user-step .step-heading {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #adb5bd;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 1.25rem;
+}
+
+/* ── Step fade transition ── */
+.add-user-step.is-visible {
+    animation: addUserStepFade 0.2s ease;
+}
+@keyframes addUserStepFade {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Stepper: flat segmented progress ── */
+.add-user-stepper {
+    margin-bottom: 2rem;
+}
+.add-user-stepper-track {
+    display: flex;
+    gap: 0.4rem;
+}
+.add-user-stepper-seg {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: #eef0f2;
+    transition: background 0.2s ease;
+}
+.add-user-stepper-seg.is-active,
+.add-user-stepper-seg.is-done {
+    background: var(--app-accent);
+}
+.add-user-stepper-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.55rem;
+}
+.add-user-stepper-labels span {
+    flex: 1;
+    font-size: 0.75rem;
+    color: #c3c8cd;
+    transition: color 0.2s ease;
+}
+.add-user-stepper-labels span:nth-child(2) { text-align: center; }
+.add-user-stepper-labels span:last-child { text-align: right; }
+.add-user-stepper-labels span.is-active {
+    color: #1a1d21;
+    font-weight: 600;
+}
+.add-user-stepper-labels span.is-done {
+    color: #6c757d;
+}
+
+.searchable-select { position: relative; }
+.user-modal-overlay .searchable-select .form-control {
+    padding-right: 1.85rem;
+}
+.searchable-select .searchable-select-caret {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    color: #adb5bd;
+    pointer-events: none;
+    font-size: 0.7rem;
+}
+.searchable-select-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 2000;
+    max-height: 190px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #e4e6e9;
+    border-radius: 0.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 0.3rem 0;
+}
+.searchable-select-option {
+    padding: 0.5rem 0.9rem;
+    cursor: pointer;
+    font-size: 0.88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.searchable-select-option:hover,
+.searchable-select-option.is-active {
+    background-color: #f1f3f5;
+}
+.searchable-select-option.is-selected {
+    background-color: #e6ebf6;
+    font-weight: 600;
+}
+.searchable-select-option.is-empty {
+    color: #c3c8cd;
+    cursor: default;
+    font-style: italic;
+}

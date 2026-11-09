@@ -263,6 +263,17 @@ loadjs.ready("head", function () {
 </td>
     </tr>
 <?php } ?>
+<?php if ($Page->rc_id->Visible) { // rc_id ?>
+    <tr id="r_rc_id"<?= $Page->rc_id->rowAttributes() ?>>
+        <td class="<?= $Page->TableLeftColumnClass ?>"><span id="elh_users_rc_id"><?= $Page->rc_id->caption() ?></span></td>
+        <td data-name="rc_id"<?= $Page->rc_id->cellAttributes() ?>>
+<span id="el_users_rc_id">
+<span<?= $Page->rc_id->viewAttributes() ?>>
+<?= $Page->rc_id->getViewValue() ?></span>
+</span>
+</td>
+    </tr>
+<?php } ?>
 </table>
 <?php
     if (in_array("user_level_assignments", explode(",", $Page->getCurrentDetailTable())) && $user_level_assignments->DetailView) {
@@ -271,14 +282,6 @@ loadjs.ready("head", function () {
 <h4 class="ew-detail-caption"><?= $Language->tablePhrase("user_level_assignments", "TblCaption") ?></h4>
 <?php } ?>
 <?php include_once "UserLevelAssignmentsGrid.php" ?>
-<?php } ?>
-<?php
-    if (in_array("aggregated_audit_logs", explode(",", $Page->getCurrentDetailTable())) && $aggregated_audit_logs->DetailView) {
-?>
-<?php if ($Page->getCurrentDetailTable() != "") { ?>
-<h4 class="ew-detail-caption"><?= $Language->tablePhrase("aggregated_audit_logs", "TblCaption") ?></h4>
-<?php } ?>
-<?php include_once "AggregatedAuditLogsGrid.php" ?>
 <?php } ?>
 </form>
 </main>

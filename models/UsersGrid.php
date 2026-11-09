@@ -163,6 +163,7 @@ class UsersGrid extends Users
         $this->position_id->setVisibility();
         $this->employee_id->setVisibility();
         $this->must_change_password->setVisibility();
+        $this->rc_id->setVisibility();
     }
 
     // Constructor
@@ -1220,6 +1221,14 @@ class UsersGrid extends Users
         if ($CurrentForm->hasValue("x_must_change_password") && $CurrentForm->hasValue("o_must_change_password") && ConvertToBool($this->must_change_password->CurrentValue) != ConvertToBool($this->must_change_password->DefaultValue)) {
             return false;
         }
+        if (
+            $CurrentForm->hasValue("x_rc_id") &&
+            $CurrentForm->hasValue("o_rc_id") &&
+            $this->rc_id->CurrentValue != $this->rc_id->DefaultValue &&
+            !($this->rc_id->IsForeignKey && $this->getCurrentMasterTable() != "" && $this->rc_id->CurrentValue == $this->rc_id->getSessionValue())
+        ) {
+            return false;
+        }
         return true;
     }
 
@@ -1907,6 +1916,19 @@ class UsersGrid extends Users
         if ($CurrentForm->hasValue("o_must_change_password")) {
             $this->must_change_password->setOldValue($CurrentForm->getValue("o_must_change_password"));
         }
+
+        // Check field name 'rc_id' first before field var 'x_rc_id'
+        $val = $CurrentForm->hasValue("rc_id") ? $CurrentForm->getValue("rc_id") : $CurrentForm->getValue("x_rc_id");
+        if (!$this->rc_id->IsDetailKey) {
+            if (IsApi() && $val === null) {
+                $this->rc_id->Visible = false; // Disable update for API request
+            } else {
+                $this->rc_id->setFormValue($val);
+            }
+        }
+        if ($CurrentForm->hasValue("o_rc_id")) {
+            $this->rc_id->setOldValue($CurrentForm->getValue("o_rc_id"));
+        }
     }
 
     // Restore form values
@@ -1927,6 +1949,7 @@ class UsersGrid extends Users
         $this->position_id->CurrentValue = $this->position_id->FormValue;
         $this->employee_id->CurrentValue = $this->employee_id->FormValue;
         $this->must_change_password->CurrentValue = $this->must_change_password->FormValue;
+        $this->rc_id->CurrentValue = $this->rc_id->FormValue;
     }
 
     /**
@@ -2044,6 +2067,7 @@ class UsersGrid extends Users
         $this->position_id->setDbValue($row['position_id']);
         $this->employee_id->setDbValue($row['employee_id']);
         $this->must_change_password->setDbValue((ConvertToBool($row['must_change_password']) ? "1" : "0"));
+        $this->rc_id->setDbValue($row['rc_id']);
     }
 
     // Return a row with default values
@@ -2070,6 +2094,7 @@ class UsersGrid extends Users
         $row['position_id'] = $this->position_id->DefaultValue;
         $row['employee_id'] = $this->employee_id->DefaultValue;
         $row['must_change_password'] = $this->must_change_password->DefaultValue;
+        $row['rc_id'] = $this->rc_id->DefaultValue;
         return $row;
     }
 
@@ -2147,6 +2172,8 @@ class UsersGrid extends Users
         // employee_id
 
         // must_change_password
+
+        // rc_id
 
         // View row
         if ($this->RowType == RowType::VIEW) {
@@ -2276,6 +2303,9 @@ class UsersGrid extends Users
                 $this->must_change_password->ViewValue = $this->must_change_password->tagCaption(2) != "" ? $this->must_change_password->tagCaption(2) : "No";
             }
 
+            // rc_id
+            $this->rc_id->ViewValue = $this->rc_id->CurrentValue;
+
             // user_id
             $this->user_id->HrefValue = "";
             $this->user_id->TooltipValue = "";
@@ -2323,6 +2353,10 @@ class UsersGrid extends Users
             // must_change_password
             $this->must_change_password->HrefValue = "";
             $this->must_change_password->TooltipValue = "";
+
+            // rc_id
+            $this->rc_id->HrefValue = "";
+            $this->rc_id->TooltipValue = "";
         } elseif ($this->RowType == RowType::ADD) {
             // user_id
 
@@ -2486,6 +2520,14 @@ class UsersGrid extends Users
             $this->must_change_password->EditValue = $this->must_change_password->options(false);
             $this->must_change_password->PlaceHolder = RemoveHtml($this->must_change_password->caption());
 
+            // rc_id
+            $this->rc_id->setupEditAttributes();
+            if (!$this->rc_id->Raw) {
+                $this->rc_id->CurrentValue = HtmlDecode($this->rc_id->CurrentValue);
+            }
+            $this->rc_id->EditValue = HtmlEncode($this->rc_id->CurrentValue);
+            $this->rc_id->PlaceHolder = RemoveHtml($this->rc_id->caption());
+
             // Add refer script
 
             // user_id
@@ -2523,6 +2565,9 @@ class UsersGrid extends Users
 
             // must_change_password
             $this->must_change_password->HrefValue = "";
+
+            // rc_id
+            $this->rc_id->HrefValue = "";
         } elseif ($this->RowType == RowType::EDIT) {
             // user_id
             $this->user_id->setupEditAttributes();
@@ -2688,6 +2733,14 @@ class UsersGrid extends Users
             $this->must_change_password->EditValue = $this->must_change_password->options(false);
             $this->must_change_password->PlaceHolder = RemoveHtml($this->must_change_password->caption());
 
+            // rc_id
+            $this->rc_id->setupEditAttributes();
+            if (!$this->rc_id->Raw) {
+                $this->rc_id->CurrentValue = HtmlDecode($this->rc_id->CurrentValue);
+            }
+            $this->rc_id->EditValue = HtmlEncode($this->rc_id->CurrentValue);
+            $this->rc_id->PlaceHolder = RemoveHtml($this->rc_id->caption());
+
             // Edit refer script
 
             // user_id
@@ -2725,6 +2778,9 @@ class UsersGrid extends Users
 
             // must_change_password
             $this->must_change_password->HrefValue = "";
+
+            // rc_id
+            $this->rc_id->HrefValue = "";
         }
         if ($this->RowType == RowType::ADD || $this->RowType == RowType::EDIT || $this->RowType == RowType::SEARCH) { // Add/Edit/Search row
             $this->setupFieldTitles();
@@ -2813,6 +2869,11 @@ class UsersGrid extends Users
             if ($this->must_change_password->Visible && $this->must_change_password->Required) {
                 if ($this->must_change_password->FormValue == "") {
                     $this->must_change_password->addErrorMessage(str_replace("%s", $this->must_change_password->caption(), $this->must_change_password->RequiredErrorMessage));
+                }
+            }
+            if ($this->rc_id->Visible && $this->rc_id->Required) {
+                if (!$this->rc_id->IsDetailKey && EmptyValue($this->rc_id->FormValue)) {
+                    $this->rc_id->addErrorMessage(str_replace("%s", $this->rc_id->caption(), $this->rc_id->RequiredErrorMessage));
                 }
             }
 
@@ -3051,6 +3112,9 @@ class UsersGrid extends Users
             $tmpBool = !empty($tmpBool) ? "1" : "0";
         }
         $this->must_change_password->setDbValueDef($rsnew, $tmpBool, $this->must_change_password->ReadOnly);
+
+        // rc_id
+        $this->rc_id->setDbValueDef($rsnew, $this->rc_id->CurrentValue, $this->rc_id->ReadOnly);
         return $rsnew;
     }
 
@@ -3092,6 +3156,9 @@ class UsersGrid extends Users
         }
         if (isset($row['must_change_password'])) { // must_change_password
             $this->must_change_password->CurrentValue = $row['must_change_password'];
+        }
+        if (isset($row['rc_id'])) { // rc_id
+            $this->rc_id->CurrentValue = $row['rc_id'];
         }
     }
 
@@ -3242,6 +3309,9 @@ class UsersGrid extends Users
         }
         $this->must_change_password->setDbValueDef($rsnew, $tmpBool, strval($this->must_change_password->CurrentValue) == "");
 
+        // rc_id
+        $this->rc_id->setDbValueDef($rsnew, $this->rc_id->CurrentValue, false);
+
         // reports_to_user_id
         if (!$Security->isAdmin() && $Security->isLoggedIn()) { // Non system admin
             $rsnew['reports_to_user_id'] = CurrentUserID();
@@ -3287,6 +3357,9 @@ class UsersGrid extends Users
         }
         if (isset($row['must_change_password'])) { // must_change_password
             $this->must_change_password->setFormValue($row['must_change_password']);
+        }
+        if (isset($row['rc_id'])) { // rc_id
+            $this->rc_id->setFormValue($row['rc_id']);
         }
         if (isset($row['reports_to_user_id'])) { // reports_to_user_id
             $this->reports_to_user_id->setFormValue($row['reports_to_user_id']);

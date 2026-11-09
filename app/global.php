@@ -4,6 +4,7 @@ namespace PHPMaker2024\FIMS;
 
 include_once(dirname(__DIR__, 1) . "/app/lib/ApiService.php");
 include_once(dirname(__DIR__, 1) . "/app/lib/NotificationManager.php");
+include_once(dirname(__DIR__, 1) . "/app/lib/UserAccessService.php");
 include_once(dirname(__DIR__, 1) . "/_shared/storage.php");
 
 

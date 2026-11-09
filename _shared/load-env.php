@@ -61,7 +61,7 @@ if (!function_exists('dbConn')) {
             'port'     => env('DB_PORT', '5432'),
             'user'     => env('DB_USER', 'postgres'),
             'password' => env('DB_PASSWORD', ''),
-            'dbname'   => env('DB_NAME', 'govflow360_nha'),
+            'dbname'   => env('DB_NAME', 'fims'),
             'schema'   => $schema,
         ];
     }
