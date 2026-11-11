@@ -160,13 +160,6 @@ $Grid->ListOptions->render("body", "left", $Grid->RowCount);
     <?php if ($Grid->system_id->Visible) { // system_id ?>
         <td data-name="system_id"<?= $Grid->system_id->cellAttributes() ?>>
 <?php if ($Grid->RowType == RowType::ADD) { // Add record ?>
-<?php if ($Grid->system_id->getSessionValue() != "") { ?>
-<span id="el<?= $Grid->RowIndex == '$rowindex$' ? '$rowindex$' : $Grid->RowCount ?>__user_levels_system_id" class="el__user_levels_system_id">
-<span<?= $Grid->system_id->viewAttributes() ?>>
-<span class="form-control-plaintext"><?= $Grid->system_id->getDisplayValue($Grid->system_id->ViewValue) ?></span></span>
-<input type="hidden" id="x<?= $Grid->RowIndex ?>_system_id" name="x<?= $Grid->RowIndex ?>_system_id" value="<?= HtmlEncode($Grid->system_id->CurrentValue) ?>" data-hidden="1">
-</span>
-<?php } else { ?>
 <span id="el<?= $Grid->RowIndex == '$rowindex$' ? '$rowindex$' : $Grid->RowCount ?>__user_levels_system_id" class="el__user_levels_system_id">
     <select
         id="x<?= $Grid->RowIndex ?>_system_id"
@@ -205,17 +198,9 @@ loadjs.ready("f_user_levelsgrid", function() {
 </script>
 <?php } ?>
 </span>
-<?php } ?>
 <input type="hidden" data-table="_user_levels" data-field="x_system_id" data-hidden="1" data-old name="o<?= $Grid->RowIndex ?>_system_id" id="o<?= $Grid->RowIndex ?>_system_id" value="<?= HtmlEncode($Grid->system_id->OldValue) ?>">
 <?php } ?>
 <?php if ($Grid->RowType == RowType::EDIT) { // Edit record ?>
-<?php if ($Grid->system_id->getSessionValue() != "") { ?>
-<span id="el<?= $Grid->RowIndex == '$rowindex$' ? '$rowindex$' : $Grid->RowCount ?>__user_levels_system_id" class="el__user_levels_system_id">
-<span<?= $Grid->system_id->viewAttributes() ?>>
-<span class="form-control-plaintext"><?= $Grid->system_id->getDisplayValue($Grid->system_id->ViewValue) ?></span></span>
-<input type="hidden" id="x<?= $Grid->RowIndex ?>_system_id" name="x<?= $Grid->RowIndex ?>_system_id" value="<?= HtmlEncode($Grid->system_id->CurrentValue) ?>" data-hidden="1">
-</span>
-<?php } else { ?>
 <span id="el<?= $Grid->RowIndex == '$rowindex$' ? '$rowindex$' : $Grid->RowCount ?>__user_levels_system_id" class="el__user_levels_system_id">
     <select
         id="x<?= $Grid->RowIndex ?>_system_id"
@@ -254,7 +239,6 @@ loadjs.ready("f_user_levelsgrid", function() {
 </script>
 <?php } ?>
 </span>
-<?php } ?>
 <?php } ?>
 <?php if ($Grid->RowType == RowType::VIEW) { // View record ?>
 <span id="el<?= $Grid->RowIndex == '$rowindex$' ? '$rowindex$' : $Grid->RowCount ?>__user_levels_system_id" class="el__user_levels_system_id">

@@ -27,6 +27,11 @@
 </script>
 
 <script>
+    // FIMS serves the notification API itself (app/routes/notifications.php, schema uac). Other apps that
+    // include this shared bell without defining the FIMS Config() keep the UAC hub default.
+    <?php if (function_exists('PHPMaker2024\FIMS\Config')) : ?>
+    window.NOTIFY_API_BASE = window.NOTIFY_API_BASE || <?= json_encode(preg_replace('~/api$~', '', rtrim((string) \PHPMaker2024\FIMS\Config('API.FIMS_URL'), '/')) . '/api/notifications') ?>;
+    <?php endif; ?>
     // Use window assignment to avoid re-declaration conflicts across pages
     if (typeof window.NotificationManager === 'undefined') {
         window.NotificationManager = {
@@ -36,8 +41,10 @@
             centerFilter: 'all',
             centerData: [],
 
-            // Notifications always live in UAC regardless of which system is loaded
-            UAC_API: '/UAC/api',
+            // Base URL of the notification API (the hub). An app overrides it before this script runs, e.g.
+            //   window.NOTIFY_API_BASE = '/api/notifications';   (FIMS: app/routes/notifications.php)
+            // The default keeps the original behaviour: the UAC hub.
+            NOTIFY_API: window.NOTIFY_API_BASE || '/UAC/api/NotificationManagers',
 
             getJwtToken() {
                 return (typeof ew !== 'undefined' && ew.API_JWT_TOKEN) ? ew.API_JWT_TOKEN : '';
@@ -79,7 +86,7 @@
 
             async updateNotifications() {
                 try {
-                    const response = await fetch(`${this.UAC_API}/NotificationManagers/recent`, {
+                    const response = await fetch(`${this.NOTIFY_API}/recent`, {
                         credentials: 'include',
                         headers: {
                             'X-Authorization': 'Bearer ' + this.getJwtToken(),
@@ -109,7 +116,7 @@
 
                 // Update badge
                 const unreadCount = notifications.filter(n => !n.read_by_user).length;
-                badge.textContent = unreadCount;
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
                 badge.style.display = unreadCount > 0 ? 'block' : 'none';
 
                 // Show max 10 notifications in dropdown
@@ -127,8 +134,8 @@
 
                 notificationList.innerHTML = displayNotifications.map(notification => `
                     <div class="dropdown-item ${notification.read_by_user ? 'fw-light' : 'fw-semibold'}"
-                        data-notification-id="${notification.id}"
-                        data-notification-link="${notification.link || '#'}"
+                        data-notification-id="${this.esc(notification.id)}"
+                        data-notification-link="${this.esc(notification.link || '#')}"
                         role="button"
                         style="cursor:pointer; font-size:.825rem;">
                         <div class="d-flex align-items-center">
@@ -136,8 +143,8 @@
                                 <i class="fas fa-${this.getIcon(notification.type)} ${this.getIconColor(notification.type)}"></i>
                             </div>
                             <div class="flex-grow-1">
-                                <div class="text-sm ${notification.read_by_user ? 'text-muted' : 'text-dark'}">${notification.subject}</div>
-                                <div class="text-xs text-truncate" style="max-width: 200px;">${notification.body || ''}</div>
+                                <div class="text-sm ${notification.read_by_user ? 'text-muted' : 'text-dark'}">${this.esc(notification.subject)}</div>
+                                <div class="text-xs text-truncate" style="max-width: 200px;">${this.esc(notification.body || '')}</div>
                                 <div class="text-xs text-muted d-flex justify-content-between align-items-center mt-1">
                                     <span>${notification.time_ago || ''}</span>
                                     <span class="badge bg-${this.getSourceColor(notification.from_system)}" style="font-size:.65rem;">${this.getSourceLabel(notification.from_system)}</span>
@@ -154,16 +161,14 @@
                         const notificationId = item.dataset.notificationId;
                         const link = item.dataset.notificationLink;
                         await this.markAsRead(e, notificationId);
-                        if (link && link !== '#') {
-                            window.location.href = link;
-                        }
+                        this.go(link);
                     });
                 });
             },
 
             async markAsRead(event, notificationId) {
                 try {
-                    const response = await fetch(`${this.UAC_API}/NotificationManagers/mark-read`, {
+                    const response = await fetch(`${this.NOTIFY_API}/mark-read`, {
                         method: 'POST',
                         credentials: 'include',
                         headers: {
@@ -199,7 +204,7 @@
                 event.stopPropagation();
 
                 try {
-                    const response = await fetch(`${this.UAC_API}/NotificationManagers/mark-all-read`, {
+                    const response = await fetch(`${this.NOTIFY_API}/mark-all-read`, {
                         method: 'POST',
                         credentials: 'include',
                         headers: { 'X-Authorization': 'Bearer ' + this.getJwtToken() }
@@ -292,6 +297,14 @@
             // ── "My Notifications" full-screen center (opened from "See All") ──
             // Self-contained overlay appended to <body> once; reads the same UAC
             // API the bell uses, just with a larger limit for a full list.
+            // Only relative, same-origin links are followed (plan §7/§10). Returns true when it navigated.
+            go(link) {
+                if (!link || link === '#' || link === 'null') return false;
+                if (link.charAt(0) !== '/' || link.startsWith('//')) return false;
+                window.location.href = link;
+                return true;
+            },
+
             esc(s) {
                 return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
                     ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -393,7 +406,7 @@
                 const list = document.getElementById('mynList');
                 if (list) list.innerHTML = `<div class="myn-loading"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
                 try {
-                    const response = await fetch(`${this.UAC_API}/NotificationManagers/recent?limit=200`, {
+                    const response = await fetch(`${this.NOTIFY_API}/recent?limit=200`, {
                         credentials: 'include',
                         headers: { 'X-Authorization': 'Bearer ' + this.getJwtToken(), 'Cache-Control': 'no-cache' }
                     });
@@ -434,8 +447,8 @@
                         const id = el.dataset.id;
                         const link = el.dataset.link;
                         await this.markAsRead(null, id);
-                        if (link && link !== '#' && link !== 'null') {
-                            window.location.href = link;
+                        if (this.go(link)) {
+                            /* navigated */
                         } else {
                             this.fetchCenter();
                         }

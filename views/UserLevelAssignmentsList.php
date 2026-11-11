@@ -46,13 +46,6 @@ loadjs.ready("head", function () {
 <?php } ?>
 <?php if (!$Page->isExport() || Config("EXPORT_MASTER_RECORD") && $Page->isExport("print")) { ?>
 <?php
-if ($Page->DbMasterFilter != "" && $Page->getCurrentMasterTable() == "systems") {
-    if ($Page->MasterRecordExists) {
-        include_once "views/SystemsMaster.php";
-    }
-}
-?>
-<?php
 if ($Page->DbMasterFilter != "" && $Page->getCurrentMasterTable() == "_user_levels") {
     if ($Page->MasterRecordExists) {
         include_once "views/UserLevelsMaster.php";
@@ -88,10 +81,6 @@ $Page->showMessage();
 <input type="hidden" name="t" value="user_level_assignments">
 <?php if ($Page->IsModal) { ?>
 <input type="hidden" name="modal" value="1">
-<?php } ?>
-<?php if ($Page->getCurrentMasterTable() == "systems" && $Page->CurrentAction) { ?>
-<input type="hidden" name="<?= Config("TABLE_SHOW_MASTER") ?>" value="systems">
-<input type="hidden" name="fk_system_id" value="<?= HtmlEncode($Page->system_id->getSessionValue()) ?>">
 <?php } ?>
 <?php if ($Page->getCurrentMasterTable() == "_user_levels" && $Page->CurrentAction) { ?>
 <input type="hidden" name="<?= Config("TABLE_SHOW_MASTER") ?>" value="_user_levels">

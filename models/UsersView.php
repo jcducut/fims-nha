@@ -167,6 +167,7 @@ class UsersView extends Users
         $this->position_id->setVisibility();
         $this->employee_id->setVisibility();
         $this->must_change_password->setVisibility();
+        $this->rc_id->setVisibility();
     }
 
     // Constructor
@@ -765,45 +766,6 @@ class UsersView extends Users
             $item->Visible = false;
         }
 
-        // "detail_aggregated_audit_logs"
-        $item = &$option->add("detail_aggregated_audit_logs");
-        $body = $Language->phrase("ViewPageDetailLink") . $Language->tablePhrase("aggregated_audit_logs", "TblCaption");
-        $body = "<a class=\"btn btn-default ew-row-link ew-detail\" data-action=\"list\" href=\"" . HtmlEncode(GetUrl("AggregatedAuditLogsList?" . Config("TABLE_SHOW_MASTER") . "=users&" . GetForeignKeyUrl("fk_user_id", $this->user_id->CurrentValue) . "")) . "\">" . $body . "</a>";
-        $links = "";
-        $detailPageObj = Container("AggregatedAuditLogsGrid");
-        if ($detailPageObj->DetailView && $Security->canView() && $Security->allowView(CurrentProjectID() . 'users')) {
-            $links .= "<li><a class=\"dropdown-item ew-row-link ew-detail-view\" data-action=\"view\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailViewLink")) . "\" href=\"" . HtmlEncode(GetUrl($this->getViewUrl(Config("TABLE_SHOW_DETAIL") . "=aggregated_audit_logs"))) . "\">" . $Language->phrase("MasterDetailViewLink", null) . "</a></li>";
-            if ($detailViewTblVar != "") {
-                $detailViewTblVar .= ",";
-            }
-            $detailViewTblVar .= "aggregated_audit_logs";
-        }
-        if ($detailPageObj->DetailEdit && $Security->canEdit() && $Security->allowEdit(CurrentProjectID() . 'users')) {
-            $links .= "<li><a class=\"dropdown-item ew-row-link ew-detail-edit\" data-action=\"edit\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailEditLink")) . "\" href=\"" . HtmlEncode(GetUrl($this->getEditUrl(Config("TABLE_SHOW_DETAIL") . "=aggregated_audit_logs"))) . "\">" . $Language->phrase("MasterDetailEditLink", null) . "</a></li>";
-            if ($detailEditTblVar != "") {
-                $detailEditTblVar .= ",";
-            }
-            $detailEditTblVar .= "aggregated_audit_logs";
-        }
-        if ($links != "") {
-            $body .= "<button type=\"button\" class=\"dropdown-toggle btn btn-default ew-detail\" data-bs-toggle=\"dropdown\"></button>";
-            $body .= "<ul class=\"dropdown-menu\">" . $links . "</ul>";
-        } else {
-            $body = preg_replace('/\b\s+dropdown-toggle\b/', "", $body);
-        }
-        $body = "<div class=\"btn-group btn-group-sm ew-btn-group\">" . $body . "</div>";
-        $item->Body = $body;
-        $item->Visible = $Security->allowList(CurrentProjectID() . 'aggregated_audit_logs');
-        if ($item->Visible) {
-            if ($detailTableLink != "") {
-                $detailTableLink .= ",";
-            }
-            $detailTableLink .= "aggregated_audit_logs";
-        }
-        if ($this->ShowMultipleDetails) {
-            $item->Visible = false;
-        }
-
         // Multiple details
         if ($this->ShowMultipleDetails) {
             $body = "<div class=\"btn-group btn-group-sm ew-btn-group\">";
@@ -910,6 +872,7 @@ class UsersView extends Users
         $this->position_id->setDbValue($row['position_id']);
         $this->employee_id->setDbValue($row['employee_id']);
         $this->must_change_password->setDbValue((ConvertToBool($row['must_change_password']) ? "1" : "0"));
+        $this->rc_id->setDbValue($row['rc_id']);
     }
 
     // Return a row with default values
@@ -936,6 +899,7 @@ class UsersView extends Users
         $row['position_id'] = $this->position_id->DefaultValue;
         $row['employee_id'] = $this->employee_id->DefaultValue;
         $row['must_change_password'] = $this->must_change_password->DefaultValue;
+        $row['rc_id'] = $this->rc_id->DefaultValue;
         return $row;
     }
 
@@ -996,6 +960,8 @@ class UsersView extends Users
         // employee_id
 
         // must_change_password
+
+        // rc_id
 
         // View row
         if ($this->RowType == RowType::VIEW) {
@@ -1125,6 +1091,9 @@ class UsersView extends Users
                 $this->must_change_password->ViewValue = $this->must_change_password->tagCaption(2) != "" ? $this->must_change_password->tagCaption(2) : "No";
             }
 
+            // rc_id
+            $this->rc_id->ViewValue = $this->rc_id->CurrentValue;
+
             // user_id
             $this->user_id->HrefValue = "";
             $this->user_id->TooltipValue = "";
@@ -1201,6 +1170,10 @@ class UsersView extends Users
             // must_change_password
             $this->must_change_password->HrefValue = "";
             $this->must_change_password->TooltipValue = "";
+
+            // rc_id
+            $this->rc_id->HrefValue = "";
+            $this->rc_id->TooltipValue = "";
         }
 
         // Call Row Rendered event
@@ -1318,20 +1291,6 @@ class UsersView extends Users
                     $detailPageObj->user_id->setSessionValue($detailPageObj->user_id->CurrentValue);
                     $detailPageObj->system_id->setSessionValue(""); // Clear session key
                     $detailPageObj->user_level_id->setSessionValue(""); // Clear session key
-                }
-            }
-            if (in_array("aggregated_audit_logs", $detailTblVar)) {
-                $detailPageObj = Container("AggregatedAuditLogsGrid");
-                if ($detailPageObj->DetailView) {
-                    $detailPageObj->EventCancelled = $this->EventCancelled;
-                    $detailPageObj->CurrentMode = "view";
-
-                    // Save current master table to detail table
-                    $detailPageObj->setCurrentMasterTable($this->TableVar);
-                    $detailPageObj->setStartRecordNumber(1);
-                    $detailPageObj->user->IsDetailKey = true;
-                    $detailPageObj->user->CurrentValue = $this->user_id->CurrentValue;
-                    $detailPageObj->user->setSessionValue($detailPageObj->user->CurrentValue);
                 }
             }
         }

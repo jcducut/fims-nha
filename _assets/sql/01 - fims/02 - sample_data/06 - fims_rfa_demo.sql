@@ -1,0 +1,39 @@
+-- -- Demo data so the Disbursement Voucher's "choose the RFA" picker has
+-- -- something to select on a fresh dev DB:
+-- --   * fims.budget_allocation has no backend of its own yet (the CBA/RFA form
+-- --     is frontend-only), so no real RFA rows exist anywhere.
+-- --   * fims.vendors has no seed data at all (the PO module is equally empty
+-- --     without one), so a demo vendor is added here too.
+-- -- Both inserts are WHERE NOT EXISTS-guarded, matching the style of
+-- -- "01 - fims_settings_status.sql", so re-running this file is a no-op.
+
+-- -- Demo vendor for the MOOE-type RFA/DV.
+-- INSERT INTO fims.vendors (vendor_code, vendor_name, vendor_type, tin, address, status)
+-- SELECT 'DVDEMO-VEND-01', 'Jackson Auto Services', 'SERVICE_PROVIDER', '289-899-715-00000',
+--        '25 Central Avenue, Tandang Sora, 1116 Quezon City, NCR, Second District', 'ACTIVE'
+-- WHERE NOT EXISTS (SELECT 1 FROM fims.vendors WHERE vendor_code = 'DVDEMO-VEND-01');
+
+-- -- MOOE-type RFA: GSD vehicle-repair payment, backed by a PO (fund source:
+-- -- Corporate Receipts), mirrors the first sample Disbursement Voucher.
+-- INSERT INTO fims.budget_allocation (
+--     memo_ref_no, allocation_type, allocation_number, fiscal_year,
+--     requesting_department_id, vendor_id, po_number, po_amount, status_id
+-- )
+-- SELECT
+--     'MEMO-DVDEMO-001', 'RFA', 'RFA-DVDEMO-MOOE-01', 2025,
+--     (SELECT department_id FROM uac.departments WHERE department_code = 'FMD' LIMIT 1),
+--     (SELECT vendor_id FROM fims.vendors WHERE vendor_code = 'DVDEMO-VEND-01'),
+--     'GSD-2025-09-103', 304195.00, NULL
+-- WHERE NOT EXISTS (SELECT 1 FROM fims.budget_allocation WHERE allocation_number = 'RFA-DVDEMO-MOOE-01');
+
+-- -- PS-type RFA: Personal Services allotment (no vendor/PO), mirrors the second
+-- -- sample Disbursement Voucher (payroll for Nov 1-15, 2025).
+-- INSERT INTO fims.budget_allocation (
+--     memo_ref_no, allocation_type, allocation_number, fiscal_year,
+--     requesting_department_id, po_amount, status_id
+-- )
+-- SELECT
+--     'MEMO-DVDEMO-002', 'RFA', 'RFA-DVDEMO-PS-01', 2025,
+--     (SELECT department_id FROM uac.departments WHERE department_code = 'FMD' LIMIT 1),
+--     1078092285.12, NULL
+-- WHERE NOT EXISTS (SELECT 1 FROM fims.budget_allocation WHERE allocation_number = 'RFA-DVDEMO-PS-01');

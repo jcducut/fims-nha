@@ -1,15 +1,93 @@
-<ew-language date="2026/11/6" id="en-US" author="e.World Technology Limited">
+<ew-language date="2026/11/10" id="en-US" author="e.World Technology Limited">
   <project>
     <phrase id="bodytitle" value="UAC - User Access Control System" />
     <phrase id="footertext" value="&amp;copy;2024 ITBS Corporation. All rights reserved." />
-    <menu id="72">
-      <phrase id="menutext" value="api logs" />
+    <menu id="9">
+      <phrase id="menutext" value="Dashboard" />
     </menu>
-    <menu id="73">
-      <phrase id="menutext" value="api resources" />
+    <menu id="146">
+      <phrase id="menutext" value="Budget" />
     </menu>
-    <menu id="74">
-      <phrase id="menutext" value="api systems" />
+    <menu id="88">
+      <phrase id="menutext" value="Memo Request" />
+    </menu>
+    <menu id="81">
+      <phrase id="menutext" value="Budget Request" />
+    </menu>
+    <menu id="261">
+      <phrase id="menutext" value="Budget Propose" />
+    </menu>
+    <menu id="85">
+      <phrase id="menutext" value="Budget Revision" />
+    </menu>
+    <menu id="147">
+      <phrase id="menutext" value="Programs &amp; Projects " />
+    </menu>
+    <menu id="80">
+      <phrase id="menutext" value="Program" />
+    </menu>
+    <menu id="82">
+      <phrase id="menutext" value="Sub Program" />
+    </menu>
+    <menu id="79">
+      <phrase id="menutext" value="Projects" />
+    </menu>
+    <menu id="148">
+      <phrase id="menutext" value="Accounting Records" />
+    </menu>
+    <menu id="89">
+      <phrase id="menutext" value="Chart of Accounts" />
+    </menu>
+    <menu id="90">
+      <phrase id="menutext" value="Responsibilty Center" />
+    </menu>
+    <menu id="91">
+      <phrase id="menutext" value="IAR Module" />
+    </menu>
+    <menu id="258">
+      <phrase id="menutext" value="Vouchers" />
+    </menu>
+    <menu id="208">
+      <phrase id="menutext" value="Journal Entry Voucher" />
+    </menu>
+    <menu id="207">
+      <phrase id="menutext" value="Disbursement Voucher" />
+    </menu>
+    <menu id="260">
+      <phrase id="menutext" value="Check Disbursements" />
+    </menu>
+    <menu id="206">
+      <phrase id="menutext" value="Administration" />
+    </menu>
+    <menu id="70">
+      <phrase id="menutext" value="Position Management" />
+    </menu>
+    <menu id="13">
+      <phrase id="menutext" value="User Access Management" />
+    </menu>
+    <menu id="12">
+      <phrase id="menutext" value="User Level Management" />
+    </menu>
+    <menu id="69">
+      <phrase id="menutext" value="Department Management" />
+    </menu>
+    <menu id="259">
+      <phrase id="menutext" value="Change Password" />
+    </menu>
+    <menu id="3">
+      <phrase id="menutext" value="Systems" />
+    </menu>
+    <menu id="84">
+      <phrase id="menutext" value="aggregated audit logs" />
+    </menu>
+    <menu id="83">
+      <phrase id="menutext" value="permission module captions" />
+    </menu>
+    <menu id="86">
+      <phrase id="menutext" value="Budget Revision Form" />
+    </menu>
+    <menu id="87">
+      <phrase id="menutext" value="Budget Revision Preview" />
     </menu>
     <menu id="75">
       <phrase id="menutext" value="document asset types" />
@@ -23,41 +101,14 @@
     <menu id="78">
       <phrase id="menutext" value="jwt sessions" />
     </menu>
-    <menu id="9">
-      <phrase id="menutext" value="Dashboard" />
-    </menu>
-    <menu id="3">
-      <phrase id="menutext" value="Systems" />
-    </menu>
-    <menu id="69">
-      <phrase id="menutext" value="Department Management" />
-    </menu>
-    <menu id="70">
-      <phrase id="menutext" value="Position Management" />
-    </menu>
-    <menu id="13">
-      <phrase id="menutext" value="User Access Management" />
-    </menu>
-    <menu id="12">
-      <phrase id="menutext" value="User Level Management" />
-    </menu>
     <menu id="59">
       <phrase id="menutext" value="ID Generator Management" />
-    </menu>
-    <menu id="8">
-      <phrase id="menutext" value="Audit Logs" />
     </menu>
     <menu id="31">
       <phrase id="menutext" value="Workflow Manager" />
     </menu>
     <menu id="71">
       <phrase id="menutext" value="Signatory Management" />
-    </menu>
-    <menu id="67">
-      <phrase id="menutext" value="v department hierarchy" />
-    </menu>
-    <menu id="68">
-      <phrase id="menutext" value="v user access summary" />
     </menu>
     <menu id="64">
       <phrase id="menutext" value="department systems" />
@@ -334,35 +385,8 @@
         <phrase id="fldtagvalue2" value="0" />
         <phrase id="fldtagcaption2" value="No" />
       </field>
-    </table>
-    <table id="aggregated_audit_logs">
-      <phrase id="tblcaption" value="Audit Logs" />
-      <field id="aggregated_id">
-        <phrase id="fldcaption" value="ID" />
-      </field>
-      <field id="action_date">
-        <phrase id="fldcaption" value="Date" />
-      </field>
-      <field id="script">
-        <phrase id="fldcaption" value="script" />
-      </field>
-      <field id="user">
-        <phrase id="fldcaption" value="user" />
-      </field>
-      <field id="_action">
-        <phrase id="fldcaption" value="action" />
-      </field>
-      <field id="_table">
-        <phrase id="fldcaption" value="table" />
-      </field>
-      <field id="action_type">
-        <phrase id="fldcaption" value="action type" />
-      </field>
-      <field id="details">
-        <phrase id="fldcaption" value="details" />
-      </field>
-      <field id="action_count">
-        <phrase id="fldcaption" value="action count" />
+      <field id="rc_id">
+        <phrase id="fldcaption" value="rc id" />
       </field>
     </table>
     <table id="maindashboard">
@@ -1199,238 +1223,11 @@
         <phrase id="fldcaption" value="assigned at" />
       </field>
     </table>
-    <table id="v_department_hierarchy">
-      <phrase id="tblcaption" value="v department hierarchy" />
-      <field id="department_id">
-        <phrase id="fldcaption" value="department id" />
-      </field>
-      <field id="department_name">
-        <phrase id="fldcaption" value="department name" />
-      </field>
-      <field id="department_code">
-        <phrase id="fldcaption" value="department code" />
-      </field>
-      <field id="department_type">
-        <phrase id="fldcaption" value="department type" />
-      </field>
-      <field id="hierarchy_level">
-        <phrase id="fldcaption" value="hierarchy level" />
-      </field>
-      <field id="parent_department_id">
-        <phrase id="fldcaption" value="parent department id" />
-      </field>
-      <field id="is_budget_unit">
-        <phrase id="fldcaption" value="is budget unit" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
-      </field>
-      <field id="rc_code">
-        <phrase id="fldcaption" value="rc code" />
-      </field>
-      <field id="rc_name">
-        <phrase id="fldcaption" value="rc name" />
-      </field>
-      <field id="office_name">
-        <phrase id="fldcaption" value="office name" />
-      </field>
-      <field id="office_code">
-        <phrase id="fldcaption" value="office code" />
-      </field>
-      <field id="full_path">
-        <phrase id="fldcaption" value="full path" />
-      </field>
-      <field id="depth">
-        <phrase id="fldcaption" value="depth" />
-      </field>
-      <field id="path_ids">
-        <phrase id="fldcaption" value="path ids" />
-      </field>
-    </table>
-    <table id="v_user_access_summary">
-      <phrase id="tblcaption" value="v user access summary" />
-      <field id="user_id">
-        <phrase id="fldcaption" value="user id" />
-      </field>
-      <field id="_username">
-        <phrase id="fldcaption" value="username" />
-      </field>
-      <field id="_email">
-        <phrase id="fldcaption" value="email" />
-      </field>
-      <field id="full_name">
-        <phrase id="fldcaption" value="full name" />
-      </field>
-      <field id="department_name">
-        <phrase id="fldcaption" value="department name" />
-      </field>
-      <field id="department_code">
-        <phrase id="fldcaption" value="department code" />
-      </field>
-      <field id="department_type">
-        <phrase id="fldcaption" value="department type" />
-      </field>
-      <field id="rc_code">
-        <phrase id="fldcaption" value="rc code" />
-      </field>
-      <field id="rc_name">
-        <phrase id="fldcaption" value="rc name" />
-      </field>
-      <field id="office_name">
-        <phrase id="fldcaption" value="office name" />
-      </field>
-      <field id="office_code">
-        <phrase id="fldcaption" value="office code" />
-      </field>
-      <field id="roles">
-        <phrase id="fldcaption" value="roles" />
-      </field>
-      <field id="accessible_systems">
-        <phrase id="fldcaption" value="accessible systems" />
-      </field>
-      <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
-      </field>
-      <field id="last_login">
-        <phrase id="fldcaption" value="last login" />
-      </field>
-      <field id="date_created">
-        <phrase id="fldcaption" value="date created" />
-      </field>
-    </table>
     <table id="positionmanagement">
       <phrase id="tblcaption" value="PositionManagement" />
     </table>
     <table id="signatorymanagement">
       <phrase id="tblcaption" value="Signatory Management" />
-    </table>
-    <table id="api_logs">
-      <phrase id="tblcaption" value="api logs" />
-      <field id="log_id">
-        <phrase id="fldcaption" value="log id" />
-      </field>
-      <field id="resource_id">
-        <phrase id="fldcaption" value="resource id" />
-      </field>
-      <field id="mode_used">
-        <phrase id="fldcaption" value="mode used" />
-      </field>
-      <field id="http_status">
-        <phrase id="fldcaption" value="http status" />
-      </field>
-      <field id="duration_ms">
-        <phrase id="fldcaption" value="duration ms" />
-      </field>
-      <field id="success">
-        <phrase id="fldcaption" value="success" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
-      </field>
-      <field id="_message">
-        <phrase id="fldcaption" value="message" />
-      </field>
-      <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
-      </field>
-    </table>
-    <table id="api_resources">
-      <phrase id="tblcaption" value="api resources" />
-      <field id="resource_id">
-        <phrase id="fldcaption" value="resource id" />
-      </field>
-      <field id="system_id">
-        <phrase id="fldcaption" value="system id" />
-      </field>
-      <field id="resource_key">
-        <phrase id="fldcaption" value="resource key" />
-      </field>
-      <field id="caption">
-        <phrase id="fldcaption" value="caption" />
-      </field>
-      <field id="http_method">
-        <phrase id="fldcaption" value="http method" />
-      </field>
-      <field id="path_template">
-        <phrase id="fldcaption" value="path template" />
-      </field>
-      <field id="mode">
-        <phrase id="fldcaption" value="mode" />
-      </field>
-      <field id="required_fields">
-        <phrase id="fldcaption" value="required fields" />
-      </field>
-      <field id="field_map">
-        <phrase id="fldcaption" value="field map" />
-      </field>
-      <field id="sample_payload">
-        <phrase id="fldcaption" value="sample payload" />
-      </field>
-      <field id="request_body">
-        <phrase id="fldcaption" value="request body" />
-      </field>
-      <field id="data_path">
-        <phrase id="fldcaption" value="data path" />
-      </field>
-      <field id="base_url">
-        <phrase id="fldcaption" value="base url" />
-      </field>
-      <field id="auth_token">
-        <phrase id="fldcaption" value="auth token" />
-      </field>
-      <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
-      </field>
-      <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
-      </field>
-      <field id="updated_at">
-        <phrase id="fldcaption" value="updated at" />
-      </field>
-    </table>
-    <table id="api_systems">
-      <phrase id="tblcaption" value="api systems" />
-      <field id="system_id">
-        <phrase id="fldcaption" value="system id" />
-      </field>
-      <field id="system_code">
-        <phrase id="fldcaption" value="system code" />
-      </field>
-      <field id="system_name">
-        <phrase id="fldcaption" value="system name" />
-      </field>
-      <field id="base_url">
-        <phrase id="fldcaption" value="base url" />
-      </field>
-      <field id="auth_type">
-        <phrase id="fldcaption" value="auth type" />
-      </field>
-      <field id="auth_token">
-        <phrase id="fldcaption" value="auth token" />
-      </field>
-      <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
-      </field>
-      <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
-      </field>
-      <field id="updated_at">
-        <phrase id="fldcaption" value="updated at" />
-      </field>
     </table>
     <table id="document_asset_types">
       <phrase id="tblcaption" value="document asset types" />
@@ -1652,6 +1449,103 @@
       <field id="revoke_reason">
         <phrase id="fldcaption" value="revoke reason" />
       </field>
+    </table>
+    <table id="project_page">
+      <phrase id="tblcaption" value="Project List" />
+    </table>
+    <table id="program_page">
+      <phrase id="tblcaption" value="Program Setup" />
+    </table>
+    <table id="budget_req_page">
+      <phrase id="tblcaption" value="Budget Request" />
+    </table>
+    <table id="sub_program_page">
+      <phrase id="tblcaption" value="Sub Program Setup" />
+    </table>
+    <table id="chart_of_accounts_page">
+      <phrase id="tblcaption" value="Chart of Accounts" />
+    </table>
+    <table id="responsibility_center_page">
+      <phrase id="tblcaption" value="Responsibilty Center" />
+    </table>
+    <table id="permission_module_captions">
+      <phrase id="tblcaption" value="permission module captions" />
+      <field id="table_name">
+        <phrase id="fldcaption" value="table name" />
+      </field>
+      <field id="caption">
+        <phrase id="fldcaption" value="caption" />
+      </field>
+      <field id="is_hidden">
+        <phrase id="fldcaption" value="is hidden" />
+        <phrase id="fldtagvalue1" value="1" />
+        <phrase id="fldtagcaption1" value="Yes" />
+        <phrase id="fldtagvalue2" value="0" />
+        <phrase id="fldtagcaption2" value="No" />
+      </field>
+      <field id="updated_at">
+        <phrase id="fldcaption" value="updated at" />
+      </field>
+    </table>
+    <table id="aggregated_audit_logs">
+      <phrase id="tblcaption" value="aggregated audit logs" />
+      <field id="aggregated_id">
+        <phrase id="fldcaption" value="aggregated id" />
+      </field>
+      <field id="action_date">
+        <phrase id="fldcaption" value="action date" />
+      </field>
+      <field id="script">
+        <phrase id="fldcaption" value="script" />
+      </field>
+      <field id="user">
+        <phrase id="fldcaption" value="user" />
+      </field>
+      <field id="_action">
+        <phrase id="fldcaption" value="action" />
+      </field>
+      <field id="_table">
+        <phrase id="fldcaption" value="table" />
+      </field>
+      <field id="action_type">
+        <phrase id="fldcaption" value="action type" />
+      </field>
+      <field id="details">
+        <phrase id="fldcaption" value="details" />
+      </field>
+      <field id="action_count">
+        <phrase id="fldcaption" value="action count" />
+      </field>
+    </table>
+    <table id="budget_revision_page">
+      <phrase id="tblcaption" value="Budget Revision" />
+    </table>
+    <table id="budget_rev_form">
+      <phrase id="tblcaption" value="Budget Revision Form" />
+    </table>
+    <table id="budget_rev_review">
+      <phrase id="tblcaption" value="Budget Revision Preview" />
+    </table>
+    <table id="memo_req_page">
+      <phrase id="tblcaption" value="Memo Request" />
+    </table>
+    <table id="iarmodule">
+      <phrase id="tblcaption" value="IAR Module" />
+    </table>
+    <table id="voucher">
+      <phrase id="tblcaption" value="Disbursement Voucher" />
+    </table>
+    <table id="journalentryvoucher">
+      <phrase id="tblcaption" value="Journal Entry Voucher" />
+    </table>
+    <table id="changepass">
+      <phrase id="tblcaption" value="Change Password" />
+    </table>
+    <table id="checkdisbursements">
+      <phrase id="tblcaption" value="Check Disbursements" />
+    </table>
+    <table id="budget_prop_page">
+      <phrase id="tblcaption" value="Budget Propose" />
     </table>
   </project>
 </ew-language>

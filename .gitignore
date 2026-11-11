@@ -162,18 +162,10 @@ nha-fims.itbsstudio.com
 .github/scripts/deploy-dev.sh
 .github/scripts/deploy-production.sh
 logs.php
-nginx.conf
+
+
 .sql_run_history.json
-FMD/composer.lock
-FMD/composer.lock
-UAC/composer.lock
-FMD/composer.lock
-FMD/composer.lock
-UAC/composer.lock
-composer.json
-composer.lock
-FMD/package-lock.json
-package-lock.json
+
 
 # FMD local history
 FMD/history/
@@ -199,7 +191,6 @@ ACCOUNTING-PCDS/composer.lock
 _assets/table-analysis
 _assets/table-analysis/*
 # /_assets/sql/07 - CROSS-MODULE-DEMO
-package-lock.json
 
 # System Design / System Requirements docs (large binaries, tracked separately)
 _assets/System Design/
@@ -222,3 +213,15 @@ _assets/sql/05 - schema_sample_data_structure/03 - ACCOUNTING/05 -sample_data/40
 _assets/sql/05 - schema_sample_data_structure/03 - ACCOUNTING/05 -sample_data/41 - regional_ca_bimonthly_sample.sql
 merge-pages-into-fims-pmp.js
 replicate-fmd-treasury-to-fims.js
+
+
+
+composer.json
+composer.lock
+
+composer.json
+composer.lock
+composer.lock
+composer.json
+
+_assets/TREASURY/

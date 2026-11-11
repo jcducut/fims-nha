@@ -421,9 +421,6 @@ class UserLevelsDelete extends UserLevels
         // Set up lookup cache
         $this->setupLookupOptions($this->system_id);
 
-        // Set up master/detail parameters
-        $this->setupMasterParms();
-
         // Set up Breadcrumb
         $this->setupBreadcrumb();
 
@@ -808,79 +805,6 @@ class UserLevelsDelete extends UserLevels
             WriteJson(["success" => true, "action" => Config("API_DELETE_ACTION"), $table => $rows]);
         }
         return $deleteRows;
-    }
-
-    // Set up master/detail based on QueryString
-    protected function setupMasterParms()
-    {
-        $validMaster = false;
-        $foreignKeys = [];
-        // Get the keys for master table
-        if (($master = Get(Config("TABLE_SHOW_MASTER"), Get(Config("TABLE_MASTER")))) !== null) {
-            $masterTblVar = $master;
-            if ($masterTblVar == "") {
-                $validMaster = true;
-                $this->DbMasterFilter = "";
-                $this->DbDetailFilter = "";
-            }
-            if ($masterTblVar == "systems") {
-                $validMaster = true;
-                $masterTbl = Container("systems");
-                if (($parm = Get("fk_system_id", Get("system_id"))) !== null) {
-                    $masterTbl->system_id->setQueryStringValue($parm);
-                    $this->system_id->QueryStringValue = $masterTbl->system_id->QueryStringValue; // DO NOT change, master/detail key data type can be different
-                    $this->system_id->setSessionValue($this->system_id->QueryStringValue);
-                    $foreignKeys["system_id"] = $this->system_id->QueryStringValue;
-                    if (!is_numeric($masterTbl->system_id->QueryStringValue)) {
-                        $validMaster = false;
-                    }
-                } else {
-                    $validMaster = false;
-                }
-            }
-        } elseif (($master = Post(Config("TABLE_SHOW_MASTER"), Post(Config("TABLE_MASTER")))) !== null) {
-            $masterTblVar = $master;
-            if ($masterTblVar == "") {
-                    $validMaster = true;
-                    $this->DbMasterFilter = "";
-                    $this->DbDetailFilter = "";
-            }
-            if ($masterTblVar == "systems") {
-                $validMaster = true;
-                $masterTbl = Container("systems");
-                if (($parm = Post("fk_system_id", Post("system_id"))) !== null) {
-                    $masterTbl->system_id->setFormValue($parm);
-                    $this->system_id->FormValue = $masterTbl->system_id->FormValue;
-                    $this->system_id->setSessionValue($this->system_id->FormValue);
-                    $foreignKeys["system_id"] = $this->system_id->FormValue;
-                    if (!is_numeric($masterTbl->system_id->FormValue)) {
-                        $validMaster = false;
-                    }
-                } else {
-                    $validMaster = false;
-                }
-            }
-        }
-        if ($validMaster) {
-            // Save current master table
-            $this->setCurrentMasterTable($masterTblVar);
-            $this->setSessionWhere($this->getDetailFilterFromSession());
-
-            // Reset start record counter (new master key)
-            if (!$this->isAddOrEdit() && !$this->isGridUpdate()) {
-                $this->StartRecord = 1;
-                $this->setStartRecordNumber($this->StartRecord);
-            }
-
-            // Clear previous master key from Session
-            if ($masterTblVar != "systems") {
-                if (!array_key_exists("system_id", $foreignKeys)) { // Not current foreign key
-                    $this->system_id->setSessionValue("");
-                }
-            }
-        }
-        $this->DbMasterFilter = $this->getMasterFilterFromSession(); // Get master filter from session
-        $this->DbDetailFilter = $this->getDetailFilterFromSession(); // Get detail filter from session
     }
 
     // Set up Breadcrumb

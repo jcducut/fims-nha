@@ -721,9 +721,6 @@ class UserLevelAssignmentsGrid extends UserLevelAssignments
 
         // Add master User ID filter
         if ($Security->currentUserID() != "" && !$Security->isAdmin()) { // Non system admin
-            if ($this->getCurrentMasterTable() == "systems") {
-                $this->DbMasterFilter = $this->addMasterUserIDFilter($this->DbMasterFilter, "systems"); // Add master User ID filter
-            }
             if ($this->getCurrentMasterTable() == "_user_levels") {
                 $this->DbMasterFilter = $this->addMasterUserIDFilter($this->DbMasterFilter, "_user_levels"); // Add master User ID filter
             }
@@ -733,22 +730,6 @@ class UserLevelAssignmentsGrid extends UserLevelAssignments
         }
         AddFilter($this->Filter, $this->DbDetailFilter);
         AddFilter($this->Filter, $this->SearchWhere);
-
-        // Load master record
-        if ($this->CurrentMode != "add" && $this->DbMasterFilter != "" && $this->getCurrentMasterTable() == "systems") {
-            $masterTbl = Container("systems");
-            $rsmaster = $masterTbl->loadRs($this->DbMasterFilter)->fetchAssociative();
-            $this->MasterRecordExists = $rsmaster !== false;
-            if (!$this->MasterRecordExists) {
-                $this->setFailureMessage($Language->phrase("NoRecord")); // Set no record found
-                $this->terminate("SystemsList"); // Return to master page
-                return;
-            } else {
-                $masterTbl->loadListRowValues($rsmaster);
-                $masterTbl->RowType = RowType::MASTER; // Master row
-                $masterTbl->renderListRow();
-            }
-        }
 
         // Load master record
         if ($this->CurrentMode != "add" && $this->DbMasterFilter != "" && $this->getCurrentMasterTable() == "_user_levels") {
@@ -1316,7 +1297,6 @@ class UserLevelAssignmentsGrid extends UserLevelAssignments
                 $this->setCurrentMasterTable(""); // Clear master table
                 $this->DbMasterFilter = "";
                 $this->DbDetailFilter = "";
-                        $this->system_id->setSessionValue("");
                         $this->user_level_id->setSessionValue("");
                         $this->user_id->setSessionValue("");
             }
@@ -2572,10 +2552,6 @@ class UserLevelAssignmentsGrid extends UserLevelAssignments
         global $Language, $Security;
 
         // Set up foreign key field value from Session
-        if ($this->getCurrentMasterTable() == "systems") {
-            $this->system_id->Visible = true; // Need to insert foreign key
-            $this->system_id->CurrentValue = $this->system_id->getSessionValue();
-        }
         if ($this->getCurrentMasterTable() == "_user_levels") {
             $this->user_level_id->Visible = true; // Need to insert foreign key
             $this->user_level_id->CurrentValue = $this->user_level_id->getSessionValue();
@@ -2666,11 +2642,6 @@ class UserLevelAssignmentsGrid extends UserLevelAssignments
         // created_at
         $this->created_at->CurrentValue = $this->created_at->getAutoUpdateValue(); // PHP
         $this->created_at->setDbValueDef($rsnew, UnFormatDateTime($this->created_at->CurrentValue, $this->created_at->formatPattern()), false);
-
-        // system_id
-        if ($this->system_id->getSessionValue() != "") {
-            $rsnew['system_id'] = $this->system_id->getSessionValue();
-        }
         return $rsnew;
     }
 
@@ -2692,9 +2663,6 @@ class UserLevelAssignmentsGrid extends UserLevelAssignments
         if (isset($row['created_at'])) { // created_at
             $this->created_at->setFormValue($row['created_at']);
         }
-        if (isset($row['system_id'])) { // system_id
-            $this->system_id->setFormValue($row['system_id']);
-        }
     }
 
     // Set up master/detail based on QueryString
@@ -2702,12 +2670,6 @@ class UserLevelAssignmentsGrid extends UserLevelAssignments
     {
         // Hide foreign keys
         $masterTblVar = $this->getCurrentMasterTable();
-        if ($masterTblVar == "systems") {
-            $masterTbl = Container("systems");
-            if ($masterTbl->EventCancelled) {
-                $this->EventCancelled = true;
-            }
-        }
         if ($masterTblVar == "_user_levels") {
             $masterTbl = Container("_user_levels");
             $this->user_level_id->Visible = false;

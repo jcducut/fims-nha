@@ -1,240 +1,106 @@
 <?php
-// __BASE__/app/routes/notifications.php
+
 namespace PHPMaker2024\FIMS;
 
-// API Routes
-$app->get("/notifications/recent", function ($request, $response) {
-    $userId = CurrentUserID();
-    $notifications = NotificationManager::getUserNotifications($userId);
-    
-    return $response->withJson([
-        'success' => true,
-        'data' => $notifications,
-        'unread_count' => NotificationManager::getUnreadCount($userId)
-    ]);
-});
-
-$app->post("/notifications/mark-read", function ($request, $response) {
-    $data = $request->getParsedBody();
-    $notificationId = $data['id'] ?? null;
-    $userId = CurrentUserID();
-    
-    if (!$notificationId) {
-        return $response->withStatus(400)->withJson([
-            'success' => false,
-            'message' => 'Notification ID required'
-        ]);
-    }
-
-    $success = NotificationManager::markAsRead($notificationId, $userId);
-    
-    return $response->withJson([
-        'success' => $success
-    ]);
-});
-
-$app->get("/notifications/count", function ($request, $response) {
-    $userId = CurrentUserID();
-    $count = NotificationManager::getUnreadCount($userId);
-    
-    return $response->withJson([
-        'success' => true,
-        'count' => $count
-    ]);
-});
-
-$app->post("/notifications/mark-all-read", function ($request, $response) {
-    $userId = CurrentUserID();
-    $success = NotificationManager::markAllAsRead($userId);
-    
-    return $response->withJson([
-        'success' => $success
-    ]);
-});
-
-$app->get("/notifications/test", function ($request, $response) {
-    $userId = CurrentUserID();
-    $userLevel = CurrentUserLevel();
-    
-    try {
-        // Test System Notification
-        $systemResult = NotificationManager::sendSystem(
-            "🔧 Test System Notification",
-            "This is a test system-wide notification sent at " . date('Y-m-d H:i:s'),
-            "/test-system",
-            "__BASE__"
-        );
-
-        // Test Personal Notification
-        $personalResult = NotificationManager::sendToUser(
-            $userId,
-            "👤 Test Personal Notification",
-            "This is a test personal notification for user #" . $userId,
-            "/test-personal",
-            "__BASE__"
-        );
-
-        // Test User Level Notification
-        $userLevelResult = NotificationManager::sendToUserLevel(
-            $userLevel,
-            "👥 Test User Level Notification",
-            "This is a test notification for user level #" . $userLevel,
-            "/test-user-level",
-            "__BASE__"
-        );
-
-        return $response->withJson([
-            'success' => true,
-            'results' => [
-                'system' => $systemResult,
-                'personal' => $personalResult,
-                'userLevel' => $userLevelResult
-            ],
-            'user_info' => [
-                'user_id' => $userId,
-                'user_level' => $userLevel
-            ]
-        ]);
-
-    } catch (\Exception $e) {
-        return $response->withStatus(500)->withJson([
-            'success' => false,
-            'message' => 'Error sending test notifications',
-            'error' => $e->getMessage()
-        ]);
-    }
-});
+use PHPMaker2024\FIMS\Service\NotificationService;
 
 /**
- * Notification API Routes
- * 
- * Example payloads for different notification types:
- * 
- * 1. System-wide notification:
- * POST /notifications/send
- * {
- *     "type": "system",
- *     "subject": "System Maintenance",
- *     "body": "The system will be down for maintenance on Sunday at 2 AM.",
- *     "link": "/maintenance-schedule",
- *     "from_system": "__BASE__"
- * }
- * 
- * 2. Personal notification:
- * {
- *     "type": "personal",
- *     "target": "123",  // user_id
- *     "subject": "Document Approved",
- *     "body": "Your document #ABC123 has been approved.",
- *     "link": "/documents/ABC123",
- *     "from_system": "__BASE__"
- * }
- * 
- * 3. User Level notification:
- * {
- *     "type": "userLevel",
- *     "target": "1000",  // user_level_id
- *     "subject": "New Feature Available",
- *     "body": "Archive search feature is now available for administrators.",
- *     "link": "/features/archive-search",
- *     "from_system": "__BASE__"
- * }
- * 
- * 4. Emergency notification:
- * {
- *     "type": "system",
- *     "subject": "⚠️ Emergency Alert",
- *     "body": "Emergency maintenance required. System access may be limited.",
- *     "link": "/emergency-status",
- *     "from_system": "__BASE__"
- * }
- * 
- * 5. Feature announcement:
- * {
- *     "type": "userLevel",
- *     "target": "2000",  // Librarian user level
- *     "subject": "📚 New Library Features",
- *     "body": "New cataloging system is now available.",
- *     "link": "/library/features",
- *     "from_system": "__BASE__"
- * }
+ * Notification hub API (schema uac) — see _shared/NOTIFICATION-IMPLEMENTATION-PLAN.md §4.
+ *
+ *   GET  /notifications/recent?limit=   { success, data:[…], unread_count }
+ *   GET  /notifications/count           { success, unread_count }
+ *   POST /notifications/mark-read       { id }            -> { success }
+ *   POST /notifications/mark-all-read                     -> { success, updated }
+ *   POST /notifications/send            superadmin only   -> { success, id }
+ *
+ * Every route is authenticated through $jwtMiddleware; the caller is the JWT's user_id (never a parameter).
+ * The old /notifications/test route (hard-coded broadcast) was removed on purpose — plan §10.
  */
+$NotificationService = new NotificationService();
 
- $app->post("/notifications/send", function ($request, $response) {
-    try {
-        $data = $request->getParsedBody();
-        
-        // Validate required fields
-        $requiredFields = ['type', 'subject', 'body'];
-        foreach ($requiredFields as $field) {
-            if (empty($data[$field])) {
-                return $response->withStatus(400)->withJson([
-                    'success' => false,
-                    'message' => "Missing required field: {$field}"
-                ]);
-            }
-        }
+$notifyUser = fn ($request): int => (int) $request->getAttribute('user_id');
 
-        // Validate notification type
-        $validTypes = ['system', 'personal', 'userLevel'];
-        if (!in_array($data['type'], $validTypes)) {
-            return $response->withStatus(400)->withJson([
-                'success' => false,
-                'message' => "Invalid notification type. Must be one of: " . implode(', ', $validTypes)
-            ]);
-        }
+$notifyUnauthorized = fn ($response) => $response->withJson(['success' => false, 'message' => 'Not authenticated.'], 401);
 
-        // If not system notification, target is required
-        if ($data['type'] !== 'system' && empty($data['target'])) {
-            return $response->withStatus(400)->withJson([
-                'success' => false,
-                'message' => "Target is required for {$data['type']} notifications"
-            ]);
-        }
-
-        // Send notification based on type
-        $result = false;
-        switch ($data['type']) {
-            case 'system':
-                $result = NotificationManager::sendSystem(
-                    $data['subject'],
-                    $data['body'],
-                    $data['link'] ?? null,
-                    $data['from_system'] ?? null
-                );
-                break;
-
-            case 'personal':
-                $result = NotificationManager::sendToUser(
-                    $data['target'],
-                    $data['subject'],
-                    $data['body'],
-                    $data['link'] ?? null,
-                    $data['from_system'] ?? null
-                );
-                break;
-
-            case 'userLevel':
-                $result = NotificationManager::sendToUserLevel(
-                    $data['target'],
-                    $data['subject'],
-                    $data['body'],
-                    $data['link'] ?? null,
-                    $data['from_system'] ?? null
-                );
-                break;
-        }
-
-        return $response->withJson([
-            'success' => $result,
-            'message' => $result ? 'Notification sent successfully' : 'Failed to send notification'
-        ]);
-
-    } catch (\Exception $e) {
-        return $response->withStatus(500)->withJson([
-            'success' => false,
-            'message' => 'Error sending notification',
-            'error' => $e->getMessage()
-        ]);
+$app->get('/notifications/recent', function ($request, $response) use ($NotificationService, $notifyUser, $notifyUnauthorized) {
+    $uid = $notifyUser($request);
+    if ($uid <= 0) {
+        return $notifyUnauthorized($response);
     }
-}); 
+    try {
+        $limit = (int) ($request->getQueryParams()['limit'] ?? 10);
+
+        return $response->withJson($NotificationService->recent($uid, $limit));
+    } catch (\Throwable $e) {
+        LogError('GET /notifications/recent ' . $e->getMessage());
+
+        return $response->withJson(['success' => false, 'message' => 'Could not load notifications.'], 500);
+    }
+})->add($jwtMiddleware);
+
+$app->get('/notifications/count', function ($request, $response) use ($NotificationService, $notifyUser, $notifyUnauthorized) {
+    $uid = $notifyUser($request);
+    if ($uid <= 0) {
+        return $notifyUnauthorized($response);
+    }
+    try {
+        return $response->withJson(['success' => true, 'unread_count' => $NotificationService->unreadCount($uid)]);
+    } catch (\Throwable $e) {
+        LogError('GET /notifications/count ' . $e->getMessage());
+
+        return $response->withJson(['success' => false, 'message' => 'Could not load the count.'], 500);
+    }
+})->add($jwtMiddleware);
+
+$app->post('/notifications/mark-read', function ($request, $response) use ($NotificationService, $notifyUser, $notifyUnauthorized) {
+    $uid = $notifyUser($request);
+    if ($uid <= 0) {
+        return $notifyUnauthorized($response);
+    }
+    $id = trim((string) (($request->getParsedBody() ?: [])['id'] ?? ''));
+    if ($id === '') {
+        return $response->withJson(['success' => false, 'message' => 'Notification ID required.'], 400);
+    }
+    try {
+        return $response->withJson(['success' => $NotificationService->markRead($id, $uid)]);
+    } catch (\Throwable $e) {
+        LogError('POST /notifications/mark-read ' . $e->getMessage());
+
+        return $response->withJson(['success' => false, 'message' => 'Could not mark as read.'], 500);
+    }
+})->add($jwtMiddleware);
+
+$app->post('/notifications/mark-all-read', function ($request, $response) use ($NotificationService, $notifyUser, $notifyUnauthorized) {
+    $uid = $notifyUser($request);
+    if ($uid <= 0) {
+        return $notifyUnauthorized($response);
+    }
+    try {
+        return $response->withJson(['success' => true, 'updated' => $NotificationService->markAllRead($uid)]);
+    } catch (\Throwable $e) {
+        LogError('POST /notifications/mark-all-read ' . $e->getMessage());
+
+        return $response->withJson(['success' => false, 'message' => 'Could not mark all as read.'], 500);
+    }
+})->add($jwtMiddleware);
+
+// Privileged: only a superadmin may broadcast arbitrary notifications. Application code should call
+// NotificationService::toUser() / toUserLevel() / … directly instead of going through HTTP.
+$app->post('/notifications/send', function ($request, $response) use ($NotificationService, $notifyUser, $notifyUnauthorized) {
+    $uid = $notifyUser($request);
+    if ($uid <= 0) {
+        return $notifyUnauthorized($response);
+    }
+    try {
+        if (!$NotificationService->isSuperAdmin($uid)) {
+            return $response->withJson(['success' => false, 'message' => 'Not allowed to send notifications.'], 403);
+        }
+        $result = $NotificationService->sendValidated($request->getParsedBody() ?: [], $uid);
+
+        return $response->withJson($result, $result['success'] ? 201 : 400);
+    } catch (\Throwable $e) {
+        LogError('POST /notifications/send ' . $e->getMessage());
+
+        return $response->withJson(['success' => false, 'message' => 'Could not send the notification.'], 500);
+    }
+})->add($jwtMiddleware);

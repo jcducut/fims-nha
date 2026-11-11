@@ -1,201 +1,149 @@
 # SQL Schema Directory — FIMS NHA
 
-This folder contains the SQL scripts that build the FIMS NHA database — currently
-**371 `.sql` files** across 9 phase folders. Scripts are discovered and executed in order by
-`install_system.js` at the repo root:
+> **Status:** rewritten 2026-11-09 to match what's actually in this folder and a verified dry-run
+> install. The previous version of this file described a much larger, older architecture (371
+> files, 9 schemas, an `ACCOUNTING-BAPD/sql/` tree, `npm run …` wrappers) that predates this repo's
+> 2026-11-06 rebuild — none of that applies anymore. See
+> `system_docs/developerguide/DEVELOPER-GUIDE.md` §11 for why these docs drift from the code.
+
+This folder contains the SQL that builds the FIMS NHA database — **49 `.sql` files** across 3
+module folders. Scripts are discovered and executed in natural (numeric-aware) path order by
+`install_system.js` at the repo root.
 
 ```bash
-npm run install-system   # SQL + composer install
-npm run sql              # SQL only
-npm run sql-consolidated # SQL only, from the consolidated build (see below)
-npm run sql-reset        # maintenance files only (resets sequences, keeps data)
-npm run sql-truncate     # empties transaction tables (regional/fmd/accounting/treasury), keeps master data
+node install_system.js             # interactive: SQL, composer install, or both
+node install_system.js --sql-only  # SQL only, skip composer
 ```
 
-> **Important:** Files are sorted by **natural (numeric-aware) sort of their full path** before
-> execution. The number prefix on every folder and file is what controls run order.
-> Follow the naming convention or the install runs things in the wrong order.
+There is **no `npm run …` wrapper today** — `package.json` at the repo root has no `"scripts"`
+section. Ignore any doc (including older copies of this one) that tells you to run `npm run
+install-system`, `npm run sql`, etc. — invoke `install_system.js` with `node` directly, as above.
 
 ---
 
-## Folder Structure Overview
+## Folder Structure (as it exists today)
 
 ```
 _assets/sql/
-│
-├── 00 - public/                          # Phase 1: extensions and schemas
-├── 01 - schema_table_structure/          # Phase 2: CREATE TABLE
-├── 02 - schema_view_structure/           # Phase 3: CREATE VIEW
-├── 03 - schema_function_structure/       # Phase 4: CREATE FUNCTION
-├── 04 - schema_alter_table_structure/    # Phase 5: ALTER TABLE (+ ALTER VIEW)
-├── 05 - schema_sample_data_structure/    # Phase 6: INSERT seed/sample data
-├── 06 - schema_truncate_structure/       # Phase 7: TRUNCATE helpers (dev only)
-├── 07 - CROSS-MODULE-DEMO/               # NOT run by the installer — manual demo seed
-└── 07 - schema_maintenance_structure/    # Runs LAST, always (see Maintenance below)
+├── 00 - public/              2 files  — extension + schema setup, runs first
+├── 00 - uac/                11 files  — User Access Control (uac schema)
+│   ├── 01 - table/           3 files  — CREATE TABLE
+│   ├── 02 - alter_table/     4 files  — ALTER TABLE
+│   ├── 03 - views/           1 file   — CREATE VIEW
+│   └── 04 - seed_data/       3 files  — INSERT seed/sample data
+└── 01 - fims/                36 files  — budgeting/procurement/reference data (fims schema)
+    ├── 01 - table/           19 files — CREATE TABLE
+    ├── 02 - alter_table/      1 file   — ALTER TABLE (first batch, pre-seed)
+    ├── 02 - sample_data/      5 files  — INSERT sample data
+    ├── 02 - seed_data/        1 file   — INSERT seed data
+    └── 03 - alter_table/     10 files — ALTER TABLE (second batch, added after 02-* already ran)
 ```
 
-| Phase                                | `.sql` files | Notes                                        |
-|--------------------------------------|--------------|----------------------------------------------|
-| `00 - public`                        | 2            | `init.sql`, `schema.sql`                     |
-| `01 - schema_table_structure`        | 77           | `CREATE TABLE` only                          |
-| `02 - schema_view_structure`         | 59           | `CREATE VIEW` (53 of them in ACCOUNTING)     |
-| `03 - schema_function_structure`     | 6            | one per module                               |
-| `04 - schema_alter_table_structure`  | 128          | the largest phase — all incremental changes  |
-| `05 - schema_sample_data_structure`  | 88           | seed / demo data                             |
-| `06 - schema_truncate_structure`     | 1            | fully commented out — safe to leave in place |
-| `07 - CROSS-MODULE-DEMO`             | 8            | **excluded** from the installer              |
-| `07 - schema_maintenance_structure`  | 2            | hoisted to the very end of every run         |
+Unlike the old multi-schema FIMS project, folders here are organized **module-first, then
+phase-type**, not phase-first-then-module. `00 - public` and `00 - uac` sort before `01 - fims`
+because of the leading number; within each module folder, the phase-type subfolder decides order.
+
+### Why `01 - fims` has two `alter_table` folders
+
+`02 - alter_table` ran before `02 - sample_data`/`02 - seed_data` (so new columns exist before data
+references them). `03 - alter_table` is a **separate, later batch** — changes added after seed data
+already existed (FK additions, column renames/drops that depend on already-seeded rows, or simply
+alterations written after the initial build). **When you add a new alter that must run after
+existing data is in place, add it to (or create a new) `03 - alter_table`-style folder — don't
+insert it into the already-executed `02 - alter_table`.** `.sql_run_history.json` (see below) only
+tracks files by path, so inserting a new file into an old folder is harmless for history purposes,
+but the *numbering convention* exists precisely so humans can tell at a glance which batch (relative
+to data) a change belongs to — keep using it.
+
+### Number reuse within a phase folder
+
+Files inside a phase folder are numbered `01 - name.sql`, `02 - name.sql`, etc., but **this repo
+does reuse the same number across sibling files** when they have no dependency on each other —
+e.g. `_assets/sql/01 - fims/01 - table/05 - budget_rev.sql` and
+`05 - fims_expense_class.sql` share `05`; ties break alphabetically on the rest of the filename.
+This works as long as the two files genuinely don't depend on each other. If your new file *does*
+depend on an earlier one in the same folder, give it the next free number — don't rely on the tie-
+break order.
 
 ---
 
-## Module Subfolders
+## How `install_system.js` Discovers and Orders Files
 
-Each phase is divided into module subfolders. **The numbers are not the same in every phase** —
-phase `04` uses a different set from phases `01`/`02`/`03`/`05`. Always copy the numbering that
-the phase you're editing already uses.
-
-| Module      | In phases `01`, `02`, `03`, `05` | In phase `04`        |
-|-------------|----------------------------------|----------------------|
-| shared      | `1.1 - shared`                   | `00 - shared`        |
-| UAC         | `01 - UAC`                       | `01 - UAC`           |
-| FMD         | `02 - FMD`                       | `01 - FMD`           |
-| ACCOUNTING  | `03 - ACCOUNTING`                | `02 - ACCOUNTING`    |
-| TREASURY    | `04 - TREASURY`                  | `03 - TREASURY`      |
-| WORKFLOW    | `05 - WORKFLOW`                  | `04 - WORKFLOW`      |
-| REGIONAL    | `06 - REGIONAL`                  | `05 - REGIONAL`      |
-| INTEGRATION | `06 - INTEGRATION`               | `07 - INTEGRATION`   |
-| DISTRICT    | `07 - DISTRICT`                  | `06 - DISTRICT`      |
-
-Not every module exists in every phase — only create the folder when you actually have a file
-for it.
-
-Inside each module folder, the subfolder name matches the phase type:
-
-```
-[module folder]/
-├── 01 - table/        # phase 01
-├── 02 - views/        # phase 02
-├── 03 - function/     # phase 03
-├── 04 - alter_table/  # phase 04
-├── 05 - alter_view/   # phase 04 — CREATE OR REPLACE VIEW on existing views
-├── 05 -sample_data/   # phase 05  ← note: NO space after the dash
-├── 06 - truncate/     # phase 06
-└── 07 - maintenance/  # phase 07
+```js
+sqlRoots = [
+    path.join(process.cwd(), '_assets', 'sql'),
+    path.join(process.cwd(), 'ACCOUNTING-BAPD', 'sql')   // does not exist in this repo
+];
 ```
 
-> **Gotcha:** the sample-data folder is literally `05 -sample_data` (no space after the dash),
-> unlike every other folder. Copy an existing one rather than typing it; a folder named
-> `05 - sample_data` sorts differently and creates a second, parallel folder.
+The second root is a leftover from the predecessor project. The script checks
+`fs.pathExists()` before walking any root, so a missing folder just contributes zero files —
+**verified harmless** by a full dry-run install (see "Verified" below).
+
+- All `.sql` files are found recursively under each root, **excluding** any directory literally
+  named `node_modules`, `.git`, `07 - cross-module-demo`, or `03 - afims` (case-insensitive). None
+  of the last two currently exist in this repo — this exclusion list is forward-looking /
+  carried over, not describing anything present today.
+- Files are sorted with `localeCompare(..., { numeric: true })` — natural sort by full path, so
+  `02 - alter_table` always sorts before `03 - alter_table`, and `9 - x.sql` sorts before
+  `10 - x.sql`.
+- Any file under a folder named `07 - schema_maintenance_structure` (or matching
+  `NN - maintenance.sql`) is hoisted to run *after everything else*. **No file in this repo
+  currently matches that pattern** — the hoist step is a no-op today, kept for when/if a
+  maintenance folder is added.
 
 ---
 
-## How the Installer Picks Up Files
+## Running the Installer
 
-`install_system.js` walks these roots **in this order**, sorting each one internally:
-
-1. `_assets/sql/`
-2. `ACCOUNTING-BAPD/sql/` (11 files — the BAPD module keeps its own SQL tree)
-
-It then applies two rules:
-
-- **Demo trees are skipped.** Any folder named `07 - cross-module-demo` (case-insensitive) is
-  excluded, so `07 - CROSS-MODULE-DEMO/` never runs during an install. Run it by hand
-  (`00 - run_all.sql`) when you want the cross-module demo dataset — see its own
-  [README](07%20-%20CROSS-MODULE-DEMO/README.md).
-- **Maintenance files are hoisted to the very end.** Anything under
-  `07 - schema_maintenance_structure/` runs after *all* other files from *all* roots. This
-  matters because `reset_all_sequences.sql` needs to see the final `MAX(id)` of every table —
-  including BAPD seed data, which runs after this folder's phase 07.
-
-### Sort order in practice
-
-The sort is `localeCompare(..., { numeric: true })`, which is a natural sort, not a plain
-numeric-prefix sort. For phase `01` the module order actually comes out as:
-
-```
-1. 01 - UAC
-2. 1.1 - shared     ← second, not first
-3. 02 - FMD
-4. 03 - ACCOUNTING
-5. 04 - TREASURY
-6. 05 - WORKFLOW
-7. 06 - INTEGRATION
-8. 06 - REGIONAL
-9. 07 - DISTRICT
+```bash
+node install_system.js                 # interactive: prompts for run mode, then Postgres connection
+node install_system.js --sql-only      # SQL only, skip composer install
+node install_system.js --composer-only # composer install only, skip SQL
+node install_system.js --reset-only    # maintenance files only — currently a no-op (none exist)
+node install_system.js --truncate-only # wipe transaction tables — currently throws, see caveat below
+node install_system.js --consolidated  # currently throws — see caveat below
 ```
 
-> **Note:** `1.1 - shared` sorts *after* `01 - UAC`, so shared tables are **not** created first.
-> This works today because UAC's tables don't have foreign keys into `shared`. If you add a
-> `uac` table that references a `shared` table, the install will fail on a missing relation —
-> put the FK in phase `04` instead of in the `CREATE TABLE`.
+Without flags, it prompts for:
+1. **Run mode**: all steps / SQL only / composer only / truncate only / cancel.
+2. **Postgres connection**: host, port, username, password, database name. Defaults are leftover
+   from an unrelated template (`port` defaults to `5432`, `database` defaults to
+   `health_sync_db`) — if you're connecting to the Docker Compose Postgres from the host machine,
+   type **port `5433`** (the mapped port in `docker-compose.yml`), and your real database name.
+3. If the database doesn't already exist, it's created; if it does, you're offered a DROP + recreate
+   (say no to keep your data).
+4. **Run ALL files or only NEW ones** — "new" is determined by `.sql_run_history.json` at the repo
+   root, which records every file path that ran successfully. Use *ALL* on a fresh database, *NEW*
+   after pulling changes.
 
-### Run modes
+`ON_ERROR_STOP=1` is set for every `psql` invocation, so **one SQL error stops the whole run
+immediately**, and the failed file is not recorded in history.
 
-A full run prompts twice:
+### Caveats on the less-common flags
 
-1. **Overwrite the database?** If the target database already exists, you're offered
-   `DROP DATABASE` and recreate. Say no to keep your data.
-2. **Run ALL files, or only NEW ones?** "New" compares against `.sql_run_history.json` at the
-   repo root, which records the relative path of every file that has run successfully. Use
-   *ALL* on a fresh database and *NEW* after pulling changes.
-
-Because `ON_ERROR_STOP=1` is set, **one SQL error stops the whole install**, and the failed file
-is not written to history.
+- **`--consolidated`** requires `consolidate_sql.js` at the repo root. **That file does not exist
+  in this repo** — using this flag throws immediately (`--consolidated requires consolidate_sql.js
+  at repo root.`). The `_assets/sql-consolidated/` folder exists but is empty. Don't use this flag
+  until that tooling is rebuilt for this repo (it existed in the predecessor project).
+- **`--truncate-only`** reads
+  `_assets/sql/07 - CROSS-MODULE-DEMO/01 - RESET_truncate_transactions.sql`, which **does not exist
+  in this repo** (there is no cross-module demo dataset here yet). It fails with a clear
+  `Truncate script not found: …` error rather than doing anything destructive — safe, just
+  currently unusable.
+- **`--reset-only`** runs only maintenance-folder files; since none exist yet, it prints "No
+  maintenance SQL files found" and exits cleanly.
 
 ---
 
-## Phase Details
+## Verified (2026-11-09)
 
-### `00 - public/`
-Sets up the PostgreSQL environment. Runs first.
-
-| File          | Purpose                                                                     |
-|---------------|-----------------------------------------------------------------------------|
-| `init.sql`    | `DROP` then `CREATE EXTENSION "uuid-ossp"` in `public` (for UUID generation) |
-| `schema.sql`  | `CREATE SCHEMA IF NOT EXISTS` for all nine module schemas                    |
-
-### `01 - schema_table_structure/`
-`CREATE TABLE` statements only. Do **not** put `ALTER TABLE` here — those belong in phase `04`.
-
-### `02 - schema_view_structure/`
-`CREATE VIEW` statements. Runs after tables exist. Use
-`DROP VIEW IF EXISTS … CASCADE;` before `CREATE VIEW` so re-runs are idempotent — see
-[`04 - TREASURY/02 - views/02 - v_bank_transactions.sql`](02%20-%20schema_view_structure/04%20-%20TREASURY/02%20-%20views/02%20-%20v_bank_transactions.sql)
-for the house style, including a header comment that states the view's purpose and its row
-grain.
-
-### `03 - schema_function_structure/`
-`CREATE FUNCTION` / `CREATE PROCEDURE`. May depend on both tables and views.
-
-### `04 - schema_alter_table_structure/`
-**All** incremental schema changes — this is where most day-to-day work goes (128 files).
-Adding or dropping a column, renaming, changing a type, adding a constraint or FK. Because it
-runs after phase `01`, the table already exists.
-
-ACCOUNTING also has a `05 - alter_view/` subfolder here for `CREATE OR REPLACE VIEW` statements
-that patch a view defined back in phase `02`.
-
-### `05 - schema_sample_data_structure/`
-`INSERT` statements for seed and demo data. Runs after tables, views and functions are ready.
-
-### `06 - schema_truncate_structure/`
-Dev-only `TRUNCATE` helpers for wiping a dataset and starting over. The one file present
-(`01 - accounting_jev_truncate.sql`) is **entirely commented out**, which is why it can sit in
-the installer's path harmlessly. Uncomment it locally when you need it — never on production.
-
-### `07 - CROSS-MODULE-DEMO/`
-A hand-run, end-to-end demo dataset that threads one scenario through FMD → BAPD → DCD → GAD →
-Treasury → LIBIS → Workflow. Excluded from the installer; run `00 - run_all.sql` yourself.
-
-### `07 - schema_maintenance_structure/`
-Runs dead last, after every other root.
-
-| File                          | Purpose                                                  |
-|-------------------------------|----------------------------------------------------------|
-| `1.1 - shared/…/reset_all_sequences.sql`  | Re-syncs every sequence to its table's `MAX(id)` |
-| `1.4 - accounting/…/fix_jev_terminal_status.sql` | Normalizes JEV terminal statuses         |
-
-`npm run sql-reset` runs **only** these files, with no DROP/recreate and no run-mode prompt.
+A full dry run was done against a throwaway database: all 49 files, in the exact order
+`install_system.js` computes, executed via `psql --set ON_ERROR_STOP=1` with **zero errors**,
+producing 30 `uac` tables and 20 `fims` tables, with the `superadmin` seed user present and
+correctly hashed. The missing `ACCOUNTING-BAPD/sql` fallback root was confirmed to be silently
+skipped, not an error. Not covered by this pass: the interactive prompt flow itself, the
+composer-install step, and `--reset-only`/`--consolidated`/`--truncate-only` (see caveats above).
 
 ---
 
@@ -203,146 +151,60 @@ Runs dead last, after every other root.
 
 Created by `00 - public/schema.sql`:
 
-| Schema        | Purpose                                                             |
-|---------------|---------------------------------------------------------------------|
-| `shared`      | Reference data used by every module (COA, bank accounts, books, …)   |
-| `uac`         | User accounts, levels, permissions, audit logs, ID-format configs    |
-| `fmd`         | Financial Management Department — appropriations, allocations         |
-| `accounting`  | Vouchers, JEVs, ledgers, financial statements                        |
-| `treasury`    | Cash management — checks, collections, fund transfers, bank rec       |
-| `workflow`    | Approval workflow definitions, instances and history                 |
-| `regional`    | Regional office records                                              |
-| `district`    | District office records                                              |
-| `integration` | External-system integration staging (LIBIS, BCS, PIS)                |
-
-`document` is present but commented out in `schema.sql`.
+| Schema | Used by this repo? | Purpose |
+|---|---|---|
+| `uac` | Yes | User accounts, levels, permissions, audit logs, document/ID config |
+| `fims` | Yes | Budget requests/revisions/allocations, chart of accounts, responsibility centers, programs/projects, vendors |
+| `fmd` | **No tables land here** | Created by `schema.sql` but unused — leftover from the predecessor project's schema plan. Candidate for removal from `schema.sql`; confirm nothing depends on it existing before dropping. |
+| `workflow` | **No tables land here** | Same as `fmd` — created but empty today. |
+| `public` | Yes | `uuid-ossp` extension only |
 
 ---
 
-## Naming Rules
+## Where to Put New SQL
 
-### Folder names
-Zero-padded number prefix, then ` - `, then a descriptive name:
+| What you're doing | Correct location |
+|---|---|
+| New table in `uac` | `00 - uac/01 - table/` |
+| New table in `fims` | `01 - fims/01 - table/` |
+| Column/constraint change that doesn't depend on existing data | `00 - uac/02 - alter_table/` or `01 - fims/02 - alter_table/` |
+| Column/constraint change that depends on data already being seeded (FK add, rename after data exists) | `01 - fims/03 - alter_table/` (or the next unused top-level alter batch if you're past `03`) |
+| New view | `00 - uac/03 - views/` (no `fims` views folder exists yet — create `01 - fims/0X - views/` if you need one, using the next free number) |
+| Seed/sample data | `00 - uac/04 - seed_data/` or `01 - fims/02 - sample_data/` / `01 - fims/02 - seed_data/` (this repo doesn't distinguish "sample" vs "seed" strictly — both exist for `fims`; pick whichever existing folder your data resembles, or ask before inventing a third) |
 
-```
-01 - UAC             ✔ correct
-03 - ACCOUNTING      ✔ correct
-1.1 - shared         ✔ correct in phases 01/02/03/05 — this is the real convention
-00 - shared          ✔ correct in phase 04
-shared               ✘ wrong  (no number prefix — sorts unpredictably)
-```
-
-### File names
-Same rule:
-
-```
-01 - uac_structure_data.sql     ✔ correct
-uac_structure_data.sql          ✘ wrong
-```
-
-If a module needs several files in one phase, increment the number and **never reuse one**:
-
-```
-01 - users_table.sql
-02 - roles_table.sql
-03 - permissions_table.sql
-```
-
-> **Heads-up:** this rule isn't currently clean everywhere. `04 - schema_alter_table_structure/`
-> `02 - ACCOUNTING/04 - alter_table/` already has 11 duplicated prefixes (`12`, `13`, `16`, `22`,
-> `24`, `27`, `29`, `32`, `33`, `38`, `44`). Two files sharing a number fall back to
-> alphabetical order on the rest of the name, which is fine only as long as they don't depend on
-> each other. Don't add to the pile — check the folder before choosing your number.
-
----
-
-## Where to Put New SQL Files
-
-| What you are doing                                     | Correct location                                            |
-|--------------------------------------------------------|-------------------------------------------------------------|
-| Creating a new table                                   | `01 - schema_table_structure/[module]/01 - table/`           |
-| Adding / removing a column on an existing table        | `04 - schema_alter_table_structure/[module]/04 - alter_table/` |
-| Renaming a column or changing a data type              | `04 - schema_alter_table_structure/[module]/04 - alter_table/` |
-| Adding a foreign key to an existing table              | `04 - schema_alter_table_structure/[module]/04 - alter_table/` |
-| Creating a new view                                    | `02 - schema_view_structure/[module]/02 - views/`             |
-| Changing a view that already exists                    | `04 - schema_alter_table_structure/[module]/05 - alter_view/` |
-| Creating a new function or procedure                   | `03 - schema_function_structure/[module]/03 - function/`      |
-| Inserting default or sample data                       | `05 - schema_sample_data_structure/[module]/05 -sample_data/` |
-| A dev-only wipe script                                 | `06 - schema_truncate_structure/[module]/06 - truncate/` (commented out) |
-| Something that must run after all seed data            | `07 - schema_maintenance_structure/[module]/07 - maintenance/` |
-
----
-
-## Common Mistakes That Cause Install Errors
-
-`ON_ERROR_STOP=1` means **one SQL error stops the entire install immediately**.
-
-| Mistake                                                     | Why it fails                                                        |
-|-------------------------------------------------------------|---------------------------------------------------------------------|
-| Putting `ALTER TABLE` inside `01 - schema_table_structure`   | Conflicts with the original `CREATE TABLE`; wrong phase              |
-| Creating a view in phase `01`                                | The tables it reads don't exist yet                                  |
-| Missing number prefix on a new file or folder                | Sorts to an unexpected position and runs at the wrong time            |
-| Typing `05 - sample_data` instead of `05 -sample_data`       | Creates a second, parallel folder that sorts differently             |
-| Editing an existing `.sql` file to add a column              | Duplicate-column error on databases that already ran it — use phase `04` |
-| Reusing a number already taken in the same folder            | Two files sort ambiguously; one may run before its dependency        |
-| `CREATE VIEW` without a preceding `DROP VIEW IF EXISTS`      | Fails on re-run when the column list changed                         |
-| Adding a `uac` table with an FK into `shared`                | `shared` is created *after* `01 - UAC` — put the FK in phase `04`    |
-
----
-
-## Consolidated Build
-
-`consolidate_sql.js` (repo root) rebuilds `_assets/sql-consolidated/` from this folder:
-
-```
-_assets/sql-consolidated/
-├── by-phase/    # 13 files: 00 - public.sql … 12 - maintenance.sql (incl. BAPD)
-└── by-schema/   # 10 files: one per schema — 01 - shared.sql, 04 - accounting.sql, …
-```
-
-`npm run sql-consolidated` re-runs the consolidator and then installs from `by-phase/` instead
-of walking this tree — far fewer `psql` invocations, so it's noticeably faster.
-
-**Treat `sql-consolidated/` as a derived artifact.** Always edit the source files here; never
-hand-edit a consolidated file, since the next consolidator run overwrites it.
+Always use `CREATE TABLE IF NOT EXISTS`, `ADD COLUMN IF NOT EXISTS`, and a preceding
+`DROP VIEW IF EXISTS … CASCADE` before `CREATE VIEW`, so re-running the installer (or `--sql-only`
+with "NEW" mode) is idempotent.
 
 ---
 
 ## Example: Adding a Column to an Existing Table
 
-**Scenario:** add a `remarks` column to `accounting.vouchers`.
+**Scenario:** add a `remarks` column to `fims.vendors`, where `vendors` already has
+seed data referencing it.
 
-1. Go to `04 - schema_alter_table_structure/02 - ACCOUNTING/04 - alter_table/`
-   (note: ACCOUNTING is `02` in phase 04, not `03`).
-2. Create a file with the next unused number — the folder currently tops out at `44`, so
-   `45 - vouchers_add_remarks.sql`.
-3. Write it idempotently:
+1. Go to `01 - fims/03 - alter_table/` (the current highest batch is `08`, so use `09`).
+2. Create `09 - vendors_add_remarks.sql`:
    ```sql
-   ALTER TABLE accounting.vouchers
+   ALTER TABLE fims.vendors
        ADD COLUMN IF NOT EXISTS remarks TEXT;
    ```
-4. `npm run sql` → choose **Run only NEW SQL files**.
+3. `node install_system.js --sql-only` → choose **Run only NEW SQL files**.
 
 ## Example: Creating a New Table
 
-**Scenario:** create `fmd.budget_allocations`.
+**Scenario:** create `fims.budget_allocation_history`.
 
-1. Go to `01 - schema_table_structure/02 - FMD/01 - table/`.
-2. Create `07 - fmd_budget_allocations.sql` (next unused number in that folder).
-3. Write the `CREATE TABLE`, using `IF NOT EXISTS` so re-runs are safe.
-4. `npm run sql`.
+1. Go to `01 - fims/01 - table/` (current highest is `15`, so use `16`).
+2. Create `16 - fims_budget_allocation_history.sql` with `CREATE TABLE IF NOT EXISTS`.
+3. `node install_system.js --sql-only`.
 
 ---
 
-## Running the Install
+## Related docs
 
-```bash
-npm run install-system    # database + PHP dependencies
-npm run sql               # SQL only
-npm run sql-consolidated  # SQL only, from the consolidated build (faster)
-npm run sql-reset         # maintenance only — resets sequences, keeps data
-```
-
-The installer prompts for your PostgreSQL connection details (host, port, username, password,
-database name). On Windows, if `psql` isn't on `PATH` it offers the PostgreSQL installs it can
-find, or lets you type a path to `psql.exe`.
+- `system_docs/developerguide/DEVELOPER-GUIDE.md` — overall architecture, conventions, and why
+  several root-level docs (including the old version of this file) describe a different system
+  than what's actually here.
+- `.sql_run_history.json` (repo root) — per-file "already ran" ledger used by the installer's
+  ALL vs NEW prompt. Don't hand-edit it; if you need to force a re-run, delete the relevant key(s).

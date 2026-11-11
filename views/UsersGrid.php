@@ -34,14 +34,15 @@ loadjs.ready(["wrapper", "head"], function () {
             ["user_level_id", [fields.user_level_id.visible && fields.user_level_id.required ? ew.Validators.required(fields.user_level_id.caption) : null], fields.user_level_id.isInvalid],
             ["position_id", [fields.position_id.visible && fields.position_id.required ? ew.Validators.required(fields.position_id.caption) : null, ew.Validators.integer], fields.position_id.isInvalid],
             ["employee_id", [fields.employee_id.visible && fields.employee_id.required ? ew.Validators.required(fields.employee_id.caption) : null], fields.employee_id.isInvalid],
-            ["must_change_password", [fields.must_change_password.visible && fields.must_change_password.required ? ew.Validators.required(fields.must_change_password.caption) : null], fields.must_change_password.isInvalid]
+            ["must_change_password", [fields.must_change_password.visible && fields.must_change_password.required ? ew.Validators.required(fields.must_change_password.caption) : null], fields.must_change_password.isInvalid],
+            ["rc_id", [fields.rc_id.visible && fields.rc_id.required ? ew.Validators.required(fields.rc_id.caption) : null], fields.rc_id.isInvalid]
         ])
 
         // Check empty row
         .setEmptyRow(
             function (rowIndex) {
                 let fobj = this.getForm(),
-                    fields = [["_username",false],["_email",false],["first_name",false],["last_name",false],["suffix",false],["department_id",false],["is_active",true],["user_level_id[]",false],["position_id",false],["employee_id",false],["must_change_password",true]];
+                    fields = [["_username",false],["_email",false],["first_name",false],["last_name",false],["suffix",false],["department_id",false],["is_active",true],["user_level_id[]",false],["position_id",false],["employee_id",false],["must_change_password",true],["rc_id",false]];
                 if (fields.some(field => ew.valueChanged(fobj, rowIndex, ...field)))
                     return false;
                 return true;
@@ -129,6 +130,9 @@ $Grid->ListOptions->render("header", "left");
 <?php } ?>
 <?php if ($Grid->must_change_password->Visible) { // must_change_password ?>
         <th data-name="must_change_password" class="<?= $Grid->must_change_password->headerCellClass() ?>"><div id="elh_users_must_change_password" class="users_must_change_password"><?= $Grid->renderFieldHeader($Grid->must_change_password) ?></div></th>
+<?php } ?>
+<?php if ($Grid->rc_id->Visible) { // rc_id ?>
+        <th data-name="rc_id" class="<?= $Grid->rc_id->headerCellClass() ?>"><div id="elh_users_rc_id" class="users_rc_id"><?= $Grid->renderFieldHeader($Grid->rc_id) ?></div></th>
 <?php } ?>
 <?php
 // Render list options (header, right)
@@ -622,6 +626,33 @@ loadjs.ready("fusersgrid", function() {
 <?php if ($Grid->isConfirm()) { ?>
 <input type="hidden" data-table="users" data-field="x_must_change_password" data-hidden="1" name="fusersgrid$x<?= $Grid->RowIndex ?>_must_change_password" id="fusersgrid$x<?= $Grid->RowIndex ?>_must_change_password" value="<?= HtmlEncode($Grid->must_change_password->FormValue) ?>">
 <input type="hidden" data-table="users" data-field="x_must_change_password" data-hidden="1" data-old name="fusersgrid$o<?= $Grid->RowIndex ?>_must_change_password" id="fusersgrid$o<?= $Grid->RowIndex ?>_must_change_password" value="<?= HtmlEncode($Grid->must_change_password->OldValue) ?>">
+<?php } ?>
+<?php } ?>
+</td>
+    <?php } ?>
+    <?php if ($Grid->rc_id->Visible) { // rc_id ?>
+        <td data-name="rc_id"<?= $Grid->rc_id->cellAttributes() ?>>
+<?php if ($Grid->RowType == RowType::ADD) { // Add record ?>
+<span id="el<?= $Grid->RowIndex == '$rowindex$' ? '$rowindex$' : $Grid->RowCount ?>_users_rc_id" class="el_users_rc_id">
+<input type="<?= $Grid->rc_id->getInputTextType() ?>" name="x<?= $Grid->RowIndex ?>_rc_id" id="x<?= $Grid->RowIndex ?>_rc_id" data-table="users" data-field="x_rc_id" value="<?= $Grid->rc_id->EditValue ?>" size="30" maxlength="10" placeholder="<?= HtmlEncode($Grid->rc_id->getPlaceHolder()) ?>" data-format-pattern="<?= HtmlEncode($Grid->rc_id->formatPattern()) ?>"<?= $Grid->rc_id->editAttributes() ?>>
+<div class="invalid-feedback"><?= $Grid->rc_id->getErrorMessage() ?></div>
+</span>
+<input type="hidden" data-table="users" data-field="x_rc_id" data-hidden="1" data-old name="o<?= $Grid->RowIndex ?>_rc_id" id="o<?= $Grid->RowIndex ?>_rc_id" value="<?= HtmlEncode($Grid->rc_id->OldValue) ?>">
+<?php } ?>
+<?php if ($Grid->RowType == RowType::EDIT) { // Edit record ?>
+<span id="el<?= $Grid->RowIndex == '$rowindex$' ? '$rowindex$' : $Grid->RowCount ?>_users_rc_id" class="el_users_rc_id">
+<input type="<?= $Grid->rc_id->getInputTextType() ?>" name="x<?= $Grid->RowIndex ?>_rc_id" id="x<?= $Grid->RowIndex ?>_rc_id" data-table="users" data-field="x_rc_id" value="<?= $Grid->rc_id->EditValue ?>" size="30" maxlength="10" placeholder="<?= HtmlEncode($Grid->rc_id->getPlaceHolder()) ?>" data-format-pattern="<?= HtmlEncode($Grid->rc_id->formatPattern()) ?>"<?= $Grid->rc_id->editAttributes() ?>>
+<div class="invalid-feedback"><?= $Grid->rc_id->getErrorMessage() ?></div>
+</span>
+<?php } ?>
+<?php if ($Grid->RowType == RowType::VIEW) { // View record ?>
+<span id="el<?= $Grid->RowIndex == '$rowindex$' ? '$rowindex$' : $Grid->RowCount ?>_users_rc_id" class="el_users_rc_id">
+<span<?= $Grid->rc_id->viewAttributes() ?>>
+<?= $Grid->rc_id->getViewValue() ?></span>
+</span>
+<?php if ($Grid->isConfirm()) { ?>
+<input type="hidden" data-table="users" data-field="x_rc_id" data-hidden="1" name="fusersgrid$x<?= $Grid->RowIndex ?>_rc_id" id="fusersgrid$x<?= $Grid->RowIndex ?>_rc_id" value="<?= HtmlEncode($Grid->rc_id->FormValue) ?>">
+<input type="hidden" data-table="users" data-field="x_rc_id" data-hidden="1" data-old name="fusersgrid$o<?= $Grid->RowIndex ?>_rc_id" id="fusersgrid$o<?= $Grid->RowIndex ?>_rc_id" value="<?= HtmlEncode($Grid->rc_id->OldValue) ?>">
 <?php } ?>
 <?php } ?>
 </td>

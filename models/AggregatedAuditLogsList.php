@@ -146,14 +146,14 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
     public function setVisibility()
     {
         $this->aggregated_id->setVisibility();
-        $this->action_date->setVisibility();
+        $this->action_date->Visible = false;
         $this->script->setVisibility();
         $this->user->setVisibility();
-        $this->_action->Visible = false;
+        $this->_action->setVisibility();
         $this->_table->setVisibility();
-        $this->action_type->setVisibility();
+        $this->action_type->Visible = false;
         $this->details->Visible = false;
-        $this->action_count->Visible = false;
+        $this->action_count->setVisibility();
     }
 
     // Constructor
@@ -446,7 +446,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
     {
         $key = "";
         if (is_array($ar)) {
-            $key .= @$ar['aggregated_id'];
         }
         return $key;
     }
@@ -700,9 +699,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
             $this->InlineDelete = true;
         }
 
-        // Set up master detail parameters
-        $this->setupMasterParms();
-
         // Setup other options
         $this->setupOtherOptions();
 
@@ -772,23 +768,14 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
 
         // Get default search criteria
         AddFilter($this->DefaultSearchWhere, $this->basicSearchWhere(true));
-        AddFilter($this->DefaultSearchWhere, $this->advancedSearchWhere(true));
 
         // Get basic search values
         $this->loadBasicSearchValues();
-
-        // Get and validate search values for advanced search
-        if (EmptyValue($this->UserAction)) { // Skip if user action
-            $this->loadSearchValues();
-        }
 
         // Process filter list
         if ($this->processFilterList()) {
             $this->terminate();
             return;
-        }
-        if (!$this->validateSearch()) {
-            // Nothing to do
         }
 
         // Restore search parms from Session if not searching / reset / export
@@ -807,14 +794,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
             $srchBasic = $this->basicSearchWhere();
         }
 
-        // Get advanced search criteria
-        if (!$this->hasInvalidFields()) {
-            $srchAdvanced = $this->advancedSearchWhere();
-        }
-
-        // Get query builder criteria
-        $query = $DashboardReport ? "" : $this->queryBuilderWhere();
-
         // Restore display records
         if ($this->Command != "json" && $this->getRecordsPerPage() != "") {
             $this->DisplayRecords = $this->getRecordsPerPage(); // Restore from Session
@@ -830,16 +809,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
             if ($this->BasicSearch->Keyword != "") {
                 $srchBasic = $this->basicSearchWhere(); // Save to session
             }
-
-            // Load advanced search from default
-            if ($this->loadAdvancedSearchDefault()) {
-                $srchAdvanced = $this->advancedSearchWhere(); // Save to session
-            }
-        }
-
-        // Restore search settings from Session
-        if (!$this->hasInvalidFields()) {
-            $this->loadAdvancedSearch();
         }
 
         // Build search criteria
@@ -866,35 +835,8 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
         if (!$Security->canList()) {
             $this->Filter = "(0=1)"; // Filter all records
         }
-
-        // Restore master/detail filter from session
-        $this->DbMasterFilter = $this->getMasterFilterFromSession(); // Restore master filter from session
-        $this->DbDetailFilter = $this->getDetailFilterFromSession(); // Restore detail filter from session
-
-        // Add master User ID filter
-        if ($Security->currentUserID() != "" && !$Security->isAdmin()) { // Non system admin
-            if ($this->getCurrentMasterTable() == "users") {
-                $this->DbMasterFilter = $this->addMasterUserIDFilter($this->DbMasterFilter, "users"); // Add master User ID filter
-            }
-        }
         AddFilter($this->Filter, $this->DbDetailFilter);
         AddFilter($this->Filter, $this->SearchWhere);
-
-        // Load master record
-        if ($this->CurrentMode != "add" && $this->DbMasterFilter != "" && $this->getCurrentMasterTable() == "users") {
-            $masterTbl = Container("users");
-            $rsmaster = $masterTbl->loadRs($this->DbMasterFilter)->fetchAssociative();
-            $this->MasterRecordExists = $rsmaster !== false;
-            if (!$this->MasterRecordExists) {
-                $this->setFailureMessage($Language->phrase("NoRecord")); // Set no record found
-                $this->terminate("UsersList"); // Return to master page
-                return;
-            } else {
-                $masterTbl->loadListRowValues($rsmaster);
-                $masterTbl->RowType = RowType::MASTER; // Master row
-                $masterTbl->renderListRow();
-            }
-        }
 
         // Set up filter
         if ($this->Command == "json") {
@@ -1224,123 +1166,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
         $this->BasicSearch->setType(@$filter[Config("TABLE_BASIC_SEARCH_TYPE")]);
     }
 
-    // Advanced search WHERE clause based on QueryString
-    public function advancedSearchWhere($default = false)
-    {
-        global $Security;
-        $where = "";
-        if (!$Security->canSearch()) {
-            return "";
-        }
-        $this->buildSearchSql($where, $this->aggregated_id, $default, false); // aggregated_id
-        $this->buildSearchSql($where, $this->action_date, $default, false); // action_date
-        $this->buildSearchSql($where, $this->script, $default, false); // script
-        $this->buildSearchSql($where, $this->user, $default, false); // user
-        $this->buildSearchSql($where, $this->_action, $default, false); // action
-        $this->buildSearchSql($where, $this->_table, $default, false); // table
-        $this->buildSearchSql($where, $this->action_type, $default, false); // action_type
-        $this->buildSearchSql($where, $this->details, $default, false); // details
-        $this->buildSearchSql($where, $this->action_count, $default, false); // action_count
-
-        // Set up search command
-        if (!$default && $where != "" && in_array($this->Command, ["", "reset", "resetall"])) {
-            $this->Command = "search";
-        }
-        if (!$default && $this->Command == "search") {
-            $this->aggregated_id->AdvancedSearch->save(); // aggregated_id
-            $this->action_date->AdvancedSearch->save(); // action_date
-            $this->script->AdvancedSearch->save(); // script
-            $this->user->AdvancedSearch->save(); // user
-            $this->_action->AdvancedSearch->save(); // action
-            $this->_table->AdvancedSearch->save(); // table
-            $this->action_type->AdvancedSearch->save(); // action_type
-            $this->details->AdvancedSearch->save(); // details
-            $this->action_count->AdvancedSearch->save(); // action_count
-
-            // Clear rules for QueryBuilder
-            $this->setSessionRules("");
-        }
-        return $where;
-    }
-
-    // Query builder rules
-    public function queryBuilderRules()
-    {
-        return Post("rules") ?? $this->getSessionRules();
-    }
-
-    // Quey builder WHERE clause
-    public function queryBuilderWhere($fieldName = "")
-    {
-        global $Security;
-        if (!$Security->canSearch()) {
-            return "";
-        }
-
-        // Get rules by query builder
-        $rules = $this->queryBuilderRules();
-
-        // Decode and parse rules
-        $where = $rules ? $this->parseRules(json_decode($rules, true), $fieldName) : "";
-
-        // Clear other search and save rules to session
-        if ($where && $fieldName == "") { // Skip if get query for specific field
-            $this->resetSearchParms();
-            $this->aggregated_id->AdvancedSearch->save(); // aggregated_id
-            $this->action_date->AdvancedSearch->save(); // action_date
-            $this->script->AdvancedSearch->save(); // script
-            $this->user->AdvancedSearch->save(); // user
-            $this->_action->AdvancedSearch->save(); // action
-            $this->_table->AdvancedSearch->save(); // table
-            $this->action_type->AdvancedSearch->save(); // action_type
-            $this->details->AdvancedSearch->save(); // details
-            $this->action_count->AdvancedSearch->save(); // action_count
-            $this->setSessionRules($rules);
-        }
-
-        // Return query
-        return $where;
-    }
-
-    // Build search SQL
-    protected function buildSearchSql(&$where, $fld, $default, $multiValue)
-    {
-        $fldParm = $fld->Param;
-        $fldVal = $default ? $fld->AdvancedSearch->SearchValueDefault : $fld->AdvancedSearch->SearchValue;
-        $fldOpr = $default ? $fld->AdvancedSearch->SearchOperatorDefault : $fld->AdvancedSearch->SearchOperator;
-        $fldCond = $default ? $fld->AdvancedSearch->SearchConditionDefault : $fld->AdvancedSearch->SearchCondition;
-        $fldVal2 = $default ? $fld->AdvancedSearch->SearchValue2Default : $fld->AdvancedSearch->SearchValue2;
-        $fldOpr2 = $default ? $fld->AdvancedSearch->SearchOperator2Default : $fld->AdvancedSearch->SearchOperator2;
-        $fldVal = ConvertSearchValue($fldVal, $fldOpr, $fld);
-        $fldVal2 = ConvertSearchValue($fldVal2, $fldOpr2, $fld);
-        $fldOpr = ConvertSearchOperator($fldOpr, $fld, $fldVal);
-        $fldOpr2 = ConvertSearchOperator($fldOpr2, $fld, $fldVal2);
-        $wrk = "";
-        $sep = $fld->UseFilter ? Config("FILTER_OPTION_SEPARATOR") : Config("MULTIPLE_OPTION_SEPARATOR");
-        if (is_array($fldVal)) {
-            $fldVal = implode($sep, $fldVal);
-        }
-        if (is_array($fldVal2)) {
-            $fldVal2 = implode($sep, $fldVal2);
-        }
-        if (Config("SEARCH_MULTI_VALUE_OPTION") == 1 && !$fld->UseFilter || !IsMultiSearchOperator($fldOpr)) {
-            $multiValue = false;
-        }
-        if ($multiValue) {
-            $wrk = $fldVal != "" ? GetMultiSearchSql($fld, $fldOpr, $fldVal, $this->Dbid) : ""; // Field value 1
-            $wrk2 = $fldVal2 != "" ? GetMultiSearchSql($fld, $fldOpr2, $fldVal2, $this->Dbid) : ""; // Field value 2
-            AddFilter($wrk, $wrk2, $fldCond);
-        } else {
-            $wrk = GetSearchSql($fld, $fldVal, $fldOpr, $fldCond, $fldVal2, $fldOpr2, $this->Dbid);
-        }
-        if ($this->SearchOption == "AUTO" && in_array($this->BasicSearch->getType(), ["AND", "OR"])) {
-            $cond = $this->BasicSearch->getType();
-        } else {
-            $cond = SameText($this->SearchOption, "OR") ? "OR" : "AND";
-        }
-        AddFilter($where, $wrk, $cond);
-    }
-
     // Show list of filters
     public function showFilterList()
     {
@@ -1350,60 +1175,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
         $filterList = "";
         $captionClass = $this->isExport("email") ? "ew-filter-caption-email" : "ew-filter-caption";
         $captionSuffix = $this->isExport("email") ? ": " : "";
-
-        // Field aggregated_id
-        $filter = $this->queryBuilderWhere("aggregated_id");
-        if (!$filter) {
-            $this->buildSearchSql($filter, $this->aggregated_id, false, false);
-        }
-        if ($filter != "") {
-            $filterList .= "<div><span class=\"" . $captionClass . "\">" . $this->aggregated_id->caption() . "</span>" . $captionSuffix . $filter . "</div>";
-        }
-
-        // Field action_date
-        $filter = $this->queryBuilderWhere("action_date");
-        if (!$filter) {
-            $this->buildSearchSql($filter, $this->action_date, false, false);
-        }
-        if ($filter != "") {
-            $filterList .= "<div><span class=\"" . $captionClass . "\">" . $this->action_date->caption() . "</span>" . $captionSuffix . $filter . "</div>";
-        }
-
-        // Field script
-        $filter = $this->queryBuilderWhere("script");
-        if (!$filter) {
-            $this->buildSearchSql($filter, $this->script, false, false);
-        }
-        if ($filter != "") {
-            $filterList .= "<div><span class=\"" . $captionClass . "\">" . $this->script->caption() . "</span>" . $captionSuffix . $filter . "</div>";
-        }
-
-        // Field user
-        $filter = $this->queryBuilderWhere("user");
-        if (!$filter) {
-            $this->buildSearchSql($filter, $this->user, false, false);
-        }
-        if ($filter != "") {
-            $filterList .= "<div><span class=\"" . $captionClass . "\">" . $this->user->caption() . "</span>" . $captionSuffix . $filter . "</div>";
-        }
-
-        // Field table
-        $filter = $this->queryBuilderWhere("table");
-        if (!$filter) {
-            $this->buildSearchSql($filter, $this->_table, false, false);
-        }
-        if ($filter != "") {
-            $filterList .= "<div><span class=\"" . $captionClass . "\">" . $this->_table->caption() . "</span>" . $captionSuffix . $filter . "</div>";
-        }
-
-        // Field action_type
-        $filter = $this->queryBuilderWhere("action_type");
-        if (!$filter) {
-            $this->buildSearchSql($filter, $this->action_type, false, false);
-        }
-        if ($filter != "") {
-            $filterList .= "<div><span class=\"" . $captionClass . "\">" . $this->action_type->caption() . "</span>" . $captionSuffix . $filter . "</div>";
-        }
         if ($this->BasicSearch->Keyword != "") {
             $filterList .= "<div><span class=\"" . $captionClass . "\">" . $Language->phrase("BasicSearchKeyword") . "</span>" . $captionSuffix . $this->BasicSearch->Keyword . "</div>";
         }
@@ -1465,33 +1236,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
         if ($this->BasicSearch->issetSession()) {
             return true;
         }
-        if ($this->aggregated_id->AdvancedSearch->issetSession()) {
-            return true;
-        }
-        if ($this->action_date->AdvancedSearch->issetSession()) {
-            return true;
-        }
-        if ($this->script->AdvancedSearch->issetSession()) {
-            return true;
-        }
-        if ($this->user->AdvancedSearch->issetSession()) {
-            return true;
-        }
-        if ($this->_action->AdvancedSearch->issetSession()) {
-            return true;
-        }
-        if ($this->_table->AdvancedSearch->issetSession()) {
-            return true;
-        }
-        if ($this->action_type->AdvancedSearch->issetSession()) {
-            return true;
-        }
-        if ($this->details->AdvancedSearch->issetSession()) {
-            return true;
-        }
-        if ($this->action_count->AdvancedSearch->issetSession()) {
-            return true;
-        }
         return false;
     }
 
@@ -1504,12 +1248,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
 
         // Clear basic search parameters
         $this->resetBasicSearchParms();
-
-        // Clear advanced search parameters
-        $this->resetAdvancedSearchParms();
-
-        // Clear queryBuilder
-        $this->setSessionRules("");
     }
 
     // Load advanced search default values
@@ -1524,20 +1262,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
         $this->BasicSearch->unsetSession();
     }
 
-    // Clear all advanced search parameters
-    protected function resetAdvancedSearchParms()
-    {
-        $this->aggregated_id->AdvancedSearch->unsetSession();
-        $this->action_date->AdvancedSearch->unsetSession();
-        $this->script->AdvancedSearch->unsetSession();
-        $this->user->AdvancedSearch->unsetSession();
-        $this->_action->AdvancedSearch->unsetSession();
-        $this->_table->AdvancedSearch->unsetSession();
-        $this->action_type->AdvancedSearch->unsetSession();
-        $this->details->AdvancedSearch->unsetSession();
-        $this->action_count->AdvancedSearch->unsetSession();
-    }
-
     // Restore all search parameters
     protected function restoreSearchParms()
     {
@@ -1545,17 +1269,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
 
         // Restore basic search values
         $this->BasicSearch->load();
-
-        // Restore advanced search values
-        $this->aggregated_id->AdvancedSearch->load();
-        $this->action_date->AdvancedSearch->load();
-        $this->script->AdvancedSearch->load();
-        $this->user->AdvancedSearch->load();
-        $this->_action->AdvancedSearch->load();
-        $this->_table->AdvancedSearch->load();
-        $this->action_type->AdvancedSearch->load();
-        $this->details->AdvancedSearch->load();
-        $this->action_count->AdvancedSearch->load();
     }
 
     // Set up sort parameters
@@ -1574,11 +1287,11 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
             $this->CurrentOrder = Get("order");
             $this->CurrentOrderType = Get("ordertype", "");
             $this->updateSort($this->aggregated_id); // aggregated_id
-            $this->updateSort($this->action_date); // action_date
             $this->updateSort($this->script); // script
             $this->updateSort($this->user); // user
+            $this->updateSort($this->_action); // action
             $this->updateSort($this->_table); // table
-            $this->updateSort($this->action_type); // action_type
+            $this->updateSort($this->action_count); // action_count
             $this->setStartRecordNumber(1); // Reset start position
         }
 
@@ -1597,14 +1310,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
             // Reset search criteria
             if ($this->Command == "reset" || $this->Command == "resetall") {
                 $this->resetSearchParms();
-            }
-
-            // Reset master/detail keys
-            if ($this->Command == "resetall") {
-                $this->setCurrentMasterTable(""); // Clear master table
-                $this->DbMasterFilter = "";
-                $this->DbDetailFilter = "";
-                        $this->user->setSessionValue("");
             }
 
             // Reset (clear) sorting order
@@ -1638,12 +1343,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
         $item->Body = "";
         $item->OnLeft = false;
         $item->Visible = false;
-
-        // "view"
-        $item = &$this->ListOptions->add("view");
-        $item->CssClass = "text-nowrap";
-        $item->Visible = $Security->canView();
-        $item->OnLeft = false;
 
         // List actions
         $item = &$this->ListOptions->add("listactions");
@@ -1702,19 +1401,7 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
         // Call ListOptions_Rendering event
         $this->listOptionsRendering();
         $pageUrl = $this->pageUrl(false);
-        if ($this->CurrentMode == "view") {
-            // "view"
-            $opt = $this->ListOptions["view"];
-            $viewcaption = HtmlTitle($Language->phrase("ViewLink"));
-            if ($Security->canView()) {
-                if ($this->ModalView && !IsMobile()) {
-                    $opt->Body = "<a class=\"ew-row-link ew-view\" title=\"" . $viewcaption . "\" data-table=\"aggregated_audit_logs\" data-caption=\"" . $viewcaption . "\" data-ew-action=\"modal\" data-action=\"view\" data-ajax=\"" . ($this->UseAjaxActions ? "true" : "false") . "\" data-url=\"" . HtmlEncode(GetUrl($this->ViewUrl)) . "\" data-btn=\"null\">" . $Language->phrase("ViewLink") . "</a>";
-                } else {
-                    $opt->Body = "<a class=\"ew-row-link ew-view\" title=\"" . $viewcaption . "\" data-caption=\"" . $viewcaption . "\" href=\"" . HtmlEncode(GetUrl($this->ViewUrl)) . "\">" . $Language->phrase("ViewLink") . "</a>";
-                }
-            } else {
-                $opt->Body = "";
-            }
+        if ($this->CurrentMode == "view") { // Check view mode
         } // End View mode
 
         // Set up list action buttons
@@ -1756,7 +1443,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
 
         // "checkbox"
         $opt = $this->ListOptions["checkbox"];
-        $opt->Body = "<div class=\"form-check\"><input type=\"checkbox\" id=\"key_m_" . $this->RowCount . "\" name=\"key_m[]\" class=\"form-check-input ew-multi-select\" value=\"" . HtmlEncode($this->aggregated_id->CurrentValue) . "\" data-ew-action=\"select-key\"></div>";
         $this->renderListOptionsExt();
 
         // Call ListOptions_Rendered event
@@ -1784,11 +1470,11 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
             $item->Body = "";
             $item->Visible = $this->UseColumnVisibility;
             $this->createColumnOption($option, "aggregated_id");
-            $this->createColumnOption($option, "action_date");
             $this->createColumnOption($option, "script");
             $this->createColumnOption($option, "user");
+            $this->createColumnOption($option, "action");
             $this->createColumnOption($option, "table");
-            $this->createColumnOption($option, "action_type");
+            $this->createColumnOption($option, "action_count");
         }
 
         // Set up custom actions
@@ -2129,93 +1815,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
         $this->BasicSearch->setType(Get(Config("TABLE_BASIC_SEARCH_TYPE"), ""), false);
     }
 
-    // Load search values for validation
-    protected function loadSearchValues()
-    {
-        // Load search values
-        $hasValue = false;
-
-        // Load query builder rules
-        $rules = Post("rules");
-        if ($rules && $this->Command == "") {
-            $this->QueryRules = $rules;
-            $this->Command = "search";
-        }
-
-        // aggregated_id
-        if ($this->aggregated_id->AdvancedSearch->get()) {
-            $hasValue = true;
-            if (($this->aggregated_id->AdvancedSearch->SearchValue != "" || $this->aggregated_id->AdvancedSearch->SearchValue2 != "") && $this->Command == "") {
-                $this->Command = "search";
-            }
-        }
-
-        // action_date
-        if ($this->action_date->AdvancedSearch->get()) {
-            $hasValue = true;
-            if (($this->action_date->AdvancedSearch->SearchValue != "" || $this->action_date->AdvancedSearch->SearchValue2 != "") && $this->Command == "") {
-                $this->Command = "search";
-            }
-        }
-
-        // script
-        if ($this->script->AdvancedSearch->get()) {
-            $hasValue = true;
-            if (($this->script->AdvancedSearch->SearchValue != "" || $this->script->AdvancedSearch->SearchValue2 != "") && $this->Command == "") {
-                $this->Command = "search";
-            }
-        }
-
-        // user
-        if ($this->user->AdvancedSearch->get()) {
-            $hasValue = true;
-            if (($this->user->AdvancedSearch->SearchValue != "" || $this->user->AdvancedSearch->SearchValue2 != "") && $this->Command == "") {
-                $this->Command = "search";
-            }
-        }
-
-        // action
-        if ($this->_action->AdvancedSearch->get()) {
-            $hasValue = true;
-            if (($this->_action->AdvancedSearch->SearchValue != "" || $this->_action->AdvancedSearch->SearchValue2 != "") && $this->Command == "") {
-                $this->Command = "search";
-            }
-        }
-
-        // table
-        if ($this->_table->AdvancedSearch->get()) {
-            $hasValue = true;
-            if (($this->_table->AdvancedSearch->SearchValue != "" || $this->_table->AdvancedSearch->SearchValue2 != "") && $this->Command == "") {
-                $this->Command = "search";
-            }
-        }
-
-        // action_type
-        if ($this->action_type->AdvancedSearch->get()) {
-            $hasValue = true;
-            if (($this->action_type->AdvancedSearch->SearchValue != "" || $this->action_type->AdvancedSearch->SearchValue2 != "") && $this->Command == "") {
-                $this->Command = "search";
-            }
-        }
-
-        // details
-        if ($this->details->AdvancedSearch->get()) {
-            $hasValue = true;
-            if (($this->details->AdvancedSearch->SearchValue != "" || $this->details->AdvancedSearch->SearchValue2 != "") && $this->Command == "") {
-                $this->Command = "search";
-            }
-        }
-
-        // action_count
-        if ($this->action_count->AdvancedSearch->get()) {
-            $hasValue = true;
-            if (($this->action_count->AdvancedSearch->SearchValue != "" || $this->action_count->AdvancedSearch->SearchValue2 != "") && $this->Command == "") {
-                $this->Command = "search";
-            }
-        }
-        return $hasValue;
-    }
-
     /**
      * Load result set
      *
@@ -2339,18 +1938,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
     // Load old record
     protected function loadOldRecord()
     {
-        // Load old record
-        if ($this->OldKey != "") {
-            $this->setKey($this->OldKey);
-            $this->CurrentFilter = $this->getRecordFilter();
-            $sql = $this->getCurrentSql();
-            $conn = $this->getConnection();
-            $rs = ExecuteQuery($sql, $conn);
-            if ($row = $rs->fetch()) {
-                $this->loadRowValues($row); // Load row values
-                return $row;
-            }
-        }
         $this->loadRowValues(); // Load default row values
         return null;
     }
@@ -2397,9 +1984,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
             $this->aggregated_id->ViewValue = $this->aggregated_id->CurrentValue;
             $this->aggregated_id->ViewValue = FormatNumber($this->aggregated_id->ViewValue, $this->aggregated_id->formatPattern());
 
-            // action_date
-            $this->action_date->ViewValue = $this->action_date->CurrentValue;
-
             // script
             $this->script->ViewValue = $this->script->CurrentValue;
 
@@ -2412,9 +1996,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
             // table
             $this->_table->ViewValue = $this->_table->CurrentValue;
 
-            // action_type
-            $this->action_type->ViewValue = $this->action_type->CurrentValue;
-
             // action_count
             $this->action_count->ViewValue = $this->action_count->CurrentValue;
             $this->action_count->ViewValue = FormatNumber($this->action_count->ViewValue, $this->action_count->formatPattern());
@@ -2422,10 +2003,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
             // aggregated_id
             $this->aggregated_id->HrefValue = "";
             $this->aggregated_id->TooltipValue = "";
-
-            // action_date
-            $this->action_date->HrefValue = "";
-            $this->action_date->TooltipValue = "";
 
             // script
             $this->script->HrefValue = "";
@@ -2435,107 +2012,23 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
             $this->user->HrefValue = "";
             $this->user->TooltipValue = "";
 
+            // action
+            $this->_action->HrefValue = "";
+            $this->_action->TooltipValue = "";
+
             // table
             $this->_table->HrefValue = "";
             $this->_table->TooltipValue = "";
 
-            // action_type
-            $this->action_type->HrefValue = "";
-            $this->action_type->TooltipValue = "";
-        } elseif ($this->RowType == RowType::SEARCH) {
-            // aggregated_id
-            $this->aggregated_id->setupEditAttributes();
-            $this->aggregated_id->EditValue = $this->aggregated_id->AdvancedSearch->SearchValue;
-            $this->aggregated_id->PlaceHolder = RemoveHtml($this->aggregated_id->caption());
-
-            // action_date
-            $this->action_date->setupEditAttributes();
-            if (!$this->action_date->Raw) {
-                $this->action_date->AdvancedSearch->SearchValue = HtmlDecode($this->action_date->AdvancedSearch->SearchValue);
-            }
-            $this->action_date->EditValue = HtmlEncode($this->action_date->AdvancedSearch->SearchValue);
-            $this->action_date->PlaceHolder = RemoveHtml($this->action_date->caption());
-            $this->action_date->setupEditAttributes();
-            if (!$this->action_date->Raw) {
-                $this->action_date->AdvancedSearch->SearchValue2 = HtmlDecode($this->action_date->AdvancedSearch->SearchValue2);
-            }
-            $this->action_date->EditValue2 = HtmlEncode($this->action_date->AdvancedSearch->SearchValue2);
-            $this->action_date->PlaceHolder = RemoveHtml($this->action_date->caption());
-
-            // script
-            $this->script->setupEditAttributes();
-            if (!$this->script->Raw) {
-                $this->script->AdvancedSearch->SearchValue = HtmlDecode($this->script->AdvancedSearch->SearchValue);
-            }
-            $this->script->EditValue = HtmlEncode($this->script->AdvancedSearch->SearchValue);
-            $this->script->PlaceHolder = RemoveHtml($this->script->caption());
-
-            // user
-            $this->user->setupEditAttributes();
-            if (!$this->user->Raw) {
-                $this->user->AdvancedSearch->SearchValue = HtmlDecode($this->user->AdvancedSearch->SearchValue);
-            }
-            $this->user->EditValue = HtmlEncode($this->user->AdvancedSearch->SearchValue);
-            $this->user->PlaceHolder = RemoveHtml($this->user->caption());
-
-            // table
-            $this->_table->setupEditAttributes();
-            if (!$this->_table->Raw) {
-                $this->_table->AdvancedSearch->SearchValue = HtmlDecode($this->_table->AdvancedSearch->SearchValue);
-            }
-            $this->_table->EditValue = HtmlEncode($this->_table->AdvancedSearch->SearchValue);
-            $this->_table->PlaceHolder = RemoveHtml($this->_table->caption());
-
-            // action_type
-            $this->action_type->setupEditAttributes();
-            if (!$this->action_type->Raw) {
-                $this->action_type->AdvancedSearch->SearchValue = HtmlDecode($this->action_type->AdvancedSearch->SearchValue);
-            }
-            $this->action_type->EditValue = HtmlEncode($this->action_type->AdvancedSearch->SearchValue);
-            $this->action_type->PlaceHolder = RemoveHtml($this->action_type->caption());
-        }
-        if ($this->RowType == RowType::ADD || $this->RowType == RowType::EDIT || $this->RowType == RowType::SEARCH) { // Add/Edit/Search row
-            $this->setupFieldTitles();
+            // action_count
+            $this->action_count->HrefValue = "";
+            $this->action_count->TooltipValue = "";
         }
 
         // Call Row Rendered event
         if ($this->RowType != RowType::AGGREGATEINIT) {
             $this->rowRendered();
         }
-    }
-
-    // Validate search
-    protected function validateSearch()
-    {
-        // Check if validation required
-        if (!Config("SERVER_VALIDATE")) {
-            return true;
-        }
-
-        // Return validate result
-        $validateSearch = !$this->hasInvalidFields();
-
-        // Call Form_CustomValidate event
-        $formCustomError = "";
-        $validateSearch = $validateSearch && $this->formCustomValidate($formCustomError);
-        if ($formCustomError != "") {
-            $this->setFailureMessage($formCustomError);
-        }
-        return $validateSearch;
-    }
-
-    // Load advanced search
-    public function loadAdvancedSearch()
-    {
-        $this->aggregated_id->AdvancedSearch->load();
-        $this->action_date->AdvancedSearch->load();
-        $this->script->AdvancedSearch->load();
-        $this->user->AdvancedSearch->load();
-        $this->_action->AdvancedSearch->load();
-        $this->_table->AdvancedSearch->load();
-        $this->action_type->AdvancedSearch->load();
-        $this->details->AdvancedSearch->load();
-        $this->action_count->AdvancedSearch->load();
     }
 
     // Set up search options
@@ -2592,90 +2085,6 @@ class AggregatedAuditLogsList extends AggregatedAuditLogs
         if (!$this->hasSearchFields() && $this->SearchOptions["searchtoggle"]) {
             $this->SearchOptions["searchtoggle"]->Visible = false;
         }
-    }
-
-    // Set up master/detail based on QueryString
-    protected function setupMasterParms()
-    {
-        $validMaster = false;
-        $foreignKeys = [];
-        // Get the keys for master table
-        if (($master = Get(Config("TABLE_SHOW_MASTER"), Get(Config("TABLE_MASTER")))) !== null) {
-            $masterTblVar = $master;
-            if ($masterTblVar == "") {
-                $validMaster = true;
-                $this->DbMasterFilter = "";
-                $this->DbDetailFilter = "";
-            }
-            if ($masterTblVar == "users") {
-                $validMaster = true;
-                $masterTbl = Container("users");
-                if (($parm = Get("fk_user_id", Get("user"))) !== null) {
-                    $masterTbl->user_id->setQueryStringValue($parm);
-                    $this->user->QueryStringValue = $masterTbl->user_id->QueryStringValue; // DO NOT change, master/detail key data type can be different
-                    $this->user->setSessionValue($this->user->QueryStringValue);
-                    $foreignKeys["user"] = $this->user->QueryStringValue;
-                    if (!is_numeric($masterTbl->user_id->QueryStringValue)) {
-                        $validMaster = false;
-                    }
-                } else {
-                    $validMaster = false;
-                }
-            }
-        } elseif (($master = Post(Config("TABLE_SHOW_MASTER"), Post(Config("TABLE_MASTER")))) !== null) {
-            $masterTblVar = $master;
-            if ($masterTblVar == "") {
-                    $validMaster = true;
-                    $this->DbMasterFilter = "";
-                    $this->DbDetailFilter = "";
-            }
-            if ($masterTblVar == "users") {
-                $validMaster = true;
-                $masterTbl = Container("users");
-                if (($parm = Post("fk_user_id", Post("user"))) !== null) {
-                    $masterTbl->user_id->setFormValue($parm);
-                    $this->user->FormValue = $masterTbl->user_id->FormValue;
-                    $this->user->setSessionValue($this->user->FormValue);
-                    $foreignKeys["user"] = $this->user->FormValue;
-                    if (!is_numeric($masterTbl->user_id->FormValue)) {
-                        $validMaster = false;
-                    }
-                } else {
-                    $validMaster = false;
-                }
-            }
-        }
-        if ($validMaster) {
-            // Save current master table
-            $this->setCurrentMasterTable($masterTblVar);
-
-            // Update URL
-            $this->AddUrl = $this->addMasterUrl($this->AddUrl);
-            $this->InlineAddUrl = $this->addMasterUrl($this->InlineAddUrl);
-            $this->GridAddUrl = $this->addMasterUrl($this->GridAddUrl);
-            $this->GridEditUrl = $this->addMasterUrl($this->GridEditUrl);
-            $this->MultiEditUrl = $this->addMasterUrl($this->MultiEditUrl);
-
-            // Set up Breadcrumb
-            if (!$this->isExport()) {
-                $this->setupBreadcrumb(); // Set up breadcrumb again for the master table
-            }
-
-            // Reset start record counter (new master key)
-            if (!$this->isAddOrEdit() && !$this->isGridUpdate()) {
-                $this->StartRecord = 1;
-                $this->setStartRecordNumber($this->StartRecord);
-            }
-
-            // Clear previous master key from Session
-            if ($masterTblVar != "users") {
-                if (!array_key_exists("user", $foreignKeys)) { // Not current foreign key
-                    $this->user->setSessionValue("");
-                }
-            }
-        }
-        $this->DbMasterFilter = $this->getMasterFilterFromSession(); // Get master filter from session
-        $this->DbDetailFilter = $this->getDetailFilterFromSession(); // Get detail filter from session
     }
 
     // Set up Breadcrumb

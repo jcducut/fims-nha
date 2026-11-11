@@ -811,9 +811,6 @@ class UserLevelAssignmentsList extends UserLevelAssignments
 
         // Add master User ID filter
         if ($Security->currentUserID() != "" && !$Security->isAdmin()) { // Non system admin
-            if ($this->getCurrentMasterTable() == "systems") {
-                $this->DbMasterFilter = $this->addMasterUserIDFilter($this->DbMasterFilter, "systems"); // Add master User ID filter
-            }
             if ($this->getCurrentMasterTable() == "_user_levels") {
                 $this->DbMasterFilter = $this->addMasterUserIDFilter($this->DbMasterFilter, "_user_levels"); // Add master User ID filter
             }
@@ -823,22 +820,6 @@ class UserLevelAssignmentsList extends UserLevelAssignments
         }
         AddFilter($this->Filter, $this->DbDetailFilter);
         AddFilter($this->Filter, $this->SearchWhere);
-
-        // Load master record
-        if ($this->CurrentMode != "add" && $this->DbMasterFilter != "" && $this->getCurrentMasterTable() == "systems") {
-            $masterTbl = Container("systems");
-            $rsmaster = $masterTbl->loadRs($this->DbMasterFilter)->fetchAssociative();
-            $this->MasterRecordExists = $rsmaster !== false;
-            if (!$this->MasterRecordExists) {
-                $this->setFailureMessage($Language->phrase("NoRecord")); // Set no record found
-                $this->terminate("SystemsList"); // Return to master page
-                return;
-            } else {
-                $masterTbl->loadListRowValues($rsmaster);
-                $masterTbl->RowType = RowType::MASTER; // Master row
-                $masterTbl->renderListRow();
-            }
-        }
 
         // Load master record
         if ($this->CurrentMode != "add" && $this->DbMasterFilter != "" && $this->getCurrentMasterTable() == "_user_levels") {
@@ -1106,7 +1087,6 @@ class UserLevelAssignmentsList extends UserLevelAssignments
                 $this->setCurrentMasterTable(""); // Clear master table
                 $this->DbMasterFilter = "";
                 $this->DbDetailFilter = "";
-                        $this->system_id->setSessionValue("");
                         $this->user_level_id->setSessionValue("");
                         $this->user_id->setSessionValue("");
             }
@@ -1997,21 +1977,6 @@ class UserLevelAssignmentsList extends UserLevelAssignments
                 $this->DbMasterFilter = "";
                 $this->DbDetailFilter = "";
             }
-            if ($masterTblVar == "systems") {
-                $validMaster = true;
-                $masterTbl = Container("systems");
-                if (($parm = Get("fk_system_id", Get("system_id"))) !== null) {
-                    $masterTbl->system_id->setQueryStringValue($parm);
-                    $this->system_id->QueryStringValue = $masterTbl->system_id->QueryStringValue; // DO NOT change, master/detail key data type can be different
-                    $this->system_id->setSessionValue($this->system_id->QueryStringValue);
-                    $foreignKeys["system_id"] = $this->system_id->QueryStringValue;
-                    if (!is_numeric($masterTbl->system_id->QueryStringValue)) {
-                        $validMaster = false;
-                    }
-                } else {
-                    $validMaster = false;
-                }
-            }
             if ($masterTblVar == "_user_levels") {
                 $validMaster = true;
                 $masterTbl = Container("_user_levels");
@@ -2048,21 +2013,6 @@ class UserLevelAssignmentsList extends UserLevelAssignments
                     $validMaster = true;
                     $this->DbMasterFilter = "";
                     $this->DbDetailFilter = "";
-            }
-            if ($masterTblVar == "systems") {
-                $validMaster = true;
-                $masterTbl = Container("systems");
-                if (($parm = Post("fk_system_id", Post("system_id"))) !== null) {
-                    $masterTbl->system_id->setFormValue($parm);
-                    $this->system_id->FormValue = $masterTbl->system_id->FormValue;
-                    $this->system_id->setSessionValue($this->system_id->FormValue);
-                    $foreignKeys["system_id"] = $this->system_id->FormValue;
-                    if (!is_numeric($masterTbl->system_id->FormValue)) {
-                        $validMaster = false;
-                    }
-                } else {
-                    $validMaster = false;
-                }
             }
             if ($masterTblVar == "_user_levels") {
                 $validMaster = true;
@@ -2118,11 +2068,6 @@ class UserLevelAssignmentsList extends UserLevelAssignments
             }
 
             // Clear previous master key from Session
-            if ($masterTblVar != "systems") {
-                if (!array_key_exists("system_id", $foreignKeys)) { // Not current foreign key
-                    $this->system_id->setSessionValue("");
-                }
-            }
             if ($masterTblVar != "_user_levels") {
                 if (!array_key_exists("user_level_id", $foreignKeys)) { // Not current foreign key
                     $this->user_level_id->setSessionValue("");

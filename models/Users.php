@@ -74,6 +74,7 @@ class Users extends DbTable
     public $position_id;
     public $employee_id;
     public $must_change_password;
+    public $rc_id;
 
     // Page ID
     public $PageID = ""; // To be overridden by subclass
@@ -600,6 +601,28 @@ class Users extends DbTable
         $this->must_change_password->SearchOperators = ["=", "<>"];
         $this->Fields['must_change_password'] = &$this->must_change_password;
 
+        // rc_id
+        $this->rc_id = new DbField(
+            $this, // Table
+            'x_rc_id', // Variable name
+            'rc_id', // Name
+            '"rc_id"', // Expression
+            '"rc_id"', // Basic search expression
+            200, // Type
+            10, // Size
+            -1, // Date/Time format
+            false, // Is upload field
+            '"rc_id"', // Virtual expression
+            false, // Is virtual
+            false, // Force selection
+            false, // Is Virtual search
+            'FORMATTED TEXT', // View Tag
+            'TEXT' // Edit Tag
+        );
+        $this->rc_id->InputTextType = "text";
+        $this->rc_id->SearchOperators = ["=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL"];
+        $this->Fields['rc_id'] = &$this->rc_id;
+
         // Add Doctrine Cache
         $this->Cache = new \Symfony\Component\Cache\Adapter\ArrayAdapter();
         $this->CacheProfile = new \Doctrine\DBAL\Cache\QueryCacheProfile(0, $this->TableVar);
@@ -758,10 +781,6 @@ class Users extends DbTable
         $detailUrl = "";
         if ($this->getCurrentDetailTable() == "user_level_assignments") {
             $detailUrl = Container("user_level_assignments")->getListUrl() . "?" . Config("TABLE_SHOW_MASTER") . "=" . $this->TableVar;
-            $detailUrl .= "&" . GetForeignKeyUrl("fk_user_id", $this->user_id->CurrentValue);
-        }
-        if ($this->getCurrentDetailTable() == "aggregated_audit_logs") {
-            $detailUrl = Container("aggregated_audit_logs")->getListUrl() . "?" . Config("TABLE_SHOW_MASTER") . "=" . $this->TableVar;
             $detailUrl .= "&" . GetForeignKeyUrl("fk_user_id", $this->user_id->CurrentValue);
         }
         if ($detailUrl == "") {
@@ -1282,6 +1301,7 @@ class Users extends DbTable
         $this->position_id->DbValue = $row['position_id'];
         $this->employee_id->DbValue = $row['employee_id'];
         $this->must_change_password->DbValue = (ConvertToBool($row['must_change_password']) ? "1" : "0");
+        $this->rc_id->DbValue = $row['rc_id'];
     }
 
     // Delete uploaded files
@@ -1673,6 +1693,7 @@ class Users extends DbTable
         $this->position_id->setDbValue($row['position_id']);
         $this->employee_id->setDbValue($row['employee_id']);
         $this->must_change_password->setDbValue(ConvertToBool($row['must_change_password']) ? "1" : "0");
+        $this->rc_id->setDbValue($row['rc_id']);
     }
 
     // Render list content
@@ -1742,6 +1763,8 @@ class Users extends DbTable
         // employee_id
 
         // must_change_password
+
+        // rc_id
 
         // user_id
         $this->user_id->ViewValue = $this->user_id->CurrentValue;
@@ -1872,6 +1895,9 @@ class Users extends DbTable
             $this->must_change_password->ViewValue = $this->must_change_password->tagCaption(2) != "" ? $this->must_change_password->tagCaption(2) : "No";
         }
 
+        // rc_id
+        $this->rc_id->ViewValue = $this->rc_id->CurrentValue;
+
         // user_id
         $this->user_id->HrefValue = "";
         $this->user_id->TooltipValue = "";
@@ -1952,6 +1978,10 @@ class Users extends DbTable
         // must_change_password
         $this->must_change_password->HrefValue = "";
         $this->must_change_password->TooltipValue = "";
+
+        // rc_id
+        $this->rc_id->HrefValue = "";
+        $this->rc_id->TooltipValue = "";
 
         // Call Row Rendered event
         $this->rowRendered();
@@ -2141,6 +2171,14 @@ class Users extends DbTable
         $this->must_change_password->EditValue = $this->must_change_password->options(false);
         $this->must_change_password->PlaceHolder = RemoveHtml($this->must_change_password->caption());
 
+        // rc_id
+        $this->rc_id->setupEditAttributes();
+        if (!$this->rc_id->Raw) {
+            $this->rc_id->CurrentValue = HtmlDecode($this->rc_id->CurrentValue);
+        }
+        $this->rc_id->EditValue = $this->rc_id->CurrentValue;
+        $this->rc_id->PlaceHolder = RemoveHtml($this->rc_id->caption());
+
         // Call Row Rendered event
         $this->rowRendered();
     }
@@ -2188,6 +2226,7 @@ class Users extends DbTable
                     $doc->exportCaption($this->position_id);
                     $doc->exportCaption($this->employee_id);
                     $doc->exportCaption($this->must_change_password);
+                    $doc->exportCaption($this->rc_id);
                 } else {
                     $doc->exportCaption($this->user_id);
                     $doc->exportCaption($this->_username);
@@ -2208,6 +2247,7 @@ class Users extends DbTable
                     $doc->exportCaption($this->position_id);
                     $doc->exportCaption($this->employee_id);
                     $doc->exportCaption($this->must_change_password);
+                    $doc->exportCaption($this->rc_id);
                 }
                 $doc->endExportRow();
             }
@@ -2253,6 +2293,7 @@ class Users extends DbTable
                         $doc->exportField($this->position_id);
                         $doc->exportField($this->employee_id);
                         $doc->exportField($this->must_change_password);
+                        $doc->exportField($this->rc_id);
                     } else {
                         $doc->exportField($this->user_id);
                         $doc->exportField($this->_username);
@@ -2273,6 +2314,7 @@ class Users extends DbTable
                         $doc->exportField($this->position_id);
                         $doc->exportField($this->employee_id);
                         $doc->exportField($this->must_change_password);
+                        $doc->exportField($this->rc_id);
                     }
                     $doc->endExportRow($rowCnt);
                 }

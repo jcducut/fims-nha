@@ -357,13 +357,36 @@ class ChangePassword extends Users
                         $pwdUpdated = true;
                     } else {
                         $this->setFailureMessage($Language->phrase("InvalidNewPassword"));
+                        // Same reasoning as the InvalidPassword branch below —
+                        // see the comment there.
+                        if (!IsApi() && !$this->IsModal) {
+                            $this->terminate("/app/pages/change-pass.php?err=newpwd");
+                            return;
+                        }
                     }
                 } else {
                     $this->setFailureMessage($Language->phrase("InvalidPassword"));
+                    // Falling through to the bottom of this method would
+                    // re-render the framework's own default views/ChangePassword.php
+                    // template in place — a different, unbranded page than our
+                    // custom app/pages/change-pass.php. That custom page's own JS
+                    // expects to parse this re-rendered HTML for a ".ew-error"
+                    // element to extract the failure reason, which is fragile and,
+                    // in practice, falls back to its generic "Could not update your
+                    // password..." message. Redirect to the custom page instead,
+                    // flagged via query string, same pattern as the /login fix.
+                    if (!IsApi() && !$this->IsModal) {
+                        $this->terminate("/app/pages/change-pass.php?err=oldpwd");
+                        return;
+                    }
                 }
             }
         }
         if ($pwdUpdated) {
+            // Captured before IsPasswordReset() gets cleared below — it reads
+            // $_SESSION[SESSION_STATUS], which line ~409 blanks out as part of
+            // completing the reset flow.
+            $wasPasswordReset = IsPasswordReset();
             $emailAddress = $user->get(Config("USER_EMAIL_FIELD_NAME"));
             if ($emailAddress != "") {
                 // Load Email Content
