@@ -50,18 +50,6 @@ loadjs.ready("head", function () {
 <?php } ?>
 </div>
 <?php } ?>
-<?php if (!$Page->isExport() || Config("EXPORT_MASTER_RECORD") && $Page->isExport("print")) { ?>
-<?php
-if ($Page->DbMasterFilter != "" && $Page->getCurrentMasterTable() == "users") {
-    if ($Page->MasterRecordExists) {
-        include_once "views/UsersMaster.php";
-    }
-}
-?>
-<?php } ?>
-<?php if ($Page->ShowCurrentFilter) { ?>
-<?php $Page->showFilterList() ?>
-<?php } ?>
 <?php if (!$Page->IsModal) { ?>
 <form name="faggregated_audit_logssrch" id="faggregated_audit_logssrch" class="ew-form ew-ext-search-form" action="<?= CurrentPageUrl(false) ?>" novalidate autocomplete="off">
 <div id="faggregated_audit_logssrch_search_panel" class="mb-2 mb-sm-0 <?= $Page->SearchPanelClass ?>"><!-- .ew-search-panel -->
@@ -82,42 +70,6 @@ loadjs.ready(["wrapper", "head"], function () {
         .setSubmitWithFetch(true)
 <?php } ?>
 
-        // Add fields
-        .addFields([
-            ["action_date", [], fields.action_date.isInvalid],
-            ["y_action_date", [ew.Validators.between], false]
-        ])
-        // Validate form
-        .setValidate(
-            async function () {
-                if (!this.validateRequired)
-                    return true; // Ignore validation
-                let fobj = this.getForm();
-
-                // Validate fields
-                if (!this.validateFields())
-                    return false;
-
-                // Call Form_CustomValidate event
-                if (!(await this.customValidate?.(fobj) ?? true)) {
-                    this.focus();
-                    return false;
-                }
-                return true;
-            }
-        )
-
-        // Form_CustomValidate
-        .setCustomValidate(
-            function (fobj) { // DO NOT CHANGE THIS LINE! (except for adding "async" keyword)!
-                    // Your custom validation code in JAVASCRIPT here, return false if invalid.
-                    return true;
-                }
-        )
-
-        // Use JavaScript validation or not
-        .setValidateRequired(ew.CLIENT_VALIDATE)
-
         // Dynamic selection lists
         .setLists({
         })
@@ -134,99 +86,6 @@ loadjs.ready(["wrapper", "head"], function () {
 <?php if ($Security->canSearch()) { ?>
 <?php if (!$Page->isExport() && !($Page->CurrentAction && $Page->CurrentAction != "search") && $Page->hasSearchFields()) { ?>
 <div class="ew-extended-search container-fluid ps-2">
-<div class="row mb-0<?= ($Page->SearchFieldsPerRow > 0) ? " row-cols-sm-" . $Page->SearchFieldsPerRow : "" ?>">
-<?php
-// Render search row
-$Page->RowType = RowType::SEARCH;
-$Page->resetAttributes();
-$Page->renderRow();
-?>
-<?php if ($Page->action_date->Visible) { // action_date ?>
-<?php
-if (!$Page->action_date->UseFilter) {
-    $Page->SearchColumnCount++;
-}
-?>
-    <div id="xs_action_date" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2<?= $Page->action_date->UseFilter ? " ew-filter-field" : "" ?>">
-        <div class="d-flex my-1 my-sm-0">
-            <label for="x_action_date" class="ew-search-caption ew-label"><?= $Page->action_date->caption() ?></label>
-            <div class="ew-search-operator">
-<?= $Language->phrase("BETWEEN") ?>
-<input type="hidden" name="z_action_date" id="z_action_date" value="BETWEEN">
-</div>
-        </div>
-        <div id="el_aggregated_audit_logs_action_date" class="ew-search-field">
-<input type="<?= $Page->action_date->getInputTextType() ?>" name="x_action_date" id="x_action_date" data-table="aggregated_audit_logs" data-field="x_action_date" value="<?= $Page->action_date->EditValue ?>" size="20" placeholder="<?= HtmlEncode($Page->action_date->getPlaceHolder()) ?>" data-format-pattern="<?= HtmlEncode($Page->action_date->formatPattern()) ?>"<?= $Page->action_date->editAttributes() ?>>
-<div class="invalid-feedback"><?= $Page->action_date->getErrorMessage(false) ?></div>
-<?php if (!$Page->action_date->ReadOnly && !$Page->action_date->Disabled && !isset($Page->action_date->EditAttrs["readonly"]) && !isset($Page->action_date->EditAttrs["disabled"])) { ?>
-<script>
-loadjs.ready(["faggregated_audit_logssrch", "datetimepicker"], function () {
-    let format = "<?= "yyyy-MM-dd" ?>",
-        options = {
-            localization: {
-                locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
-                hourCycle: format.match(/H/) ? "h24" : "h12",
-                format,
-                ...ew.language.phrase("datetimepicker")
-            },
-            display: {
-                icons: {
-                    previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
-                    next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
-                },
-                components: {
-                    clock: !!format.match(/h/i) || !!format.match(/m/) || !!format.match(/s/i),
-                    hours: !!format.match(/h/i),
-                    minutes: !!format.match(/m/),
-                    seconds: !!format.match(/s/i)
-                },
-                theme: ew.getPreferredTheme()
-            }
-        };
-    ew.createDateTimePicker("faggregated_audit_logssrch", "x_action_date", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
-});
-</script>
-<?php } ?>
-</div>
-        <div class="d-flex my-1 my-sm-0">
-            <div class="ew-search-and"><label><?= $Language->phrase("AND") ?></label></div>
-        </div><!-- /.ew-search-field -->
-        <div id="el2_aggregated_audit_logs_action_date" class="ew-search-field2">
-<input type="<?= $Page->action_date->getInputTextType() ?>" name="y_action_date" id="y_action_date" data-table="aggregated_audit_logs" data-field="x_action_date" value="<?= $Page->action_date->EditValue2 ?>" size="20" placeholder="<?= HtmlEncode($Page->action_date->getPlaceHolder()) ?>" data-format-pattern="<?= HtmlEncode($Page->action_date->formatPattern()) ?>"<?= $Page->action_date->editAttributes() ?>>
-<div class="invalid-feedback"><?= $Page->action_date->getErrorMessage(false) ?></div>
-<?php if (!$Page->action_date->ReadOnly && !$Page->action_date->Disabled && !isset($Page->action_date->EditAttrs["readonly"]) && !isset($Page->action_date->EditAttrs["disabled"])) { ?>
-<script>
-loadjs.ready(["faggregated_audit_logssrch", "datetimepicker"], function () {
-    let format = "<?= "yyyy-MM-dd" ?>",
-        options = {
-            localization: {
-                locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
-                hourCycle: format.match(/H/) ? "h24" : "h12",
-                format,
-                ...ew.language.phrase("datetimepicker")
-            },
-            display: {
-                icons: {
-                    previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
-                    next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
-                },
-                components: {
-                    clock: !!format.match(/h/i) || !!format.match(/m/) || !!format.match(/s/i),
-                    hours: !!format.match(/h/i),
-                    minutes: !!format.match(/m/),
-                    seconds: !!format.match(/s/i)
-                },
-                theme: ew.getPreferredTheme()
-            }
-        };
-    ew.createDateTimePicker("faggregated_audit_logssrch", "y_action_date", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
-});
-</script>
-<?php } ?>
-</div>
-    </div><!-- /.col-sm-auto -->
-<?php } ?>
-</div><!-- /.row -->
 <div class="row mb-0">
     <div class="col-sm-auto px-0 pe-sm-2">
         <div class="ew-basic-search input-group">
@@ -273,10 +132,6 @@ $Page->showMessage();
 <?php if ($Page->IsModal) { ?>
 <input type="hidden" name="modal" value="1">
 <?php } ?>
-<?php if ($Page->getCurrentMasterTable() == "users" && $Page->CurrentAction) { ?>
-<input type="hidden" name="<?= Config("TABLE_SHOW_MASTER") ?>" value="users">
-<input type="hidden" name="fk_user_id" value="<?= HtmlEncode($Page->user->getSessionValue()) ?>">
-<?php } ?>
 <div id="gmp_aggregated_audit_logs" class="card-body ew-grid-middle-panel <?= $Page->TableContainerClass ?>" style="<?= $Page->TableContainerStyle ?>">
 <?php if ($Page->TotalRecords > 0 || $Page->isGridEdit() || $Page->isMultiEdit()) { ?>
 <table id="tbl_aggregated_audit_logslist" class="<?= $Page->TableClass ?>"><!-- .ew-table -->
@@ -295,20 +150,20 @@ $Page->ListOptions->render("header", "left");
 <?php if ($Page->aggregated_id->Visible) { // aggregated_id ?>
         <th data-name="aggregated_id" class="<?= $Page->aggregated_id->headerCellClass() ?>"><div id="elh_aggregated_audit_logs_aggregated_id" class="aggregated_audit_logs_aggregated_id"><?= $Page->renderFieldHeader($Page->aggregated_id) ?></div></th>
 <?php } ?>
-<?php if ($Page->action_date->Visible) { // action_date ?>
-        <th data-name="action_date" class="<?= $Page->action_date->headerCellClass() ?>"><div id="elh_aggregated_audit_logs_action_date" class="aggregated_audit_logs_action_date"><?= $Page->renderFieldHeader($Page->action_date) ?></div></th>
-<?php } ?>
 <?php if ($Page->script->Visible) { // script ?>
         <th data-name="script" class="<?= $Page->script->headerCellClass() ?>"><div id="elh_aggregated_audit_logs_script" class="aggregated_audit_logs_script"><?= $Page->renderFieldHeader($Page->script) ?></div></th>
 <?php } ?>
 <?php if ($Page->user->Visible) { // user ?>
         <th data-name="user" class="<?= $Page->user->headerCellClass() ?>"><div id="elh_aggregated_audit_logs_user" class="aggregated_audit_logs_user"><?= $Page->renderFieldHeader($Page->user) ?></div></th>
 <?php } ?>
+<?php if ($Page->_action->Visible) { // action ?>
+        <th data-name="_action" class="<?= $Page->_action->headerCellClass() ?>"><div id="elh_aggregated_audit_logs__action" class="aggregated_audit_logs__action"><?= $Page->renderFieldHeader($Page->_action) ?></div></th>
+<?php } ?>
 <?php if ($Page->_table->Visible) { // table ?>
         <th data-name="_table" class="<?= $Page->_table->headerCellClass() ?>"><div id="elh_aggregated_audit_logs__table" class="aggregated_audit_logs__table"><?= $Page->renderFieldHeader($Page->_table) ?></div></th>
 <?php } ?>
-<?php if ($Page->action_type->Visible) { // action_type ?>
-        <th data-name="action_type" class="<?= $Page->action_type->headerCellClass() ?>"><div id="elh_aggregated_audit_logs_action_type" class="aggregated_audit_logs_action_type"><?= $Page->renderFieldHeader($Page->action_type) ?></div></th>
+<?php if ($Page->action_count->Visible) { // action_count ?>
+        <th data-name="action_count" class="<?= $Page->action_count->headerCellClass() ?>"><div id="elh_aggregated_audit_logs_action_count" class="aggregated_audit_logs_action_count"><?= $Page->renderFieldHeader($Page->action_count) ?></div></th>
 <?php } ?>
 <?php
 // Render list options (header, right)
@@ -346,14 +201,6 @@ $Page->ListOptions->render("body", "left", $Page->RowCount);
 </span>
 </td>
     <?php } ?>
-    <?php if ($Page->action_date->Visible) { // action_date ?>
-        <td data-name="action_date"<?= $Page->action_date->cellAttributes() ?>>
-<span id="el<?= $Page->RowIndex == '$rowindex$' ? '$rowindex$' : $Page->RowCount ?>_aggregated_audit_logs_action_date" class="el_aggregated_audit_logs_action_date">
-<span<?= $Page->action_date->viewAttributes() ?>>
-<?= $Page->action_date->getViewValue() ?></span>
-</span>
-</td>
-    <?php } ?>
     <?php if ($Page->script->Visible) { // script ?>
         <td data-name="script"<?= $Page->script->cellAttributes() ?>>
 <span id="el<?= $Page->RowIndex == '$rowindex$' ? '$rowindex$' : $Page->RowCount ?>_aggregated_audit_logs_script" class="el_aggregated_audit_logs_script">
@@ -370,6 +217,14 @@ $Page->ListOptions->render("body", "left", $Page->RowCount);
 </span>
 </td>
     <?php } ?>
+    <?php if ($Page->_action->Visible) { // action ?>
+        <td data-name="_action"<?= $Page->_action->cellAttributes() ?>>
+<span id="el<?= $Page->RowIndex == '$rowindex$' ? '$rowindex$' : $Page->RowCount ?>_aggregated_audit_logs__action" class="el_aggregated_audit_logs__action">
+<span<?= $Page->_action->viewAttributes() ?>>
+<?= $Page->_action->getViewValue() ?></span>
+</span>
+</td>
+    <?php } ?>
     <?php if ($Page->_table->Visible) { // table ?>
         <td data-name="_table"<?= $Page->_table->cellAttributes() ?>>
 <span id="el<?= $Page->RowIndex == '$rowindex$' ? '$rowindex$' : $Page->RowCount ?>_aggregated_audit_logs__table" class="el_aggregated_audit_logs__table">
@@ -378,11 +233,11 @@ $Page->ListOptions->render("body", "left", $Page->RowCount);
 </span>
 </td>
     <?php } ?>
-    <?php if ($Page->action_type->Visible) { // action_type ?>
-        <td data-name="action_type"<?= $Page->action_type->cellAttributes() ?>>
-<span id="el<?= $Page->RowIndex == '$rowindex$' ? '$rowindex$' : $Page->RowCount ?>_aggregated_audit_logs_action_type" class="el_aggregated_audit_logs_action_type">
-<span<?= $Page->action_type->viewAttributes() ?>>
-<?= $Page->action_type->getViewValue() ?></span>
+    <?php if ($Page->action_count->Visible) { // action_count ?>
+        <td data-name="action_count"<?= $Page->action_count->cellAttributes() ?>>
+<span id="el<?= $Page->RowIndex == '$rowindex$' ? '$rowindex$' : $Page->RowCount ?>_aggregated_audit_logs_action_count" class="el_aggregated_audit_logs_action_count">
+<span<?= $Page->action_count->viewAttributes() ?>>
+<?= $Page->action_count->getViewValue() ?></span>
 </span>
 </td>
     <?php } ?>

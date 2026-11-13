@@ -133,6 +133,8 @@ class NotificationsEdit extends Notifications
         $this->is_read->setVisibility();
         $this->created_at->setVisibility();
         $this->read_users->setVisibility();
+        $this->sender_id->setVisibility();
+        $this->event_key->setVisibility();
     }
 
     // Constructor
@@ -837,6 +839,26 @@ class NotificationsEdit extends Notifications
                 $this->read_users->setFormValue($val);
             }
         }
+
+        // Check field name 'sender_id' first before field var 'x_sender_id'
+        $val = $CurrentForm->hasValue("sender_id") ? $CurrentForm->getValue("sender_id") : $CurrentForm->getValue("x_sender_id");
+        if (!$this->sender_id->IsDetailKey) {
+            if (IsApi() && $val === null) {
+                $this->sender_id->Visible = false; // Disable update for API request
+            } else {
+                $this->sender_id->setFormValue($val, true, $validate);
+            }
+        }
+
+        // Check field name 'event_key' first before field var 'x_event_key'
+        $val = $CurrentForm->hasValue("event_key") ? $CurrentForm->getValue("event_key") : $CurrentForm->getValue("x_event_key");
+        if (!$this->event_key->IsDetailKey) {
+            if (IsApi() && $val === null) {
+                $this->event_key->Visible = false; // Disable update for API request
+            } else {
+                $this->event_key->setFormValue($val);
+            }
+        }
     }
 
     // Restore form values
@@ -857,6 +879,8 @@ class NotificationsEdit extends Notifications
         $this->created_at->CurrentValue = $this->created_at->FormValue;
         $this->created_at->CurrentValue = UnFormatDateTime($this->created_at->CurrentValue, $this->created_at->formatPattern());
         $this->read_users->CurrentValue = $this->read_users->FormValue;
+        $this->sender_id->CurrentValue = $this->sender_id->FormValue;
+        $this->event_key->CurrentValue = $this->event_key->FormValue;
     }
 
     /**
@@ -909,6 +933,8 @@ class NotificationsEdit extends Notifications
         $this->is_read->setDbValue((ConvertToBool($row['is_read']) ? "1" : "0"));
         $this->created_at->setDbValue($row['created_at']);
         $this->read_users->setDbValue($row['read_users']);
+        $this->sender_id->setDbValue($row['sender_id']);
+        $this->event_key->setDbValue($row['event_key']);
     }
 
     // Return a row with default values
@@ -927,6 +953,8 @@ class NotificationsEdit extends Notifications
         $row['is_read'] = $this->is_read->DefaultValue;
         $row['created_at'] = $this->created_at->DefaultValue;
         $row['read_users'] = $this->read_users->DefaultValue;
+        $row['sender_id'] = $this->sender_id->DefaultValue;
+        $row['event_key'] = $this->event_key->DefaultValue;
         return $row;
     }
 
@@ -997,6 +1025,12 @@ class NotificationsEdit extends Notifications
         // read_users
         $this->read_users->RowCssClass = "row";
 
+        // sender_id
+        $this->sender_id->RowCssClass = "row";
+
+        // event_key
+        $this->event_key->RowCssClass = "row";
+
         // View row
         if ($this->RowType == RowType::VIEW) {
             // id
@@ -1042,6 +1076,13 @@ class NotificationsEdit extends Notifications
             // read_users
             $this->read_users->ViewValue = $this->read_users->CurrentValue;
 
+            // sender_id
+            $this->sender_id->ViewValue = $this->sender_id->CurrentValue;
+            $this->sender_id->ViewValue = FormatNumber($this->sender_id->ViewValue, $this->sender_id->formatPattern());
+
+            // event_key
+            $this->event_key->ViewValue = $this->event_key->CurrentValue;
+
             // id
             $this->id->HrefValue = "";
 
@@ -1077,6 +1118,12 @@ class NotificationsEdit extends Notifications
 
             // read_users
             $this->read_users->HrefValue = "";
+
+            // sender_id
+            $this->sender_id->HrefValue = "";
+
+            // event_key
+            $this->event_key->HrefValue = "";
         } elseif ($this->RowType == RowType::EDIT) {
             // id
             $this->id->setupEditAttributes();
@@ -1158,6 +1205,22 @@ class NotificationsEdit extends Notifications
             $this->read_users->EditValue = HtmlEncode($this->read_users->CurrentValue);
             $this->read_users->PlaceHolder = RemoveHtml($this->read_users->caption());
 
+            // sender_id
+            $this->sender_id->setupEditAttributes();
+            $this->sender_id->EditValue = $this->sender_id->CurrentValue;
+            $this->sender_id->PlaceHolder = RemoveHtml($this->sender_id->caption());
+            if (strval($this->sender_id->EditValue) != "" && is_numeric($this->sender_id->EditValue)) {
+                $this->sender_id->EditValue = FormatNumber($this->sender_id->EditValue, null);
+            }
+
+            // event_key
+            $this->event_key->setupEditAttributes();
+            if (!$this->event_key->Raw) {
+                $this->event_key->CurrentValue = HtmlDecode($this->event_key->CurrentValue);
+            }
+            $this->event_key->EditValue = HtmlEncode($this->event_key->CurrentValue);
+            $this->event_key->PlaceHolder = RemoveHtml($this->event_key->caption());
+
             // Edit refer script
 
             // id
@@ -1195,6 +1258,12 @@ class NotificationsEdit extends Notifications
 
             // read_users
             $this->read_users->HrefValue = "";
+
+            // sender_id
+            $this->sender_id->HrefValue = "";
+
+            // event_key
+            $this->event_key->HrefValue = "";
         }
         if ($this->RowType == RowType::ADD || $this->RowType == RowType::EDIT || $this->RowType == RowType::SEARCH) { // Add/Edit/Search row
             $this->setupFieldTitles();
@@ -1285,6 +1354,19 @@ class NotificationsEdit extends Notifications
                     $this->read_users->addErrorMessage(str_replace("%s", $this->read_users->caption(), $this->read_users->RequiredErrorMessage));
                 }
             }
+            if ($this->sender_id->Visible && $this->sender_id->Required) {
+                if (!$this->sender_id->IsDetailKey && EmptyValue($this->sender_id->FormValue)) {
+                    $this->sender_id->addErrorMessage(str_replace("%s", $this->sender_id->caption(), $this->sender_id->RequiredErrorMessage));
+                }
+            }
+            if (!CheckInteger($this->sender_id->FormValue)) {
+                $this->sender_id->addErrorMessage($this->sender_id->getErrorMessage(false));
+            }
+            if ($this->event_key->Visible && $this->event_key->Required) {
+                if (!$this->event_key->IsDetailKey && EmptyValue($this->event_key->FormValue)) {
+                    $this->event_key->addErrorMessage(str_replace("%s", $this->event_key->caption(), $this->event_key->RequiredErrorMessage));
+                }
+            }
 
         // Return validate result
         $validateForm = $validateForm && !$this->hasInvalidFields();
@@ -1337,6 +1419,24 @@ class NotificationsEdit extends Notifications
             if ($rsChk->fetch()) {
                 $idxErrMsg = str_replace("%f", $this->id->caption(), $Language->phrase("DupIndex"));
                 $idxErrMsg = str_replace("%v", $this->id->CurrentValue, $idxErrMsg);
+                $this->setFailureMessage($idxErrMsg);
+                return false;
+            }
+        }
+
+        // Check field with unique index (event_key)
+        if ($this->event_key->CurrentValue != "") {
+            $filterChk = "(\"event_key\" = '" . AdjustSql($this->event_key->CurrentValue, $this->Dbid) . "')";
+            $filterChk .= " AND NOT (" . $filter . ")";
+            $this->CurrentFilter = $filterChk;
+            $sqlChk = $this->getCurrentSql();
+            $rsChk = $conn->executeQuery($sqlChk);
+            if (!$rsChk) {
+                return false;
+            }
+            if ($rsChk->fetch()) {
+                $idxErrMsg = str_replace("%f", $this->event_key->caption(), $Language->phrase("DupIndex"));
+                $idxErrMsg = str_replace("%v", $this->event_key->CurrentValue, $idxErrMsg);
                 $this->setFailureMessage($idxErrMsg);
                 return false;
             }
@@ -1444,6 +1544,12 @@ class NotificationsEdit extends Notifications
 
         // read_users
         $this->read_users->setDbValueDef($rsnew, $this->read_users->CurrentValue, $this->read_users->ReadOnly);
+
+        // sender_id
+        $this->sender_id->setDbValueDef($rsnew, $this->sender_id->CurrentValue, $this->sender_id->ReadOnly);
+
+        // event_key
+        $this->event_key->setDbValueDef($rsnew, $this->event_key->CurrentValue, $this->event_key->ReadOnly);
         return $rsnew;
     }
 
@@ -1488,6 +1594,12 @@ class NotificationsEdit extends Notifications
         }
         if (isset($row['read_users'])) { // read_users
             $this->read_users->CurrentValue = $row['read_users'];
+        }
+        if (isset($row['sender_id'])) { // sender_id
+            $this->sender_id->CurrentValue = $row['sender_id'];
+        }
+        if (isset($row['event_key'])) { // event_key
+            $this->event_key->CurrentValue = $row['event_key'];
         }
     }
 

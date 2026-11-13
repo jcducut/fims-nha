@@ -443,6 +443,10 @@
 
   // Theme functions
   function applyTheme(theme, mode) {
+    if (!themes[theme] || !themes[theme][mode]) {
+      theme = "blue";
+      mode = mode === "dark" ? "dark" : "light";
+    }
     const selectedTheme = themes[theme][mode];
 
     for (const property in selectedTheme) {
@@ -518,19 +522,34 @@
     applyTheme(currentTheme, currentMode);
   }
 
-  function handleModeChange(toggle) {
-    if (toggle.checked) {
-      document.documentElement.setAttribute("data-bs-theme", "dark");
-      document.getElementById("mode-label").textContent = "Dark";
-      currentMode = "dark";
-    } else {
-      document.documentElement.setAttribute("data-bs-theme", "light");
-      document.getElementById("mode-label").textContent = "Light";
-      currentMode = "light";
-    }
-
-    applyTheme(currentTheme, currentMode);
+  // One source of truth: PHPMaker's own colour-mode switcher (localStorage "theme" + ew.setTheme).
+  // Both the navbar dropdown and this panel go through applyMode(), and each reacts to the
+  // "changetheme" event that ew.setTheme() fires, so they never disagree.
+  function applyMode(mode) {
+    mode = mode === "dark" ? "dark" : "light";
+    currentMode = mode;
+    document.documentElement.setAttribute("data-bs-theme", mode);
+    const toggle = document.getElementById("theme-mode-toggle");
+    const label = document.getElementById("mode-label");
+    if (toggle) toggle.checked = mode === "dark";
+    if (label) label.textContent = mode === "dark" ? "Dark" : "Light";
+    applyTheme(currentTheme, mode);
   }
+
+  function handleModeChange(toggle) {
+    const mode = toggle.checked ? "dark" : "light";
+    if (window.ew && ew.setStoredTheme && ew.setTheme) {
+      ew.setStoredTheme(mode);          // same key the navbar dropdown uses
+      ew.setTheme(mode);                // fires "changetheme" -> applyMode()
+      if (ew.showActiveTheme) ew.showActiveTheme(mode); // highlight Light/Dark in the navbar dropdown
+    }
+    applyMode(mode);
+  }
+
+  // Navbar dropdown (or anything else) changed the mode -> follow it.
+  document.addEventListener("changetheme", (e) => {
+    if (initializationComplete) applyMode(e.detail);
+  });
 
   // Font functions
   function handleFontSizeChange(button) {
@@ -579,13 +598,16 @@
 
   function loadSavedPreferences() {
     // Load theme preferences
-    const savedTheme = localStorage.getItem("phpmaker-theme") || "blue";
-    const savedMode =
-      localStorage.getItem("phpmaker-mode") ||
-      (window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light");
+    let savedTheme = localStorage.getItem("phpmaker-theme");
+    if (!themes[savedTheme]) savedTheme = "blue";   // empty/stale value -> the only defined theme
+    // Light is the default; dark only when the user switched it (saved in localStorage).
+    let savedMode = localStorage.getItem("theme") || localStorage.getItem("phpmaker-mode");
+    if (savedMode !== "light" && savedMode !== "dark") savedMode = "light";
+    // Nothing chosen yet: make PHPMaker's switcher agree with our light default (it would follow the OS).
+    if (!localStorage.getItem("theme") && window.ew && ew.setTheme) {
+      ew.setTheme(savedMode);
+      if (ew.showActiveTheme) ew.showActiveTheme(savedMode);
+    }
 
     currentTheme = savedTheme;
     currentMode = savedMode;
@@ -937,7 +959,10 @@
   const AFIMS_DARK_MODULES = ["UAC", "ACCOUNTING", "ACCOUNTING-BAPD", "GSD", "ACCOUNTING-DCD", "ACCOUNTING-GAD", "FMD", "TREASURY", "REGIONAL"];
   (function markDarkReady() {
     const module = (location.pathname.split("/")[1] || "").toUpperCase();
-    if (AFIMS_DARK_MODULES.includes(module)) document.documentElement.classList.add("afims-dark");
+    // The FIMS app itself is served from the site root (no module folder in the path), so the
+    // first path segment is a page name, not a module: it always gets the AFIMS dark palette.
+    const isModuleFolder = /^(UAC|DOCUMENT|ACCOUNTING|ACCOUNTING-BAPD|GSD|ACCOUNTING-DCD|ACCOUNTING-GAD|FMD|TREASURY|REGIONAL|DISTRICT)$/.test(module);
+    if (!isModuleFolder || AFIMS_DARK_MODULES.includes(module)) document.documentElement.classList.add("afims-dark");
   })();
 
   // Stylesheet URL with the file's modified time as ?v= (via _shared/afims-asset.php),

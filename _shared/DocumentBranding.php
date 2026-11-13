@@ -394,65 +394,190 @@ class DocumentBranding
         // A half-configured letterhead would print as a lone line of text on an
         // official document — worse than the old banner. Same rule as the DOCX.
         if ($usable && ($expected === 0 || count($usable) >= $expected)) {
-            $totalPct = 0.0;
-            foreach ($usable as $p) {
-                $totalPct += (float) ($p['column_pct'] ?? 0);
-            }
-            if ($totalPct <= 0) {
-                $totalPct = count($usable);
-            }
-
-            // px -> pt, so the parts sit at the same relative size as in the DOCX.
-            $scale = $widthPt / 630.0;
-
-            $cells = '';
-            foreach ($usable as $p) {
-                $pct   = (float) ($p['column_pct'] ?? (100 / count($usable)));
-                $wPct  = ($pct / $totalPct) * 100;
-                $align = strtolower((string) ($p['align'] ?? 'center'));
-                $align = in_array($align, ['left', 'right', 'center'], true) ? $align : 'center';
-
-                if (($p['kind'] ?? '') === 'text') {
-                    $t    = $p['text'] ?? [];
-                    $font = htmlspecialchars((string) ($t['font'] ?? 'Arial'), ENT_QUOTES);
-                    $body = '';
-                    foreach ([1, 2] as $i) {
-                        $line = (string) ($t["line{$i}"] ?? '');
-                        if ($line === '') continue;
-                        $size  = (float) ($t["line{$i}_size_pt"] ?? ($i === 1 ? 16 : 9)) * $scale;
-                        $bold  = !empty($t["line{$i}_bold"]) ? 'bold' : 'normal';
-                        $color = preg_replace('/[^0-9A-Fa-f]/', '', (string) ($t["line{$i}_color"] ?? '000000'));
-                        $color = strlen($color) === 6 ? $color : '000000';
-                        $body .= '<div style="font-family:' . $font . ',sans-serif;'
-                               . 'font-size:' . round($size, 2) . 'pt;font-weight:' . $bold . ';'
-                               . 'color:#' . $color . ';line-height:1.15;">'
-                               . htmlspecialchars($line, ENT_QUOTES) . '</div>';
-                    }
-                    $inner = $body;
-                } else {
-                    $src = self::dataUri($p['file'], $p['mime'] ?? null);
-                    if ($src === null) {
-                        $inner = '';
-                    } else {
-                        $w = (float) ($p['render']['width']  ?? 60) * $scale;
-                        $h = (float) ($p['render']['height'] ?? 60) * $scale;
-                        $inner = '<img src="' . $src . '" style="width:' . round($w, 2) . 'pt;'
-                               . 'height:' . round($h, 2) . 'pt;" alt="">';
-                    }
-                }
-
-                $cells .= '<td style="width:' . round($wPct, 3) . '%;text-align:' . $align . ';'
-                        . 'vertical-align:middle;padding:0 2pt;">' . $inner . '</td>';
-            }
-
-            return '<table style="width:' . $widthPt . 'pt;border-collapse:collapse;'
-                 . 'margin:0 auto;border:0;"><tr>' . $cells . '</tr></table>';
+            return self::composeHeaderHtml($usable, $widthPt);
         }
 
         // ── 3. The caller's own static image ────────────────────────────────
         return $fallbackSrc
             ? '<img src="' . $fallbackSrc . '" style="width:' . $widthPt . 'pt;" alt="">'
             : '';
+    }
+
+    /**
+     * Lay out letterhead parts in one row (the composed letterhead).
+     *
+     * Used by headerHtml() for the UAC-published parts, and directly by callers
+     * that build the parts themselves (e.g. a per-print header edited in a
+     * preview). Each part: kind 'text' with text{line1, line2, font, line{n}_size_pt,
+     * line{n}_bold, line{n}_color}, or an image with either 'src' (data URI) or
+     * 'file' (in the branding mirror) plus render{width, height} in px at a
+     * 630 px wide letterhead; column_pct and align as in the manifest.
+     *
+     * @param array $parts    left to right
+     * @param float $widthPt  total width in points
+     */
+    public static function composeHeaderHtml(array $parts, float $widthPt): string
+    {
+        $usable = array_values($parts);
+        if (!$usable) {
+            return '';
+        }
+        if (self::isPlaced($usable)) {
+            return self::composePlacedHeaderHtml($usable, $widthPt);
+        }
+
+        $totalPct = 0.0;
+        foreach ($usable as $p) {
+            $totalPct += (float) ($p['column_pct'] ?? 0);
+        }
+        if ($totalPct <= 0) {
+            $totalPct = count($usable);
+        }
+
+        // px -> pt, so the parts sit at the same relative size as in the DOCX.
+        $scale = $widthPt / 630.0;
+
+        $cells = '';
+        foreach ($usable as $p) {
+            $pct   = (float) ($p['column_pct'] ?? (100 / count($usable)));
+            $wPct  = ($pct / $totalPct) * 100;
+            $align = strtolower((string) ($p['align'] ?? 'center'));
+            $align = in_array($align, ['left', 'right', 'center'], true) ? $align : 'center';
+
+            if (($p['kind'] ?? '') === 'text') {
+                $t    = $p['text'] ?? [];
+                $font = htmlspecialchars((string) ($t['font'] ?? 'Arial'), ENT_QUOTES);
+                $body = '';
+                foreach ([1, 2] as $i) {
+                    $line = (string) ($t["line{$i}"] ?? '');
+                    if ($line === '') continue;
+                    $size  = (float) ($t["line{$i}_size_pt"] ?? ($i === 1 ? 16 : 9)) * $scale;
+                    $bold  = !empty($t["line{$i}_bold"]) ? 'bold' : 'normal';
+                    $color = preg_replace('/[^0-9A-Fa-f]/', '', (string) ($t["line{$i}_color"] ?? '000000'));
+                    $color = strlen($color) === 6 ? $color : '000000';
+                    $body .= '<div style="font-family:' . $font . ',sans-serif;'
+                           . 'font-size:' . round($size, 2) . 'pt;font-weight:' . $bold . ';'
+                           . 'color:#' . $color . ';line-height:1.15;">'
+                           . htmlspecialchars($line, ENT_QUOTES) . '</div>';
+                }
+                $inner = $body;
+            } else {
+                // 'src' = data URI handed in by the caller; 'file' = mirror file.
+                $src = isset($p['src'])
+                    ? (preg_match('#^data:image/(png|jpe?g);base64,[A-Za-z0-9+/=]+$#', (string) $p['src']) ? $p['src'] : null)
+                    : (!empty($p['file']) ? self::dataUri($p['file'], $p['mime'] ?? null) : null);
+                if ($src === null) {
+                    $inner = '';
+                } else {
+                    $w = (float) ($p['render']['width']  ?? 60) * $scale;
+                    $h = (float) ($p['render']['height'] ?? 60) * $scale;
+                    $inner = '<img src="' . $src . '" style="width:' . round($w, 2) . 'pt;'
+                           . 'height:' . round($h, 2) . 'pt;" alt="">';
+                }
+            }
+
+            $cells .= '<td style="width:' . round($wPct, 3) . '%;text-align:' . $align . ';'
+                    . 'vertical-align:middle;padding:0 2pt;">' . $inner . '</td>';
+        }
+
+        return '<table style="width:' . $widthPt . 'pt;border-collapse:collapse;'
+             . 'margin:0 auto;border:0;"><tr>' . $cells . '</tr></table>';
+    }
+
+    /**
+     * True when every part carries a position (x, y) — a freely placed
+     * letterhead instead of a row of columns.
+     */
+    public static function isPlaced(array $parts): bool
+    {
+        foreach ($parts as $p) {
+            if (!is_numeric($p['x'] ?? null) || !is_numeric($p['y'] ?? null)) {
+                return false;
+            }
+        }
+
+        return (bool) $parts;
+    }
+
+    /** A placed part's [width, height] in px at a 630 px letterhead. */
+    public static function placedSize(array $p): array
+    {
+        if (($p['kind'] ?? '') === 'text') {
+            $t = $p['text'] ?? [];
+            $h = 0.0;
+            foreach ([1, 2] as $i) {
+                if ((string) ($t["line{$i}"] ?? '') !== '') {
+                    $h += (float) ($t["line{$i}_size_pt"] ?? ($i === 1 ? 16 : 9)) * 1.15;
+                }
+            }
+
+            return [(float) ($p['box_width'] ?? 300), $h];
+        }
+
+        return [(float) ($p['render']['width'] ?? 60), (float) ($p['render']['height'] ?? 60)];
+    }
+
+    /** Height (px at a 630 px letterhead) a placed letterhead needs: its lowest bottom edge. */
+    public static function placedHeight(array $parts): float
+    {
+        $h = 0.0;
+        foreach ($parts as $p) {
+            $h = max($h, (float) $p['y'] + self::placedSize($p)[1]);
+        }
+
+        return $h;
+    }
+
+    /**
+     * Placed parts → a box $widthPt wide, each part absolutely positioned at
+     * its x / y (px at a 630 px letterhead, scaled to $widthPt). Titles sit in
+     * a box_width wide box with their align; lines never wrap, so the height
+     * is exactly placedHeight().
+     */
+    private static function composePlacedHeaderHtml(array $parts, float $widthPt): string
+    {
+        $scale = $widthPt / 630.0;
+        $pt    = static fn (float $v): string => round($v * $scale, 2) . 'pt';
+        $items = '';
+
+        foreach ($parts as $p) {
+            $style = 'position:absolute;left:' . $pt((float) $p['x']) . ';top:' . $pt((float) $p['y']) . ';';
+
+            if (($p['kind'] ?? '') === 'text') {
+                $t     = $p['text'] ?? [];
+                $font  = htmlspecialchars((string) ($t['font'] ?? 'Arial'), ENT_QUOTES);
+                $align = in_array($p['align'] ?? '', ['left', 'right', 'center'], true) ? $p['align'] : 'center';
+                $body  = '';
+                foreach ([1, 2] as $i) {
+                    $line = (string) ($t["line{$i}"] ?? '');
+                    if ($line === '') continue;
+                    $size  = (float) ($t["line{$i}_size_pt"] ?? ($i === 1 ? 16 : 9)) * $scale;
+                    $bold  = !empty($t["line{$i}_bold"]) ? 'bold' : 'normal';
+                    $color = preg_replace('/[^0-9A-Fa-f]/', '', (string) ($t["line{$i}_color"] ?? '000000'));
+                    $color = strlen($color) === 6 ? $color : '000000';
+                    $body .= '<div style="font-family:' . $font . ',sans-serif;'
+                           . 'font-size:' . round($size, 2) . 'pt;font-weight:' . $bold . ';'
+                           . 'color:#' . $color . ';line-height:1.15;white-space:nowrap;">'
+                           . htmlspecialchars($line, ENT_QUOTES) . '</div>';
+                }
+                $items .= '<div style="' . $style . 'width:' . $pt((float) ($p['box_width'] ?? 300)) . ';'
+                        . 'text-align:' . $align . ';">' . $body . '</div>';
+                continue;
+            }
+
+            $src = isset($p['src'])
+                ? (preg_match('#^data:image/(png|jpe?g);base64,[A-Za-z0-9+/=]+$#', (string) $p['src']) ? $p['src'] : null)
+                : (!empty($p['file']) ? self::dataUri($p['file'], $p['mime'] ?? null) : null);
+            if ($src === null) {
+                continue;
+            }
+            [$w, $h] = self::placedSize($p);
+            $items  .= '<div style="' . $style . '"><img src="' . $src . '" style="display:block;'
+                     . 'width:' . $pt($w) . ';height:' . $pt($h) . ';" alt=""></div>';
+        }
+
+        return '<div style="position:relative;width:' . $widthPt . 'pt;height:'
+             . $pt(self::placedHeight($parts)) . ';margin:0 auto;">' . $items . '</div>';
     }
 
     /**

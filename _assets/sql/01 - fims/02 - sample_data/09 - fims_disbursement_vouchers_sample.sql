@@ -1,0 +1,60 @@
+-- ============================================================================
+-- Disbursement Vouchers — sample data, all at FOR_TREASURY so every row
+-- shows up in the Check Disbursement Voucher module's "Prepare Check"
+-- modal (DV Number dropdown reads only FOR_TREASURY rows — see
+-- CheckProcessingService::getDvsForPrep()).
+--
+-- FOR_TREASURY means the DV has already passed Originating -> FMD ->
+-- Accounting, so submitted_by/at, fmd_approved_by/at, and
+-- accounting_processed_by/at are all populated for every row;
+-- treasury_released_by/at stay NULL until a check is actually prepared
+-- against it (CheckProcessingService::saveCheck() sets those via
+-- DisbursementVoucherService::changeStatus()).
+--
+-- status_id is looked up by name from fims.settings_status rather than
+-- hardcoded, since seed insert order (and therefore the id each status
+-- lands on) isn't guaranteed stable across environments — same reasoning as
+-- DisbursementVoucherService::getStatusIdByName().
+--
+-- Every row is a single full payment against its own obligation (no
+-- partial/prior payments), so budget_amount = obligation_amount = net_amount
+-- and balance_amount = 0 throughout.
+--
+-- No vendor_id on any row (fims.vendors has no sample data yet) — claimant
+-- is free text throughout, same as a payroll-group claimant with no
+-- registered vendor record.
+-- ============================================================================
+
+-- INSERT INTO fims.disbursement_vouchers
+--     (dv_no, dv_date, fiscal_yr, expense_class, status_id,
+--      requesting_department_id, dept_project, fund_source,
+--      claimant_name, claimant_address, employee_no_tin,
+--      particulars, gross_amount, net_amount,
+--      account_code, budget_amount, obligation_amount, balance_amount,
+--      created_by, submitted_by, submitted_at,
+--      fmd_approved_by, fmd_approved_at,
+--      accounting_processed_by, accounting_processed_at,
+--      remarks)
+-- SELECT
+--     v.dv_no, v.dv_date::date, v.fiscal_yr, v.expense_class, st.id,
+--     v.requesting_department_id, v.dept_project, v.fund_source,
+--     v.claimant_name, v.claimant_address, v.employee_no_tin,
+--     v.particulars, v.amount, v.amount,
+--     v.account_code, v.amount, v.amount, 0,
+--     v.created_by, v.submitted_by, v.submitted_at::timestamp,
+--     v.fmd_approved_by, v.fmd_approved_at::timestamp,
+--     v.accounting_processed_by, v.accounting_processed_at::timestamp,
+--     v.remarks
+-- FROM (VALUES
+--     -- dv_no,          dv_date,      fiscal_yr, expense_class, dept_id, dept_project,                           fund_source,    claimant_name,                     claimant_address,                    employee_no_tin,   particulars,                                                                amount,    created_by, submitted_by, submitted_at,          fmd_approved_by, fmd_approved_at,       accounting_processed_by, accounting_processed_at, account_code,  remarks
+--     ('DV-2026-00001', '2026-11-03', 2026, 'MOOE', 955, 'Planning Division - Office Supplies',  'General Fund', 'Maria Santos',                    NULL::text,                           NULL::text,         'Payment for office supplies, Q4 2026',                                    15500.00,  2,          2,            '2026-11-01 09:00:00', 3,               '2026-11-02 10:00:00', 4,                       '2026-11-02 15:00:00',  '5-01-01-020', 'Ready for check preparation'),
+--     ('DV-2026-00002', '2026-11-02', 2026, 'MOOE', 956, 'Fund Management Division - Training',  'General Fund', 'PHINMA Training Institute',       '123 Katipunan Ave, Quezon City',    NULL::text,         'Training fees for 10 staff, Financial Mgmt seminar',                      42000.00,  2,          2,            '2026-10-30 09:00:00', 3,               '2026-10-31 10:00:00', 4,                       '2026-11-01 15:00:00',  '5-02-17-010', 'Ready for check preparation'),
+--     ('DV-2026-00003', '2026-10-28', 2026, 'MOOE', 955, 'Planning Division - Utilities',        'General Fund', 'Manila Electric Company',         '1 Lopez Drive, Pasig City',          NULL::text,         'Electric bill, October 2026',                                             68250.75,  2,          2,            '2026-10-26 09:00:00', 3,               '2026-10-27 10:00:00', 4,                       '2026-10-27 15:00:00',  '5-01-01-020', 'Ready for check preparation'),
+--     ('DV-2026-00004', '2026-10-20', 2026, 'MOOE', 956, 'Fund Management Division - Supplies',  'General Fund', 'Juan Dela Cruz',                  NULL::text,                           '123-456-789-000',  'Reimbursement for approved travel expenses, Region 3 site visit',         8750.00,   2,          2,            '2026-10-20 08:30:00', 3,               '2026-10-21 11:00:00', 4,                       '2026-10-22 09:45:00',  '5-01-02-070', 'Ready for check preparation'),
+--     ('DV-2026-00005', '2026-10-18', 2026, 'MOOE', 955, 'Planning Division - Supplies',         'General Fund', 'ABC Construction Supplies',       '45 Industrial Rd, Caloocan City',    NULL::text,         'Payment for construction materials, PO# 2026-0045',                        125000.00, 2,          2,            '2026-10-18 13:20:00', 3,               '2026-10-19 10:00:00', 4,                       '2026-10-20 16:10:00',  '5-01-01-020', 'Ready for check preparation'),
+--     ('DV-2026-00006', '2026-10-15', 2026, 'MOOE', 956, 'Fund Management Division - Rent',      'General Fund', 'Ortigas Center Properties Inc.',  '789 Ortigas Ave, Pasig City',         NULL::text,         'Office rent, October 2026',                                               55000.00,  2,          2,            '2026-10-15 08:00:00', 3,               '2026-10-16 09:30:00', 4,                       '2026-10-17 11:20:00',  '5-01-01-020', 'Ready for check preparation'),
+--     ('DV-2026-00007', '2026-11-01', 2026, 'MOOE', 955, 'Planning Division - Equipment',        'General Fund', 'Office Depot Philippines',        '321 Shaw Blvd, Mandaluyong City',    NULL::text,         'Purchase of printers and scanners',                                       32000.00,  4,          4,            '2026-10-29 09:00:00', 3,               '2026-10-30 10:00:00', 4,                       '2026-10-30 15:00:00',  '5-01-01-020', 'Ready for check preparation'),
+--     ('DV-2026-00008', '2026-10-05', 2026, 'MOOE', 956, 'Fund Management Division - Travel',    'General Fund', 'Philippine Airlines',             NULL::text,                           NULL::text,         'Airfare for regional conference delegates',                               18500.00,  2,          2,            '2026-10-02 10:00:00', 3,               '2026-10-03 11:00:00', 4,                       '2026-10-03 16:00:00',  '5-01-01-020', 'Ready for check preparation')
+-- ) AS v(dv_no, dv_date, fiscal_yr, expense_class, requesting_department_id, dept_project, fund_source, claimant_name, claimant_address, employee_no_tin, particulars, amount, created_by, submitted_by, submitted_at, fmd_approved_by, fmd_approved_at, accounting_processed_by, accounting_processed_at, account_code, remarks)
+-- JOIN fims.settings_status st ON st.status_for = 'disbursement_voucher' AND st.name = 'FOR_TREASURY'
+-- WHERE NOT EXISTS (SELECT 1 FROM fims.disbursement_vouchers dv WHERE dv.dv_no = v.dv_no);

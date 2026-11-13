@@ -157,6 +157,8 @@ class NotificationsList extends Notifications
         $this->is_read->setVisibility();
         $this->created_at->setVisibility();
         $this->read_users->Visible = false;
+        $this->sender_id->setVisibility();
+        $this->event_key->setVisibility();
     }
 
     // Constructor
@@ -1062,6 +1064,8 @@ class NotificationsList extends Notifications
         $filterList = Concat($filterList, $this->is_read->AdvancedSearch->toJson(), ","); // Field is_read
         $filterList = Concat($filterList, $this->created_at->AdvancedSearch->toJson(), ","); // Field created_at
         $filterList = Concat($filterList, $this->read_users->AdvancedSearch->toJson(), ","); // Field read_users
+        $filterList = Concat($filterList, $this->sender_id->AdvancedSearch->toJson(), ","); // Field sender_id
+        $filterList = Concat($filterList, $this->event_key->AdvancedSearch->toJson(), ","); // Field event_key
         if ($this->BasicSearch->Keyword != "") {
             $wrk = "\"" . Config("TABLE_BASIC_SEARCH") . "\":\"" . JsEncode($this->BasicSearch->Keyword) . "\",\"" . Config("TABLE_BASIC_SEARCH_TYPE") . "\":\"" . JsEncode($this->BasicSearch->Type) . "\"";
             $filterList = Concat($filterList, $wrk, ",");
@@ -1196,6 +1200,22 @@ class NotificationsList extends Notifications
         $this->read_users->AdvancedSearch->SearchValue2 = @$filter["y_read_users"];
         $this->read_users->AdvancedSearch->SearchOperator2 = @$filter["w_read_users"];
         $this->read_users->AdvancedSearch->save();
+
+        // Field sender_id
+        $this->sender_id->AdvancedSearch->SearchValue = @$filter["x_sender_id"];
+        $this->sender_id->AdvancedSearch->SearchOperator = @$filter["z_sender_id"];
+        $this->sender_id->AdvancedSearch->SearchCondition = @$filter["v_sender_id"];
+        $this->sender_id->AdvancedSearch->SearchValue2 = @$filter["y_sender_id"];
+        $this->sender_id->AdvancedSearch->SearchOperator2 = @$filter["w_sender_id"];
+        $this->sender_id->AdvancedSearch->save();
+
+        // Field event_key
+        $this->event_key->AdvancedSearch->SearchValue = @$filter["x_event_key"];
+        $this->event_key->AdvancedSearch->SearchOperator = @$filter["z_event_key"];
+        $this->event_key->AdvancedSearch->SearchCondition = @$filter["v_event_key"];
+        $this->event_key->AdvancedSearch->SearchValue2 = @$filter["y_event_key"];
+        $this->event_key->AdvancedSearch->SearchOperator2 = @$filter["w_event_key"];
+        $this->event_key->AdvancedSearch->save();
         $this->BasicSearch->setKeyword(@$filter[Config("TABLE_BASIC_SEARCH")]);
         $this->BasicSearch->setType(@$filter[Config("TABLE_BASIC_SEARCH_TYPE")]);
     }
@@ -1243,6 +1263,7 @@ class NotificationsList extends Notifications
         $searchFlds[] = &$this->link;
         $searchFlds[] = &$this->from_system;
         $searchFlds[] = &$this->read_users;
+        $searchFlds[] = &$this->event_key;
         $searchKeyword = $default ? $this->BasicSearch->KeywordDefault : $this->BasicSearch->Keyword;
         $searchType = $default ? $this->BasicSearch->TypeDefault : $this->BasicSearch->Type;
 
@@ -1331,6 +1352,8 @@ class NotificationsList extends Notifications
             $this->updateSort($this->from_system); // from_system
             $this->updateSort($this->is_read); // is_read
             $this->updateSort($this->created_at); // created_at
+            $this->updateSort($this->sender_id); // sender_id
+            $this->updateSort($this->event_key); // event_key
             $this->setStartRecordNumber(1); // Reset start position
         }
 
@@ -1367,6 +1390,8 @@ class NotificationsList extends Notifications
                 $this->is_read->setSort("");
                 $this->created_at->setSort("");
                 $this->read_users->setSort("");
+                $this->sender_id->setSort("");
+                $this->event_key->setSort("");
             }
 
             // Reset start position
@@ -1592,6 +1617,8 @@ class NotificationsList extends Notifications
             $this->createColumnOption($option, "from_system");
             $this->createColumnOption($option, "is_read");
             $this->createColumnOption($option, "created_at");
+            $this->createColumnOption($option, "sender_id");
+            $this->createColumnOption($option, "event_key");
         }
 
         // Set up custom actions
@@ -2037,6 +2064,8 @@ class NotificationsList extends Notifications
         $this->is_read->setDbValue((ConvertToBool($row['is_read']) ? "1" : "0"));
         $this->created_at->setDbValue($row['created_at']);
         $this->read_users->setDbValue($row['read_users']);
+        $this->sender_id->setDbValue($row['sender_id']);
+        $this->event_key->setDbValue($row['event_key']);
     }
 
     // Return a row with default values
@@ -2055,6 +2084,8 @@ class NotificationsList extends Notifications
         $row['is_read'] = $this->is_read->DefaultValue;
         $row['created_at'] = $this->created_at->DefaultValue;
         $row['read_users'] = $this->read_users->DefaultValue;
+        $row['sender_id'] = $this->sender_id->DefaultValue;
+        $row['event_key'] = $this->event_key->DefaultValue;
         return $row;
     }
 
@@ -2119,6 +2150,10 @@ class NotificationsList extends Notifications
 
         // read_users
 
+        // sender_id
+
+        // event_key
+
         // View row
         if ($this->RowType == RowType::VIEW) {
             // id
@@ -2157,6 +2192,13 @@ class NotificationsList extends Notifications
             // created_at
             $this->created_at->ViewValue = $this->created_at->CurrentValue;
             $this->created_at->ViewValue = FormatDateTime($this->created_at->ViewValue, $this->created_at->formatPattern());
+
+            // sender_id
+            $this->sender_id->ViewValue = $this->sender_id->CurrentValue;
+            $this->sender_id->ViewValue = FormatNumber($this->sender_id->ViewValue, $this->sender_id->formatPattern());
+
+            // event_key
+            $this->event_key->ViewValue = $this->event_key->CurrentValue;
 
             // id
             $this->id->HrefValue = "";
@@ -2197,6 +2239,14 @@ class NotificationsList extends Notifications
             // created_at
             $this->created_at->HrefValue = "";
             $this->created_at->TooltipValue = "";
+
+            // sender_id
+            $this->sender_id->HrefValue = "";
+            $this->sender_id->TooltipValue = "";
+
+            // event_key
+            $this->event_key->HrefValue = "";
+            $this->event_key->TooltipValue = "";
         }
 
         // Call Row Rendered event

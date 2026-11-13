@@ -80,6 +80,12 @@ $Page->showMessage();
 <?php if ($Page->created_at->Visible) { // created_at ?>
         <th class="<?= $Page->created_at->headerCellClass() ?>"><span id="elh_notifications_created_at" class="notifications_created_at"><?= $Page->created_at->caption() ?></span></th>
 <?php } ?>
+<?php if ($Page->sender_id->Visible) { // sender_id ?>
+        <th class="<?= $Page->sender_id->headerCellClass() ?>"><span id="elh_notifications_sender_id" class="notifications_sender_id"><?= $Page->sender_id->caption() ?></span></th>
+<?php } ?>
+<?php if ($Page->event_key->Visible) { // event_key ?>
+        <th class="<?= $Page->event_key->headerCellClass() ?>"><span id="elh_notifications_event_key" class="notifications_event_key"><?= $Page->event_key->caption() ?></span></th>
+<?php } ?>
     </tr>
     </thead>
     <tbody>
@@ -179,6 +185,22 @@ while ($Page->fetch()) {
 <span id="">
 <span<?= $Page->created_at->viewAttributes() ?>>
 <?= $Page->created_at->getViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($Page->sender_id->Visible) { // sender_id ?>
+        <td<?= $Page->sender_id->cellAttributes() ?>>
+<span id="">
+<span<?= $Page->sender_id->viewAttributes() ?>>
+<?= $Page->sender_id->getViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($Page->event_key->Visible) { // event_key ?>
+        <td<?= $Page->event_key->cellAttributes() ?>>
+<span id="">
+<span<?= $Page->event_key->viewAttributes() ?>>
+<?= $Page->event_key->getViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

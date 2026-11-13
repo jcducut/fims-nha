@@ -39,7 +39,9 @@ loadjs.ready(["wrapper", "head"], function () {
             ["from_system", [fields.from_system.visible && fields.from_system.required ? ew.Validators.required(fields.from_system.caption) : null], fields.from_system.isInvalid],
             ["is_read", [fields.is_read.visible && fields.is_read.required ? ew.Validators.required(fields.is_read.caption) : null], fields.is_read.isInvalid],
             ["created_at", [fields.created_at.visible && fields.created_at.required ? ew.Validators.required(fields.created_at.caption) : null, ew.Validators.datetime(fields.created_at.clientFormatPattern)], fields.created_at.isInvalid],
-            ["read_users", [fields.read_users.visible && fields.read_users.required ? ew.Validators.required(fields.read_users.caption) : null], fields.read_users.isInvalid]
+            ["read_users", [fields.read_users.visible && fields.read_users.required ? ew.Validators.required(fields.read_users.caption) : null], fields.read_users.isInvalid],
+            ["sender_id", [fields.sender_id.visible && fields.sender_id.required ? ew.Validators.required(fields.sender_id.caption) : null, ew.Validators.integer], fields.sender_id.isInvalid],
+            ["event_key", [fields.event_key.visible && fields.event_key.required ? ew.Validators.required(fields.event_key.caption) : null], fields.event_key.isInvalid]
         ])
 
         // Form_CustomValidate
@@ -211,7 +213,7 @@ loadjs.ready(["fnotificationsedit", "datetimepicker"], function () {
         <label id="elh_notifications_from_system" for="x_from_system" class="<?= $Page->LeftColumnClass ?>"><?= $Page->from_system->caption() ?><?= $Page->from_system->Required ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
         <div class="<?= $Page->RightColumnClass ?>"><div<?= $Page->from_system->cellAttributes() ?>>
 <span id="el_notifications_from_system">
-<input type="<?= $Page->from_system->getInputTextType() ?>" name="x_from_system" id="x_from_system" data-table="notifications" data-field="x_from_system" value="<?= $Page->from_system->EditValue ?>" size="30" maxlength="20" placeholder="<?= HtmlEncode($Page->from_system->getPlaceHolder()) ?>" data-format-pattern="<?= HtmlEncode($Page->from_system->formatPattern()) ?>"<?= $Page->from_system->editAttributes() ?> aria-describedby="x_from_system_help">
+<input type="<?= $Page->from_system->getInputTextType() ?>" name="x_from_system" id="x_from_system" data-table="notifications" data-field="x_from_system" value="<?= $Page->from_system->EditValue ?>" size="30" maxlength="30" placeholder="<?= HtmlEncode($Page->from_system->getPlaceHolder()) ?>" data-format-pattern="<?= HtmlEncode($Page->from_system->formatPattern()) ?>"<?= $Page->from_system->editAttributes() ?> aria-describedby="x_from_system_help">
 <?= $Page->from_system->getCustomMessage() ?>
 <div class="invalid-feedback"><?= $Page->from_system->getErrorMessage() ?></div>
 </span>
@@ -281,6 +283,30 @@ loadjs.ready(["fnotificationsedit", "datetimepicker"], function () {
 <textarea data-table="notifications" data-field="x_read_users" name="x_read_users" id="x_read_users" cols="35" rows="4" placeholder="<?= HtmlEncode($Page->read_users->getPlaceHolder()) ?>"<?= $Page->read_users->editAttributes() ?> aria-describedby="x_read_users_help"><?= $Page->read_users->EditValue ?></textarea>
 <?= $Page->read_users->getCustomMessage() ?>
 <div class="invalid-feedback"><?= $Page->read_users->getErrorMessage() ?></div>
+</span>
+</div></div>
+    </div>
+<?php } ?>
+<?php if ($Page->sender_id->Visible) { // sender_id ?>
+    <div id="r_sender_id"<?= $Page->sender_id->rowAttributes() ?>>
+        <label id="elh_notifications_sender_id" for="x_sender_id" class="<?= $Page->LeftColumnClass ?>"><?= $Page->sender_id->caption() ?><?= $Page->sender_id->Required ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
+        <div class="<?= $Page->RightColumnClass ?>"><div<?= $Page->sender_id->cellAttributes() ?>>
+<span id="el_notifications_sender_id">
+<input type="<?= $Page->sender_id->getInputTextType() ?>" name="x_sender_id" id="x_sender_id" data-table="notifications" data-field="x_sender_id" value="<?= $Page->sender_id->EditValue ?>" size="30" placeholder="<?= HtmlEncode($Page->sender_id->getPlaceHolder()) ?>" data-format-pattern="<?= HtmlEncode($Page->sender_id->formatPattern()) ?>"<?= $Page->sender_id->editAttributes() ?> aria-describedby="x_sender_id_help">
+<?= $Page->sender_id->getCustomMessage() ?>
+<div class="invalid-feedback"><?= $Page->sender_id->getErrorMessage() ?></div>
+</span>
+</div></div>
+    </div>
+<?php } ?>
+<?php if ($Page->event_key->Visible) { // event_key ?>
+    <div id="r_event_key"<?= $Page->event_key->rowAttributes() ?>>
+        <label id="elh_notifications_event_key" for="x_event_key" class="<?= $Page->LeftColumnClass ?>"><?= $Page->event_key->caption() ?><?= $Page->event_key->Required ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
+        <div class="<?= $Page->RightColumnClass ?>"><div<?= $Page->event_key->cellAttributes() ?>>
+<span id="el_notifications_event_key">
+<input type="<?= $Page->event_key->getInputTextType() ?>" name="x_event_key" id="x_event_key" data-table="notifications" data-field="x_event_key" value="<?= $Page->event_key->EditValue ?>" size="30" maxlength="100" placeholder="<?= HtmlEncode($Page->event_key->getPlaceHolder()) ?>" data-format-pattern="<?= HtmlEncode($Page->event_key->formatPattern()) ?>"<?= $Page->event_key->editAttributes() ?> aria-describedby="x_event_key_help">
+<?= $Page->event_key->getCustomMessage() ?>
+<div class="invalid-feedback"><?= $Page->event_key->getErrorMessage() ?></div>
 </span>
 </div></div>
     </div>

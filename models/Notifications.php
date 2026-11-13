@@ -58,6 +58,8 @@ class Notifications extends DbTable
     public $is_read;
     public $created_at;
     public $read_users;
+    public $sender_id;
+    public $event_key;
 
     // Page ID
     public $PageID = ""; // To be overridden by subclass
@@ -173,7 +175,9 @@ class Notifications extends DbTable
             'TEXT' // Edit Tag
         );
         $this->type->InputTextType = "text";
-        $this->type->SearchOperators = ["=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL"];
+        $this->type->Nullable = false; // NOT NULL field
+        $this->type->Required = true; // Required field
+        $this->type->SearchOperators = ["=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY"];
         $this->Fields['type'] = &$this->type;
 
         // target
@@ -195,7 +199,9 @@ class Notifications extends DbTable
             'TEXT' // Edit Tag
         );
         $this->target->InputTextType = "text";
-        $this->target->SearchOperators = ["=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL"];
+        $this->target->Nullable = false; // NOT NULL field
+        $this->target->Required = true; // Required field
+        $this->target->SearchOperators = ["=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY"];
         $this->Fields['target'] = &$this->target;
 
         // user_id
@@ -241,7 +247,9 @@ class Notifications extends DbTable
             'TEXT' // Edit Tag
         );
         $this->subject->InputTextType = "text";
-        $this->subject->SearchOperators = ["=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL"];
+        $this->subject->Nullable = false; // NOT NULL field
+        $this->subject->Required = true; // Required field
+        $this->subject->SearchOperators = ["=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY"];
         $this->Fields['subject'] = &$this->subject;
 
         // body
@@ -296,7 +304,7 @@ class Notifications extends DbTable
             '"from_system"', // Expression
             '"from_system"', // Basic search expression
             200, // Type
-            20, // Size
+            30, // Size
             -1, // Date/Time format
             false, // Is upload field
             '"from_system"', // Virtual expression
@@ -307,7 +315,9 @@ class Notifications extends DbTable
             'TEXT' // Edit Tag
         );
         $this->from_system->InputTextType = "text";
-        $this->from_system->SearchOperators = ["=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL"];
+        $this->from_system->Nullable = false; // NOT NULL field
+        $this->from_system->Required = true; // Required field
+        $this->from_system->SearchOperators = ["=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY"];
         $this->Fields['from_system'] = &$this->from_system;
 
         // is_read
@@ -356,8 +366,9 @@ class Notifications extends DbTable
         );
         $this->created_at->InputTextType = "text";
         $this->created_at->Raw = true;
+        $this->created_at->Nullable = false; // NOT NULL field
         $this->created_at->DefaultErrorMessage = str_replace("%s", $GLOBALS["DATE_FORMAT"], $Language->phrase("IncorrectDate"));
-        $this->created_at->SearchOperators = ["=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL"];
+        $this->created_at->SearchOperators = ["=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN"];
         $this->Fields['created_at'] = &$this->created_at;
 
         // read_users
@@ -381,6 +392,52 @@ class Notifications extends DbTable
         $this->read_users->InputTextType = "text";
         $this->read_users->SearchOperators = ["=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL"];
         $this->Fields['read_users'] = &$this->read_users;
+
+        // sender_id
+        $this->sender_id = new DbField(
+            $this, // Table
+            'x_sender_id', // Variable name
+            'sender_id', // Name
+            '"sender_id"', // Expression
+            'CAST("sender_id" AS varchar(255))', // Basic search expression
+            3, // Type
+            0, // Size
+            -1, // Date/Time format
+            false, // Is upload field
+            '"sender_id"', // Virtual expression
+            false, // Is virtual
+            false, // Force selection
+            false, // Is Virtual search
+            'FORMATTED TEXT', // View Tag
+            'TEXT' // Edit Tag
+        );
+        $this->sender_id->InputTextType = "text";
+        $this->sender_id->Raw = true;
+        $this->sender_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
+        $this->sender_id->SearchOperators = ["=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL"];
+        $this->Fields['sender_id'] = &$this->sender_id;
+
+        // event_key
+        $this->event_key = new DbField(
+            $this, // Table
+            'x_event_key', // Variable name
+            'event_key', // Name
+            '"event_key"', // Expression
+            '"event_key"', // Basic search expression
+            200, // Type
+            100, // Size
+            -1, // Date/Time format
+            false, // Is upload field
+            '"event_key"', // Virtual expression
+            false, // Is virtual
+            false, // Force selection
+            false, // Is Virtual search
+            'FORMATTED TEXT', // View Tag
+            'TEXT' // Edit Tag
+        );
+        $this->event_key->InputTextType = "text";
+        $this->event_key->SearchOperators = ["=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL"];
+        $this->Fields['event_key'] = &$this->event_key;
 
         // Add Doctrine Cache
         $this->Cache = new \Symfony\Component\Cache\Adapter\ArrayAdapter();
@@ -903,6 +960,8 @@ class Notifications extends DbTable
         $this->is_read->DbValue = (ConvertToBool($row['is_read']) ? "1" : "0");
         $this->created_at->DbValue = $row['created_at'];
         $this->read_users->DbValue = $row['read_users'];
+        $this->sender_id->DbValue = $row['sender_id'];
+        $this->event_key->DbValue = $row['event_key'];
     }
 
     // Delete uploaded files
@@ -1261,6 +1320,8 @@ class Notifications extends DbTable
         $this->is_read->setDbValue(ConvertToBool($row['is_read']) ? "1" : "0");
         $this->created_at->setDbValue($row['created_at']);
         $this->read_users->setDbValue($row['read_users']);
+        $this->sender_id->setDbValue($row['sender_id']);
+        $this->event_key->setDbValue($row['event_key']);
     }
 
     // Render list content
@@ -1315,6 +1376,10 @@ class Notifications extends DbTable
 
         // read_users
 
+        // sender_id
+
+        // event_key
+
         // id
         $this->id->ViewValue = $this->id->CurrentValue;
 
@@ -1357,6 +1422,13 @@ class Notifications extends DbTable
 
         // read_users
         $this->read_users->ViewValue = $this->read_users->CurrentValue;
+
+        // sender_id
+        $this->sender_id->ViewValue = $this->sender_id->CurrentValue;
+        $this->sender_id->ViewValue = FormatNumber($this->sender_id->ViewValue, $this->sender_id->formatPattern());
+
+        // event_key
+        $this->event_key->ViewValue = $this->event_key->CurrentValue;
 
         // id
         $this->id->HrefValue = "";
@@ -1405,6 +1477,14 @@ class Notifications extends DbTable
         // read_users
         $this->read_users->HrefValue = "";
         $this->read_users->TooltipValue = "";
+
+        // sender_id
+        $this->sender_id->HrefValue = "";
+        $this->sender_id->TooltipValue = "";
+
+        // event_key
+        $this->event_key->HrefValue = "";
+        $this->event_key->TooltipValue = "";
 
         // Call Row Rendered event
         $this->rowRendered();
@@ -1501,6 +1581,22 @@ class Notifications extends DbTable
         $this->read_users->EditValue = $this->read_users->CurrentValue;
         $this->read_users->PlaceHolder = RemoveHtml($this->read_users->caption());
 
+        // sender_id
+        $this->sender_id->setupEditAttributes();
+        $this->sender_id->EditValue = $this->sender_id->CurrentValue;
+        $this->sender_id->PlaceHolder = RemoveHtml($this->sender_id->caption());
+        if (strval($this->sender_id->EditValue) != "" && is_numeric($this->sender_id->EditValue)) {
+            $this->sender_id->EditValue = FormatNumber($this->sender_id->EditValue, null);
+        }
+
+        // event_key
+        $this->event_key->setupEditAttributes();
+        if (!$this->event_key->Raw) {
+            $this->event_key->CurrentValue = HtmlDecode($this->event_key->CurrentValue);
+        }
+        $this->event_key->EditValue = $this->event_key->CurrentValue;
+        $this->event_key->PlaceHolder = RemoveHtml($this->event_key->caption());
+
         // Call Row Rendered event
         $this->rowRendered();
     }
@@ -1541,6 +1637,8 @@ class Notifications extends DbTable
                     $doc->exportCaption($this->is_read);
                     $doc->exportCaption($this->created_at);
                     $doc->exportCaption($this->read_users);
+                    $doc->exportCaption($this->sender_id);
+                    $doc->exportCaption($this->event_key);
                 } else {
                     $doc->exportCaption($this->id);
                     $doc->exportCaption($this->timestamp);
@@ -1552,6 +1650,8 @@ class Notifications extends DbTable
                     $doc->exportCaption($this->from_system);
                     $doc->exportCaption($this->is_read);
                     $doc->exportCaption($this->created_at);
+                    $doc->exportCaption($this->sender_id);
+                    $doc->exportCaption($this->event_key);
                 }
                 $doc->endExportRow();
             }
@@ -1590,6 +1690,8 @@ class Notifications extends DbTable
                         $doc->exportField($this->is_read);
                         $doc->exportField($this->created_at);
                         $doc->exportField($this->read_users);
+                        $doc->exportField($this->sender_id);
+                        $doc->exportField($this->event_key);
                     } else {
                         $doc->exportField($this->id);
                         $doc->exportField($this->timestamp);
@@ -1601,6 +1703,8 @@ class Notifications extends DbTable
                         $doc->exportField($this->from_system);
                         $doc->exportField($this->is_read);
                         $doc->exportField($this->created_at);
+                        $doc->exportField($this->sender_id);
+                        $doc->exportField($this->event_key);
                     }
                     $doc->endExportRow($rowCnt);
                 }

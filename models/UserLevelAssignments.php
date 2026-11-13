@@ -348,14 +348,6 @@ class UserLevelAssignments extends DbTable
     {
         // Master filter
         $masterFilter = "";
-        if ($this->getCurrentMasterTable() == "systems") {
-            $masterTable = Container("systems");
-            if ($this->system_id->getSessionValue() != "") {
-                $masterFilter .= "" . GetKeyFilter($masterTable->system_id, $this->system_id->getSessionValue(), $masterTable->system_id->DataType, $masterTable->Dbid);
-            } else {
-                return "";
-            }
-        }
         if ($this->getCurrentMasterTable() == "_user_levels") {
             $masterTable = Container("_user_levels");
             if ($this->user_level_id->getSessionValue() != "") {
@@ -380,14 +372,6 @@ class UserLevelAssignments extends DbTable
     {
         // Detail filter
         $detailFilter = "";
-        if ($this->getCurrentMasterTable() == "systems") {
-            $masterTable = Container("systems");
-            if ($this->system_id->getSessionValue() != "") {
-                $detailFilter .= "" . GetKeyFilter($this->system_id, $this->system_id->getSessionValue(), $masterTable->system_id->DataType, $this->Dbid);
-            } else {
-                return "";
-            }
-        }
         if ($this->getCurrentMasterTable() == "_user_levels") {
             $masterTable = Container("_user_levels");
             if ($this->user_level_id->getSessionValue() != "") {
@@ -418,20 +402,6 @@ class UserLevelAssignments extends DbTable
     {
         $validKeys = true;
         switch ($masterTable->TableVar) {
-            case "systems":
-                $key = $keys["system_id"] ?? "";
-                if (EmptyValue($key)) {
-                    if ($masterTable->system_id->Required) { // Required field and empty value
-                        return ""; // Return empty filter
-                    }
-                    $validKeys = false;
-                } elseif (!$validKeys) { // Already has empty key
-                    return ""; // Return empty filter
-                }
-                if ($validKeys) {
-                    return GetKeyFilter($masterTable->system_id, $keys["system_id"], $this->system_id->DataType, $this->Dbid);
-                }
-                break;
             case "_user_levels":
                 $key = $keys["user_level_id"] ?? "";
                 if (EmptyValue($key)) {
@@ -468,8 +438,6 @@ class UserLevelAssignments extends DbTable
     public function getDetailFilter($masterTable)
     {
         switch ($masterTable->TableVar) {
-            case "systems":
-                return GetKeyFilter($this->system_id, $masterTable->system_id->DbValue, $masterTable->system_id->DataType, $masterTable->Dbid);
             case "_user_levels":
                 return GetKeyFilter($this->user_level_id, $masterTable->user_level_id->DbValue, $masterTable->user_level_id->DataType, $masterTable->Dbid);
             case "users":
@@ -620,9 +588,6 @@ class UserLevelAssignments extends DbTable
         global $Security;
         // Add User ID filter
         if ($Security->currentUserID() != "" && !$Security->isAdmin()) { // Non system admin
-            if ($this->getCurrentMasterTable() == "systems" || $this->getCurrentMasterTable() == "") {
-                $filter = $this->addDetailUserIDFilter($filter, "systems"); // Add detail User ID filter
-            }
             if ($this->getCurrentMasterTable() == "_user_levels" || $this->getCurrentMasterTable() == "") {
                 $filter = $this->addDetailUserIDFilter($filter, "_user_levels"); // Add detail User ID filter
             }
@@ -1169,10 +1134,6 @@ class UserLevelAssignments extends DbTable
     // Add master url
     public function addMasterUrl($url)
     {
-        if ($this->getCurrentMasterTable() == "systems" && !ContainsString($url, Config("TABLE_SHOW_MASTER") . "=")) {
-            $url .= (ContainsString($url, "?") ? "&" : "?") . Config("TABLE_SHOW_MASTER") . "=" . $this->getCurrentMasterTable();
-            $url .= "&" . GetForeignKeyUrl("fk_system_id", $this->system_id->getSessionValue()); // Use Session Value
-        }
         if ($this->getCurrentMasterTable() == "_user_levels" && !ContainsString($url, Config("TABLE_SHOW_MASTER") . "=")) {
             $url .= (ContainsString($url, "?") ? "&" : "?") . Config("TABLE_SHOW_MASTER") . "=" . $this->getCurrentMasterTable();
             $url .= "&" . GetForeignKeyUrl("fk_user_level_id", $this->user_level_id->getSessionValue()); // Use Session Value
@@ -1512,32 +1473,7 @@ class UserLevelAssignments extends DbTable
 
         // system_id
         $this->system_id->setupEditAttributes();
-        if ($this->system_id->getSessionValue() != "") {
-            $this->system_id->CurrentValue = GetForeignKeyValue($this->system_id->getSessionValue());
-            $curVal = strval($this->system_id->CurrentValue);
-            if ($curVal != "") {
-                $this->system_id->ViewValue = $this->system_id->lookupCacheOption($curVal);
-                if ($this->system_id->ViewValue === null) { // Lookup from database
-                    $filterWrk = SearchFilter($this->system_id->Lookup->getTable()->Fields["system_id"]->searchExpression(), "=", $curVal, $this->system_id->Lookup->getTable()->Fields["system_id"]->searchDataType(), "");
-                    $sqlWrk = $this->system_id->Lookup->getSql(false, $filterWrk, '', $this, true, true);
-                    $conn = Conn();
-                    $config = $conn->getConfiguration();
-                    $config->setResultCache($this->Cache);
-                    $rswrk = $conn->executeCacheQuery($sqlWrk, [], [], $this->CacheProfile)->fetchAll();
-                    $ari = count($rswrk);
-                    if ($ari > 0) { // Lookup values found
-                        $arwrk = $this->system_id->Lookup->renderViewRow($rswrk[0]);
-                        $this->system_id->ViewValue = $this->system_id->displayValue($arwrk);
-                    } else {
-                        $this->system_id->ViewValue = FormatNumber($this->system_id->CurrentValue, $this->system_id->formatPattern());
-                    }
-                }
-            } else {
-                $this->system_id->ViewValue = null;
-            }
-        } else {
-            $this->system_id->PlaceHolder = RemoveHtml($this->system_id->caption());
-        }
+        $this->system_id->PlaceHolder = RemoveHtml($this->system_id->caption());
 
         // user_level_id
         $this->user_level_id->setupEditAttributes();

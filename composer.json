@@ -1,0 +1,85 @@
+{
+    "name": "hkvstore/phpmaker",
+    "version": "2024",
+    "type": "project",
+    "homepage": "https://phpmaker.dev/",
+    "license": "Commercial",
+    "authors": [
+        {
+            "name": "e.World Technology Limited",
+            "email": "sales@hkvstore.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "ext-intl": "*",
+        "slim/slim": "^4.10.0",
+        "slim/csrf": "^1.2.1",
+        "slim/http": "^1.2.0",
+        "slim/http-cache": "^1.1.0",
+        "slim/flash": "^0.4.0",
+        "slim/php-view": "^3.2.0",
+        "nyholm/psr7": "^1.5.1",
+        "nyholm/psr7-server": "^1.0.2",
+        "php-di/php-di": "^7.0.0",
+        "doctrine/dbal": "^3.6.0",
+        "doctrine/orm": "^2.18.0",
+        "monolog/monolog": "^3.4.0",
+        "firebase/php-jwt": "^6.3.0",
+        "phpmailer/phpmailer": "^6.6.4",
+        "ezyang/htmlpurifier": "^4.16.0",
+        "hkvstore/phpthumb": "^2.1.4",
+        "mobiledetect/mobiledetectlib": "^3.74.0",
+        "soundasleep/html2text": "^2.0.0",
+        "defuse/php-encryption": "~2.3.1",
+        "dflydev/dot-access-data": "^3.0.2",
+        "dflydev/fig-cookies": "^3.0.0",
+        "hkvstore/samesite-cookie": "~0.3.4",
+        "imangazaliev/didom": "^2.0",
+        "illuminate/filesystem": "^9.52.5",
+        "illuminate/collections": "^9.52.5",
+        "illuminate/encryption": "^9.52.5",
+        "symfony/cache": "^6.0.19",
+        "symfony/event-dispatcher": "^v6.0.19",
+        "symfony/mime": "^v6.0.19",
+        "symfony/finder": "^v6.0.19",
+        "symfony/var-exporter": "^v6.0.19",
+        "ramsey/uuid": "^4.7.3",
+        "jawira/case-converter": "^3.5.1",
+        "filp/whoops": "^2.14.5",
+        "spatie/color": "^1.5.3",
+        "nikic/php-parser": "^4.13.0",
+        "symfony/polyfill-php84": "^1.30.0",
+        "hkvstore/dompdf": "~2.0.0",
+        "guzzlehttp/guzzle": "^7.9.2",
+        "aws/aws-sdk-php": "^3.330.0",
+        "predis/predis": "^3.0.1",
+        "vlucas/phpdotenv": "^5.6.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "PHPMaker2024\\FIMS\\": [
+                "src/",
+                "models/",
+                "controllers/"
+            ],
+            "": [
+                "src/",
+                "controllers/"
+            ]
+        },
+        "classmap": [
+            "src/UploadHandler.php",
+            "src/PasswordHash.php"
+        ]
+    },
+    "config": {
+        "platform": {
+            "php": "8.3.28"
+        },
+        "allow-plugins": true
+    },
+    "scripts": {
+        "routes": "PHPMaker2024\\FIMS\\RouteAttributes::dispatch"
+    }
+}

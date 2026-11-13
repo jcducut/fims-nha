@@ -70,10 +70,6 @@ $Page->showMessage();
 <input type="hidden" name="json" value="1">
 <?php } ?>
 <input type="hidden" name="<?= $Page->OldKeyName ?>" value="<?= $Page->OldKey ?>">
-<?php if ($Page->getCurrentMasterTable() == "systems") { ?>
-<input type="hidden" name="<?= Config("TABLE_SHOW_MASTER") ?>" value="systems">
-<input type="hidden" name="fk_system_id" value="<?= HtmlEncode($Page->system_id->getSessionValue()) ?>">
-<?php } ?>
 <div class="ew-add-div"><!-- page* -->
 <?php if ($Page->user_level_id->Visible) { // user_level_id ?>
     <div id="r_user_level_id"<?= $Page->user_level_id->rowAttributes() ?>>
@@ -91,13 +87,6 @@ $Page->showMessage();
     <div id="r_system_id"<?= $Page->system_id->rowAttributes() ?>>
         <label id="elh__user_levels_system_id" for="x_system_id" class="<?= $Page->LeftColumnClass ?>"><?= $Page->system_id->caption() ?><?= $Page->system_id->Required ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
         <div class="<?= $Page->RightColumnClass ?>"><div<?= $Page->system_id->cellAttributes() ?>>
-<?php if ($Page->system_id->getSessionValue() != "") { ?>
-<span id="el__user_levels_system_id">
-<span<?= $Page->system_id->viewAttributes() ?>>
-<span class="form-control-plaintext"><?= $Page->system_id->getDisplayValue($Page->system_id->ViewValue) ?></span></span>
-<input type="hidden" id="x_system_id" name="x_system_id" value="<?= HtmlEncode($Page->system_id->CurrentValue) ?>" data-hidden="1">
-</span>
-<?php } else { ?>
 <span id="el__user_levels_system_id">
     <select
         id="x_system_id"
@@ -137,7 +126,6 @@ loadjs.ready("f_user_levelsadd", function() {
 </script>
 <?php } ?>
 </span>
-<?php } ?>
 </div></div>
     </div>
 <?php } ?>

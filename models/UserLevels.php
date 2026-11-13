@@ -265,88 +265,6 @@ class UserLevels extends DbTable
         }
     }
 
-    // Current master table name
-    public function getCurrentMasterTable()
-    {
-        return Session(PROJECT_NAME . "_" . $this->TableVar . "_" . Config("TABLE_MASTER_TABLE"));
-    }
-
-    public function setCurrentMasterTable($v)
-    {
-        $_SESSION[PROJECT_NAME . "_" . $this->TableVar . "_" . Config("TABLE_MASTER_TABLE")] = $v;
-    }
-
-    // Get master WHERE clause from session values
-    public function getMasterFilterFromSession()
-    {
-        // Master filter
-        $masterFilter = "";
-        if ($this->getCurrentMasterTable() == "systems") {
-            $masterTable = Container("systems");
-            if ($this->system_id->getSessionValue() != "") {
-                $masterFilter .= "" . GetKeyFilter($masterTable->system_id, $this->system_id->getSessionValue(), $masterTable->system_id->DataType, $masterTable->Dbid);
-            } else {
-                return "";
-            }
-        }
-        return $masterFilter;
-    }
-
-    // Get detail WHERE clause from session values
-    public function getDetailFilterFromSession()
-    {
-        // Detail filter
-        $detailFilter = "";
-        if ($this->getCurrentMasterTable() == "systems") {
-            $masterTable = Container("systems");
-            if ($this->system_id->getSessionValue() != "") {
-                $detailFilter .= "" . GetKeyFilter($this->system_id, $this->system_id->getSessionValue(), $masterTable->system_id->DataType, $this->Dbid);
-            } else {
-                return "";
-            }
-        }
-        return $detailFilter;
-    }
-
-    /**
-     * Get master filter
-     *
-     * @param object $masterTable Master Table
-     * @param array $keys Detail Keys
-     * @return mixed NULL is returned if all keys are empty, Empty string is returned if some keys are empty and is required
-     */
-    public function getMasterFilter($masterTable, $keys)
-    {
-        $validKeys = true;
-        switch ($masterTable->TableVar) {
-            case "systems":
-                $key = $keys["system_id"] ?? "";
-                if (EmptyValue($key)) {
-                    if ($masterTable->system_id->Required) { // Required field and empty value
-                        return ""; // Return empty filter
-                    }
-                    $validKeys = false;
-                } elseif (!$validKeys) { // Already has empty key
-                    return ""; // Return empty filter
-                }
-                if ($validKeys) {
-                    return GetKeyFilter($masterTable->system_id, $keys["system_id"], $this->system_id->DataType, $this->Dbid);
-                }
-                break;
-        }
-        return null; // All null values and no required fields
-    }
-
-    // Get detail filter
-    public function getDetailFilter($masterTable)
-    {
-        switch ($masterTable->TableVar) {
-            case "systems":
-                return GetKeyFilter($this->system_id, $masterTable->system_id->DbValue, $masterTable->system_id->DataType, $masterTable->Dbid);
-        }
-        return "";
-    }
-
     // Current detail table name
     public function getCurrentDetailTable()
     {
@@ -1048,10 +966,6 @@ class UserLevels extends DbTable
     // Add master url
     public function addMasterUrl($url)
     {
-        if ($this->getCurrentMasterTable() == "systems" && !ContainsString($url, Config("TABLE_SHOW_MASTER") . "=")) {
-            $url .= (ContainsString($url, "?") ? "&" : "?") . Config("TABLE_SHOW_MASTER") . "=" . $this->getCurrentMasterTable();
-            $url .= "&" . GetForeignKeyUrl("fk_system_id", $this->system_id->getSessionValue()); // Use Session Value
-        }
         return $url;
     }
 
@@ -1326,32 +1240,7 @@ class UserLevels extends DbTable
 
         // system_id
         $this->system_id->setupEditAttributes();
-        if ($this->system_id->getSessionValue() != "") {
-            $this->system_id->CurrentValue = GetForeignKeyValue($this->system_id->getSessionValue());
-            $curVal = strval($this->system_id->CurrentValue);
-            if ($curVal != "") {
-                $this->system_id->ViewValue = $this->system_id->lookupCacheOption($curVal);
-                if ($this->system_id->ViewValue === null) { // Lookup from database
-                    $filterWrk = SearchFilter($this->system_id->Lookup->getTable()->Fields["system_id"]->searchExpression(), "=", $curVal, $this->system_id->Lookup->getTable()->Fields["system_id"]->searchDataType(), "");
-                    $sqlWrk = $this->system_id->Lookup->getSql(false, $filterWrk, '', $this, true, true);
-                    $conn = Conn();
-                    $config = $conn->getConfiguration();
-                    $config->setResultCache($this->Cache);
-                    $rswrk = $conn->executeCacheQuery($sqlWrk, [], [], $this->CacheProfile)->fetchAll();
-                    $ari = count($rswrk);
-                    if ($ari > 0) { // Lookup values found
-                        $arwrk = $this->system_id->Lookup->renderViewRow($rswrk[0]);
-                        $this->system_id->ViewValue = $this->system_id->displayValue($arwrk);
-                    } else {
-                        $this->system_id->ViewValue = FormatNumber($this->system_id->CurrentValue, $this->system_id->formatPattern());
-                    }
-                }
-            } else {
-                $this->system_id->ViewValue = null;
-            }
-        } else {
-            $this->system_id->PlaceHolder = RemoveHtml($this->system_id->caption());
-        }
+        $this->system_id->PlaceHolder = RemoveHtml($this->system_id->caption());
 
         // name
         $this->name->setupEditAttributes();

@@ -36,7 +36,7 @@ class AggregatedAuditLogs extends DbTable
     // Ajax / Modal
     public $UseAjaxActions = false;
     public $ModalSearch = false;
-    public $ModalView = true;
+    public $ModalView = false;
     public $ModalAdd = false;
     public $ModalEdit = false;
     public $ModalUpdate = false;
@@ -121,7 +121,6 @@ class AggregatedAuditLogs extends DbTable
         );
         $this->aggregated_id->InputTextType = "text";
         $this->aggregated_id->Raw = true;
-        $this->aggregated_id->IsPrimaryKey = true; // Primary key field
         $this->aggregated_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
         $this->aggregated_id->SearchOperators = ["=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL"];
         $this->Fields['aggregated_id'] = &$this->aggregated_id;
@@ -135,17 +134,16 @@ class AggregatedAuditLogs extends DbTable
             '"action_date"', // Basic search expression
             201, // Type
             0, // Size
-            2, // Date/Time format
+            -1, // Date/Time format
             false, // Is upload field
             '"action_date"', // Virtual expression
             false, // Is virtual
             false, // Force selection
             false, // Is Virtual search
             'FORMATTED TEXT', // View Tag
-            'TEXT' // Edit Tag
+            'TEXTAREA' // Edit Tag
         );
         $this->action_date->InputTextType = "text";
-        $this->action_date->FormatPattern = "yyyy-MM-dd"; // Format pattern
         $this->action_date->SearchOperators = ["=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL"];
         $this->Fields['action_date'] = &$this->action_date;
 
@@ -190,7 +188,6 @@ class AggregatedAuditLogs extends DbTable
             'TEXT' // Edit Tag
         );
         $this->user->InputTextType = "text";
-        $this->user->IsForeignKey = true; // Foreign key field
         $this->user->SearchOperators = ["=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL"];
         $this->Fields['user'] = &$this->user;
 
@@ -245,7 +242,7 @@ class AggregatedAuditLogs extends DbTable
             'action_type', // Name
             '"action_type"', // Expression
             '"action_type"', // Basic search expression
-            200, // Type
+            201, // Type
             0, // Size
             -1, // Date/Time format
             false, // Is upload field
@@ -254,7 +251,7 @@ class AggregatedAuditLogs extends DbTable
             false, // Force selection
             false, // Is Virtual search
             'FORMATTED TEXT', // View Tag
-            'TEXT' // Edit Tag
+            'TEXTAREA' // Edit Tag
         );
         $this->action_type->InputTextType = "text";
         $this->action_type->SearchOperators = ["=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL"];
@@ -362,88 +359,6 @@ class AggregatedAuditLogs extends DbTable
             }
             $field->setSort($fldSort);
         }
-    }
-
-    // Current master table name
-    public function getCurrentMasterTable()
-    {
-        return Session(PROJECT_NAME . "_" . $this->TableVar . "_" . Config("TABLE_MASTER_TABLE"));
-    }
-
-    public function setCurrentMasterTable($v)
-    {
-        $_SESSION[PROJECT_NAME . "_" . $this->TableVar . "_" . Config("TABLE_MASTER_TABLE")] = $v;
-    }
-
-    // Get master WHERE clause from session values
-    public function getMasterFilterFromSession()
-    {
-        // Master filter
-        $masterFilter = "";
-        if ($this->getCurrentMasterTable() == "users") {
-            $masterTable = Container("users");
-            if ($this->user->getSessionValue() != "") {
-                $masterFilter .= "" . GetKeyFilter($masterTable->user_id, $this->user->getSessionValue(), $masterTable->user_id->DataType, $masterTable->Dbid);
-            } else {
-                return "";
-            }
-        }
-        return $masterFilter;
-    }
-
-    // Get detail WHERE clause from session values
-    public function getDetailFilterFromSession()
-    {
-        // Detail filter
-        $detailFilter = "";
-        if ($this->getCurrentMasterTable() == "users") {
-            $masterTable = Container("users");
-            if ($this->user->getSessionValue() != "") {
-                $detailFilter .= "" . GetKeyFilter($this->user, $this->user->getSessionValue(), $masterTable->user_id->DataType, $this->Dbid);
-            } else {
-                return "";
-            }
-        }
-        return $detailFilter;
-    }
-
-    /**
-     * Get master filter
-     *
-     * @param object $masterTable Master Table
-     * @param array $keys Detail Keys
-     * @return mixed NULL is returned if all keys are empty, Empty string is returned if some keys are empty and is required
-     */
-    public function getMasterFilter($masterTable, $keys)
-    {
-        $validKeys = true;
-        switch ($masterTable->TableVar) {
-            case "users":
-                $key = $keys["user"] ?? "";
-                if (EmptyValue($key)) {
-                    if ($masterTable->user_id->Required) { // Required field and empty value
-                        return ""; // Return empty filter
-                    }
-                    $validKeys = false;
-                } elseif (!$validKeys) { // Already has empty key
-                    return ""; // Return empty filter
-                }
-                if ($validKeys) {
-                    return GetKeyFilter($masterTable->user_id, $keys["user"], $this->user->DataType, $this->Dbid);
-                }
-                break;
-        }
-        return null; // All null values and no required fields
-    }
-
-    // Get detail filter
-    public function getDetailFilter($masterTable)
-    {
-        switch ($masterTable->TableVar) {
-            case "users":
-                return GetKeyFilter($this->user, $masterTable->user_id->DbValue, $masterTable->user_id->DataType, $masterTable->Dbid);
-        }
-        return "";
     }
 
     // Render X Axis for chart
@@ -585,13 +500,6 @@ class AggregatedAuditLogs extends DbTable
     // Apply User ID filters
     public function applyUserIDFilters($filter, $id = "")
     {
-        global $Security;
-        // Add User ID filter
-        if ($Security->currentUserID() != "" && !$Security->isAdmin()) { // Non system admin
-            if ($this->getCurrentMasterTable() == "users" || $this->getCurrentMasterTable() == "") {
-                $filter = $this->addDetailUserIDFilter($filter, "users"); // Add detail User ID filter
-            }
-        }
         return $filter;
     }
 
@@ -873,9 +781,6 @@ class AggregatedAuditLogs extends DbTable
             $where = $this->arrayToFilter($where);
         }
         if ($rs) {
-            if (array_key_exists('aggregated_id', $rs)) {
-                AddFilter($where, QuotedName('aggregated_id', $this->Dbid) . '=' . QuotedValue($rs['aggregated_id'], $this->aggregated_id->DataType, $this->Dbid));
-            }
         }
         $filter = $curfilter ? $this->CurrentFilter : "";
         AddFilter($filter, $where);
@@ -924,19 +829,13 @@ class AggregatedAuditLogs extends DbTable
     // Record filter WHERE clause
     protected function sqlKeyFilter()
     {
-        return "\"aggregated_id\" = @aggregated_id@";
+        return "";
     }
 
     // Get Key
     public function getKey($current = false, $keySeparator = null)
     {
         $keys = [];
-        $val = $current ? $this->aggregated_id->CurrentValue : $this->aggregated_id->OldValue;
-        if (EmptyValue($val)) {
-            return "";
-        } else {
-            $keys[] = $val;
-        }
         $keySeparator ??= Config("COMPOSITE_KEY_SEPARATOR");
         return implode($keySeparator, $keys);
     }
@@ -947,12 +846,7 @@ class AggregatedAuditLogs extends DbTable
         $keySeparator ??= Config("COMPOSITE_KEY_SEPARATOR");
         $this->OldKey = strval($key);
         $keys = explode($keySeparator, $this->OldKey);
-        if (count($keys) == 1) {
-            if ($current) {
-                $this->aggregated_id->CurrentValue = $keys[0];
-            } else {
-                $this->aggregated_id->OldValue = $keys[0];
-            }
+        if (count($keys) == 0) {
         }
     }
 
@@ -960,19 +854,6 @@ class AggregatedAuditLogs extends DbTable
     public function getRecordFilter($row = null, $current = false)
     {
         $keyFilter = $this->sqlKeyFilter();
-        if (is_array($row)) {
-            $val = array_key_exists('aggregated_id', $row) ? $row['aggregated_id'] : null;
-        } else {
-            $val = !EmptyValue($this->aggregated_id->OldValue) && !$current ? $this->aggregated_id->OldValue : $this->aggregated_id->CurrentValue;
-        }
-        if (!is_numeric($val)) {
-            return "0=1"; // Invalid key
-        }
-        if ($val === null) {
-            return "0=1"; // Invalid key
-        } else {
-            $keyFilter = str_replace("@aggregated_id@", AdjustSql($val, $this->Dbid), $keyFilter); // Replace key value
-        }
         return $keyFilter;
     }
 
@@ -1107,17 +988,12 @@ class AggregatedAuditLogs extends DbTable
     // Add master url
     public function addMasterUrl($url)
     {
-        if ($this->getCurrentMasterTable() == "users" && !ContainsString($url, Config("TABLE_SHOW_MASTER") . "=")) {
-            $url .= (ContainsString($url, "?") ? "&" : "?") . Config("TABLE_SHOW_MASTER") . "=" . $this->getCurrentMasterTable();
-            $url .= "&" . GetForeignKeyUrl("fk_user_id", $this->user->getSessionValue()); // Use Session Value
-        }
         return $url;
     }
 
     public function keyToJson($htmlEncode = false)
     {
         $json = "";
-        $json .= "\"aggregated_id\":" . VarToJson($this->aggregated_id->CurrentValue, "number");
         $json = "{" . $json . "}";
         if ($htmlEncode) {
             $json = HtmlEncode($json);
@@ -1128,11 +1004,6 @@ class AggregatedAuditLogs extends DbTable
     // Add key value to URL
     public function keyUrl($url, $parm = "")
     {
-        if ($this->aggregated_id->CurrentValue !== null) {
-            $url .= "/" . $this->encodeKeyValue($this->aggregated_id->CurrentValue);
-        } else {
-            return "javascript:ew.alert(ew.language.phrase('InvalidRecord'));";
-        }
         if ($parm != "") {
             $url .= "?" . $parm;
         }
@@ -1202,24 +1073,14 @@ class AggregatedAuditLogs extends DbTable
             $isApi = IsApi();
             $keyValues = $isApi
                 ? (Route(0) == "export"
-                    ? array_map(fn ($i) => Route($i + 3), range(0, 0))  // Export API
-                    : array_map(fn ($i) => Route($i + 2), range(0, 0))) // Other API
+                    ? array_map(fn ($i) => Route($i + 3), range(0, -1))  // Export API
+                    : array_map(fn ($i) => Route($i + 2), range(0, -1))) // Other API
                 : []; // Non-API
-            if (($keyValue = Param("aggregated_id") ?? Route("aggregated_id")) !== null) {
-                $arKeys[] = $keyValue;
-            } elseif ($isApi && (($keyValue = Key(0) ?? $keyValues[0] ?? null) !== null)) {
-                $arKeys[] = $keyValue;
-            } else {
-                $arKeys = null; // Do not setup
-            }
         }
         // Check keys
         $ar = [];
         if (is_array($arKeys)) {
             foreach ($arKeys as $key) {
-                if (!is_numeric($key)) {
-                    continue;
-                }
                 $ar[] = $key;
             }
         }
@@ -1240,11 +1101,6 @@ class AggregatedAuditLogs extends DbTable
         foreach ($arKeys as $key) {
             if ($keyFilter != "") {
                 $keyFilter .= " OR ";
-            }
-            if ($setCurrent) {
-                $this->aggregated_id->CurrentValue = $key;
-            } else {
-                $this->aggregated_id->OldValue = $key;
             }
             $keyFilter .= "(" . $this->getRecordFilter() . ")";
         }
@@ -1350,9 +1206,6 @@ class AggregatedAuditLogs extends DbTable
 
         // details
         $this->details->ViewValue = $this->details->CurrentValue;
-        if ($this->details->ViewValue != null) {
-            $this->details->ViewValue = str_replace(["\r\n", "\n", "\r"], "<br>", $this->details->ViewValue);
-        }
 
         // action_count
         $this->action_count->ViewValue = $this->action_count->CurrentValue;
@@ -1413,12 +1266,12 @@ class AggregatedAuditLogs extends DbTable
         $this->aggregated_id->setupEditAttributes();
         $this->aggregated_id->EditValue = $this->aggregated_id->CurrentValue;
         $this->aggregated_id->PlaceHolder = RemoveHtml($this->aggregated_id->caption());
+        if (strval($this->aggregated_id->EditValue) != "" && is_numeric($this->aggregated_id->EditValue)) {
+            $this->aggregated_id->EditValue = FormatNumber($this->aggregated_id->EditValue, null);
+        }
 
         // action_date
         $this->action_date->setupEditAttributes();
-        if (!$this->action_date->Raw) {
-            $this->action_date->CurrentValue = HtmlDecode($this->action_date->CurrentValue);
-        }
         $this->action_date->EditValue = $this->action_date->CurrentValue;
         $this->action_date->PlaceHolder = RemoveHtml($this->action_date->caption());
 
@@ -1432,16 +1285,11 @@ class AggregatedAuditLogs extends DbTable
 
         // user
         $this->user->setupEditAttributes();
-        if ($this->user->getSessionValue() != "") {
-            $this->user->CurrentValue = GetForeignKeyValue($this->user->getSessionValue());
-            $this->user->ViewValue = $this->user->CurrentValue;
-        } else {
-            if (!$this->user->Raw) {
-                $this->user->CurrentValue = HtmlDecode($this->user->CurrentValue);
-            }
-            $this->user->EditValue = $this->user->CurrentValue;
-            $this->user->PlaceHolder = RemoveHtml($this->user->caption());
+        if (!$this->user->Raw) {
+            $this->user->CurrentValue = HtmlDecode($this->user->CurrentValue);
         }
+        $this->user->EditValue = $this->user->CurrentValue;
+        $this->user->PlaceHolder = RemoveHtml($this->user->caption());
 
         // action
         $this->_action->setupEditAttributes();
@@ -1461,9 +1309,6 @@ class AggregatedAuditLogs extends DbTable
 
         // action_type
         $this->action_type->setupEditAttributes();
-        if (!$this->action_type->Raw) {
-            $this->action_type->CurrentValue = HtmlDecode($this->action_type->CurrentValue);
-        }
         $this->action_type->EditValue = $this->action_type->CurrentValue;
         $this->action_type->PlaceHolder = RemoveHtml($this->action_type->caption());
 
@@ -1523,7 +1368,6 @@ class AggregatedAuditLogs extends DbTable
                     $doc->exportCaption($this->user);
                     $doc->exportCaption($this->_action);
                     $doc->exportCaption($this->_table);
-                    $doc->exportCaption($this->action_type);
                     $doc->exportCaption($this->action_count);
                 }
                 $doc->endExportRow();
@@ -1566,7 +1410,6 @@ class AggregatedAuditLogs extends DbTable
                         $doc->exportField($this->user);
                         $doc->exportField($this->_action);
                         $doc->exportField($this->_table);
-                        $doc->exportField($this->action_type);
                         $doc->exportField($this->action_count);
                     }
                     $doc->endExportRow($rowCnt);
@@ -1581,30 +1424,6 @@ class AggregatedAuditLogs extends DbTable
         if (!$doc->ExportCustom) {
             $doc->exportTableFooter();
         }
-    }
-
-    // Add master User ID filter
-    public function addMasterUserIDFilter($filter, $currentMasterTable)
-    {
-        $filterWrk = $filter;
-        if ($currentMasterTable == "users") {
-            $filterWrk = Container("users")->addUserIDFilter($filterWrk);
-        }
-        return $filterWrk;
-    }
-
-    // Add detail User ID filter
-    public function addDetailUserIDFilter($filter, $currentMasterTable)
-    {
-        $filterWrk = $filter;
-        if ($currentMasterTable == "users") {
-            $mastertable = Container("users");
-            if (!$mastertable->userIDAllow()) {
-                $subqueryWrk = $mastertable->getUserIDSubquery($this->user, $mastertable->user_id);
-                AddFilter($filterWrk, $subqueryWrk);
-            }
-        }
-        return $filterWrk;
     }
 
     // Get file data

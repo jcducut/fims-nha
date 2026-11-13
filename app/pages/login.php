@@ -2,14 +2,34 @@
 session_start();
 require_once(__DIR__ . "/../../_shared/auth.php");
 
+// This page's own JS reads a fresh CSRF token pair from a live fetch() of
+// /login before every sign-in attempt — a stale cached copy of THIS page
+// (old HTML/JS) would keep retrying that flow the old way indefinitely, no
+// matter how many times the actual login/CSRF logic gets fixed server-side.
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Pragma: no-cache');
+
 if (isAnyUserLoggedIn()) {
     $homeUrl = $_SESSION['nha_home_url'] ?? '/MainDashboard';
     header('Location: ' . $homeUrl);
     exit;
 }
 
-// Success flash after a completed password change (from /changepassword.php → /changepassword → back).
+// Success flash after a completed password change (from /changepassword → back).
 $pwdChanged = isset($_GET['pwd']) && $_GET['pwd'] === 'changed';
+
+// Set by models/Login.php right after a failed credential check, instead of
+// letting a POST to /login (which isn't rewritten to this page by nginx.conf,
+// unlike "/") fall through and render the framework's own default
+// views/Login.php template.
+$loginFailed = isset($_GET['login']) && $_GET['login'] === 'failed';
+
+// Set by ResetPassword.php right before it redirects here, after the user
+// clicks the password-reset link emailed to them — same flag the framework's
+// own IsPasswordReset() checks. Shows the embedded Change Password panel
+// below instead of the normal sign-in form, since the framework itself won't
+// let this user do anything else until they set a new password.
+$showChangePassword = (($_SESSION['FIMS_Status'] ?? '') === 'passwordreset');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,506 +37,15 @@ $pwdChanged = isset($_GET['pwd']) && $_GET['pwd'] === 'changed';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NHA FIMS — Sign In</title>
+    <link rel="icon" type="image/png" href="/_shared/images/NHA.png">
+    <link rel="apple-touch-icon" href="/_shared/images/NHA.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@100;300;400&family=Roboto:wght@400;500&family=Geist:wght@300;400&family=Syne:wght@400&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Geist', 'Segoe UI', system-ui, -apple-system, sans-serif;
-            height: 100vh;
-            overflow: hidden;
-            background: #00091f;
-        }
-
-        /* ══════════════════════════════════════
-           PAGE BACKGROUND — shared image + overlay
-        ══════════════════════════════════════ */
-        .page-bg {
-            position: fixed;
-            inset: 0;
-            background-image: url('/_shared/images/tree-greenyard.jpg');
-            background-size: cover;
-            background-position: center;
-            z-index: 0;
-        }
-
-        .page-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 23, 86, 0.85);
-            backdrop-filter: blur(7.5px);
-            -webkit-backdrop-filter: blur(7.5px);
-            z-index: 1;
-        }
-
-        .main-container {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            align-items: stretch;
-            height: 100vh;
-            width: 100%;
-            padding: 100px 50px;
-            gap: 0;
-        }
-
-        .content-box {
-            display: flex;
-            align-items: stretch;
-            width: 100%;
-            min-height: 800px;
-            filter: drop-shadow(0 0 12.5px rgba(0, 14, 62, 0.25));
-        }
-
-        /* ══════════════════════════════════════
-           LEFT PANEL — branding
-        ══════════════════════════════════════ */
-        .logo-section {
-            --logo-width: 60%; /* change this to control the panel width, e.g. 480px or 60% */
-            flex: 0 0 auto;
-            width: var(--logo-width);
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 50px;
-        }
-
-        /* top: logo + headings */
-        .left-header {
-            flex: 1;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .logo-wrap {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 50px;
-            margin-bottom: 0;
-        }
-
-        .logo-wrap-inner {
-            width: 150px;
-            height: 150px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .left-logo-svg {
-            width: 150px;
-            height: 150px;
-        }
-
-        .left-headings {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            text-align: center;
-            color: #f5faf5;
-        }
-
-        .heading-main {
-            font-family: 'Barlow Semi Condensed', sans-serif;
-            font-size: 35px;
-            font-weight: 400;
-            font-style: normal;
-            line-height: 32px;
-            letter-spacing: 0;
-        }
-
-        .heading-sub {
-            font-family: 'Barlow Semi Condensed', sans-serif;
-            font-size: 25px;
-            font-weight: 400;
-            font-style: normal;
-            line-height: 24px;
-            letter-spacing: 0;
-        }
-
-        /* bottom: secure login badge */
-        .left-footer {
-            width: 100%;
-        }
-
-        .nha-badge {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .badge-shield {
-            width: 48px;
-            height: 48px;
-            border: 1px solid #fcd20f;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            padding: 1px;
-        }
-
-        .badge-shield svg {
-            width: 24px;
-            height: 24px;
-            fill: #fcd20f;
-        }
-
-        .badge-label {
-            color: #fcd20f;
-            font-family: 'Roboto', sans-serif;
-            font-size: 12px;
-            font-weight: 500;
-            letter-spacing: 2.4px;
-            text-transform: uppercase;
-        }
-
-        /* ══════════════════════════════════════
-           RIGHT PANEL — login form card
-        ══════════════════════════════════════ */
-        .login-container {
-            --login-width: 30%; /* change this to control the panel width, e.g. 480px or 40% */
-            display: flex;
-            padding: 50px;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 25px;
-            flex: 0 0 auto;
-            width: var(--login-width);
-            align-self: stretch;
-            border-radius: 10px;
-            background: rgba(0, 7, 43, 0.90);
-            box-shadow: 0 4px 25px 0 rgba(0, 14, 62, 0.25);
-        }
-
-        .login-form {
-            display: flex;
-            padding: 20px 0;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-            flex: 1 0 0;
-            align-self: stretch;
-        }
-
-        .form-margin {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
-            align-self: stretch;
-            width: 100%;
-        }
-
-        .form-header {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
-            align-self: stretch;
-        }
-
-        .form-margin form {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 20px;
-            align-self: stretch;
-            width: 100%;
-        }
-
-        .secure-badge {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            color: #11a752;
-            font-size: 14px;
-            font-weight: 400;
-            font-family: 'Roboto', sans-serif;
-            line-height: 20px;
-            text-transform: uppercase;
-        }
-
-        .form-subtitle {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            align-self: stretch;
-            color: #f5faf5;
-            text-align: center;
-            font-family: 'Barlow Semi Condensed', sans-serif;
-            font-size: 17px;
-            font-weight: 400;
-            line-height: 32px;
-        }
-
-        .flash-error {
-            background: rgba(220,38,38,0.12);
-            border: 1px solid rgba(220,38,38,0.3);
-            color: #fca5a5;
-            padding: 10px 14px;
-            font-size: 12px;
-            border-radius: 3px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .field-group {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            align-self: stretch;
-            gap: 10px;
-            border-bottom: 2px solid #7c8ca3;
-            padding: 15px 0;
-            width: 100%;
-            transition: border-color 0.2s;
-        }
-
-        .field-group:focus-within {
-            border-bottom-color: rgba(252,210,15,0.65);
-        }
-
-        .field-wrap {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            position: relative;
-            flex: 1 0 0;
-            min-width: 0;
-            padding: 5px 0;
-        }
-
-        .field-label {
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #f5faf5;
-            font-family: 'Geist', sans-serif;
-            font-size: 17px;
-            font-weight: 400;
-            line-height: 21px;
-            letter-spacing: 1.4px;
-            text-transform: uppercase;
-            pointer-events: none;
-            transition: top 0.18s ease, font-size 0.18s ease, transform 0.18s ease, color 0.18s ease;
-        }
-
-        .field-input:focus + .field-label,
-        .field-input:not(:placeholder-shown) + .field-label,
-        .field-input:-webkit-autofill + .field-label {
-            top: -14px;
-            transform: translateY(0);
-            font-size: 11px;
-            color: rgba(245,250,245,0.65);
-        }
-
-        .field-input {
-            align-self: stretch;
-            width: 100%;
-            background: transparent;
-            border: none;
-            padding: 0 2rem 0 0;
-            color: #fff;
-            font-size: 18px;
-            font-family: "IBM Plex Mono", monospace;
-            font-weight: 400;
-            outline: none;
-        }
-
-        .field-input:-webkit-autofill,
-        .field-input:-webkit-autofill:hover,
-        .field-input:-webkit-autofill:focus,
-        .field-input:-webkit-autofill:active {
-            -webkit-text-fill-color: #fff;
-            -webkit-box-shadow: 0 0 0 1000px rgba(0, 7, 43, 0.90) inset;
-            box-shadow: 0 0 0 1000px rgba(0, 7, 43, 0.90) inset;
-            caret-color: #fff;
-            transition: background-color 5000s ease-in-out 0s;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            background: transparent;
-            border: none;
-            color: rgba(255,255,255,0.28);
-            cursor: pointer;
-            padding: 4px;
-            transition: color 0.15s;
-        }
-
-        .toggle-password:hover { color: rgba(255,255,255,0.65); }
-
-        .retain-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .retain-row input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: #fcd20f;
-            cursor: pointer;
-            flex-shrink: 0;
-            border: 1px solid #7c8ca3;
-        }
-
-        .retain-row label {
-            color: #f5faf5;
-            font-family: 'Geist', sans-serif;
-            font-size: 12px;
-            font-weight: 400;
-            letter-spacing: 0.6px;
-            text-transform: uppercase;
-            cursor: pointer;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 16px 24px;
-            background: #fcd20f;
-            color: #020617;
-            border: none;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 16px;
-            font-weight: 700;
-            letter-spacing: 2.4px;
-            text-transform: uppercase;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: background 0.18s;
-        }
-
-        .login-btn:hover:not(:disabled) { background: #e8be00; }
-
-        .login-btn:disabled {
-            opacity: 0.55;
-            cursor: not-allowed;
-        }
-
-        .login-footer {
-            padding-left: 18px;
-            border-left: 2px solid #7c8ca3;
-            color: rgba(255,255,255,0.6);
-            font-family: 'Geist', sans-serif;
-            font-size: 10px;
-            line-height: 12px;
-        }
-
-        /* ══════════════════════════════════════
-           FORGOT PASSWORD — link + reset panel
-        ══════════════════════════════════════ */
-        .forgot-row {
-            width: 100%;
-            display: flex;
-            justify-content: flex-end;
-            margin-top: -4px;
-        }
-
-        .forgot-link {
-            background: none;
-            border: none;
-            padding: 0;
-            color: rgba(252,210,15,0.85);
-            font-family: 'Geist', sans-serif;
-            font-size: 12px;
-            font-weight: 400;
-            letter-spacing: 0.6px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: color 0.18s;
-        }
-
-        .forgot-link:hover { color: #fcd20f; text-decoration: underline; }
-
-        .flash-success {
-            background: rgba(17,167,82,0.12);
-            border: 1px solid rgba(17,167,82,0.35);
-            color: #86efac;
-            padding: 10px 14px;
-            font-size: 12px;
-            border-radius: 3px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            line-height: 1.5;
-        }
-
-        .back-link {
-            background: none;
-            border: none;
-            padding: 0;
-            color: rgba(245,250,245,0.65);
-            font-family: 'Geist', sans-serif;
-            font-size: 12px;
-            font-weight: 400;
-            letter-spacing: 0.6px;
-            text-transform: uppercase;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: color 0.18s;
-        }
-
-        .back-link:hover { color: #f5faf5; }
-
-        .field-input.invalid ~ .field-label { color: #fca5a5; }
-        .field-group.invalid { border-bottom-color: rgba(220,38,38,0.65); }
-
-        .field-error {
-            color: #fca5a5;
-            font-family: 'Geist', sans-serif;
-            font-size: 11px;
-            margin-top: 4px;
-            display: none;
-        }
-        .field-error.show { display: block; }
-
-        /* ══════════════════════════════════════
-           RESPONSIVE
-        ══════════════════════════════════════ */
-        @media (max-width: 900px) {
-            body { overflow-y: auto; height: auto; }
-            .page-bg, .page-overlay { position: absolute; }
-            .main-container { height: auto; padding: 2.5rem 1.5rem; }
-            .content-box { flex-direction: column; min-height: 0; }
-            .logo-section { padding: 1.5rem 1rem 2.5rem; }
-            .login-container { padding: 2.5rem 1.5rem; }
-        }
-
-        @media (max-width: 480px) {
-            .heading-main { font-size: 22px; }
-            .heading-sub { font-size: 18px; }
-            .logo-wrap-inner { width: 110px; height: 110px; }
-            .left-logo-svg { width: 110px; height: 110px; }
-        }
-    </style>
+    <link rel="stylesheet" href="/app/fims-css/fims.css?v=<?= @filemtime($_SERVER['DOCUMENT_ROOT'] . '/app/fims-css/fims.css') ?>" />
 </head>
-<body>
+<body class="login-page">
 <div class="page-bg"></div>
 <div class="page-overlay"></div>
 <div class="main-container">
@@ -561,13 +90,17 @@ $pwdChanged = isset($_GET['pwd']) && $_GET['pwd'] === 'changed';
                         <i class="fas fa-lock"></i>
                         Secure Portal
                     </div>
-                    <p class="form-subtitle">Use your NHA-issued credentials to proceed.</p>
+                    <p class="form-subtitle">
+                        <?= $showChangePassword
+                            ? 'Set a new password to continue.'
+                            : 'Use your NHA-issued credentials to proceed.' ?>
+                    </p>
                 </div>
 
-                <?php if (isset($_SESSION['flash_failure'])): ?>
+                <?php if (isset($_SESSION['flash_failure']) || $loginFailed): ?>
                 <div class="flash-error" id="flash-failure">
                     <i class="fas fa-exclamation-circle"></i>
-                    <?= htmlspecialchars($_SESSION['flash_failure']) ?>
+                    <?= htmlspecialchars($_SESSION['flash_failure'] ?? 'Incorrect username or password.') ?>
                 </div>
                 <?php unset($_SESSION['flash_failure']); endif; ?>
 
@@ -576,7 +109,7 @@ $pwdChanged = isset($_GET['pwd']) && $_GET['pwd'] === 'changed';
                     <span id="flash-success-msg"><?= $pwdChanged ? 'Your password has been updated. Please sign in with your new password.' : '' ?></span>
                 </div>
 
-                <form name="flogin" id="flogin" action="/login" method="post" novalidate autocomplete="off">
+                <form name="flogin" id="flogin" action="/login" method="post" novalidate autocomplete="off" style="<?= $showChangePassword ? 'display:none;' : '' ?>">
 
                     <div class="field-group">
                         <div class="field-wrap">
@@ -637,6 +170,42 @@ $pwdChanged = isset($_GET['pwd']) && $_GET['pwd'] === 'changed';
                     </div>
 
                 </form>
+
+                <!-- Reached only via the emailed password-reset link (sets the
+                     FIMS_Status "passwordreset" session flag checked above) —
+                     not a normal logged-in user's own "change my password"
+                     screen, which stays inside the main app. -->
+                <form name="fchangepass" id="fchangepass" action="/changepassword" method="post" novalidate autocomplete="off" style="<?= $showChangePassword ? '' : 'display:none;' ?>">
+
+                    <div class="field-group">
+                        <div class="field-wrap">
+                            <input class="field-input" type="password" name="npwd" id="new-password"
+                                   placeholder=" " autocomplete="new-password" required>
+                            <label class="field-label" for="new-password">New Password</label>
+                            <button type="button" class="toggle-password" data-toggle-for="new-password" title="Toggle password">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="field-group" id="confirm-password-group">
+                        <div class="field-wrap">
+                            <input class="field-input" type="password" name="cpwd" id="confirm-password"
+                                   placeholder=" " autocomplete="new-password" required>
+                            <label class="field-label" for="confirm-password">Confirm Password</label>
+                            <button type="button" class="toggle-password" data-toggle-for="confirm-password" title="Toggle password">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="field-error" id="confirm-password-error">Passwords do not match.</div>
+
+                    <button type="submit" class="login-btn" id="btn-changepass">
+                        <span>Set New Password</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+
+                </form>
             </div>
         </div>
 
@@ -678,7 +247,10 @@ $pwdChanged = isset($_GET['pwd']) && $_GET['pwd'] === 'changed';
         btn.disabled = true;
         btn.innerHTML = '<span>Signing in…</span><i class="fas fa-spinner fa-spin"></i>';
 
-        fetch('/login')
+        // X-Requested-With tells the server this is the internal CSRF-harvest
+        // fetch, not real navigation — otherwise /login redirects plain GETs
+        // back to "/", and this would harvest tokens from the wrong page.
+        fetch('/login', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(r => r.text())
             .then(html => {
                 const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -772,59 +344,131 @@ $pwdChanged = isset($_GET['pwd']) && $_GET['pwd'] === 'changed';
         btn.disabled = true;
         btn.innerHTML = '<span>Sending…</span><i class="fas fa-spinner fa-spin"></i>';
 
-        // Fetch the reset-password page to harvest the actual email field
-        // name (PHPMaker uses "x_email") and CSRF tokens, then POST back to it.
+        // PHPMaker's /resetpassword guards every POST with a pair of CSRF
+        // tokens that are re-generated per request and validated against the
+        // session (Slim-Csrf) — a fetch()+FormData POST built from scratch
+        // has no way to obtain a valid pair. So, same approach as the real
+        // login form above: fetch the page once to harvest its real field
+        // name + fresh CSRF pair, graft them onto this form, then do a real
+        // submit (full navigation) so the browser handles cookies/redirect
+        // exactly as it would for a native form post.
         fetch('/resetpassword')
             .then(r => r.text())
             .then(html => {
                 const doc = new DOMParser().parseFromString(html, 'text/html');
 
-                // Locate PHPMaker's email input to get its real field name.
-                let realEmailName = 'x_email';
+                // Locate PHPMaker's email input to pick up its real field name
+                // (in case it ever stops being the literal "email").
                 const emailField = doc.querySelector('input[id$="email"][type="text"], input[name$="email"]');
-                if (emailField && emailField.name) {
-                    realEmailName = emailField.name;
+                if (emailField && emailField.name && emailField.name !== emailInput.name) {
+                    emailInput.name = emailField.name;
                 }
 
-                const fd = new FormData();
-                fd.append(realEmailName, email);
-                fd.append('modal', '0');
-
-                // Copy CSRF hidden inputs (name + value pair) from the source form.
-                const csrfInputs = doc.querySelectorAll('input[name*="csrf"]');
-                csrfInputs.forEach(inp => fd.append(inp.name, inp.value));
-
-                // If the source uses different field name for our email input, rebuild.
-                if (realEmailName !== 'email') {
-                    fd.delete('email');
-                }
-
-                return fetch('/resetpassword', {
-                    method: 'POST',
-                    body: fd,
-                    credentials: 'same-origin',
-                    redirect: 'follow'
+                // Drop any stale hidden fields from a previous attempt, then
+                // graft a fresh CSRF pair + "modal" flag from the fetched form.
+                resetForm.querySelectorAll('input[type="hidden"][data-harvested]').forEach(el => el.remove());
+                const hiddenFields = doc.querySelectorAll('input[type="hidden"][name*="csrf"], input[type="hidden"][name="modal"]');
+                hiddenFields.forEach(src => {
+                    const h = document.createElement('input');
+                    h.type = 'hidden';
+                    h.name = src.name;
+                    h.value = src.value;
+                    h.dataset.harvested = '1';
+                    resetForm.appendChild(h);
                 });
-            })
-            .then(() => {
-                // Reset-password endpoint always returns a neutral response
-                // regardless of whether the email exists (anti-enumeration).
-                // Show a neutral inline message.
-                resetForm.reset();
-                showLogin();
-                flashOkMsg.textContent =
-                    'If your email address is registered, you will receive password ' +
-                    'recovery instructions shortly.';
-                flashOk.style.display = 'flex';
+
+                resetForm.submit();
             })
             .catch(() => {
                 markEmailError('Could not reach the server. Please try again.');
-            })
-            .finally(() => {
                 btn.disabled = false;
                 btn.innerHTML = '<span>Send Reset Link</span><i class="fas fa-paper-plane"></i>';
             });
     });
+
+    /* ══════════════════════════════════════
+       CHANGE PASSWORD — reached only via the
+       emailed reset link (see $showChangePassword)
+    ══════════════════════════════════════ */
+    document.querySelectorAll('.toggle-password[data-toggle-for]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const field = document.getElementById(this.dataset.toggleFor);
+            const icon = this.querySelector('i');
+            if (!field || !icon) return;
+            const show = field.type === 'password';
+            field.type = show ? 'text' : 'password';
+            icon.classList.toggle('fa-eye', !show);
+            icon.classList.toggle('fa-eye-slash', show);
+        });
+    });
+
+    const changePassForm = document.getElementById('fchangepass');
+    if (changePassForm) {
+        const newPasswordInput = document.getElementById('new-password');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const confirmPasswordGroup = document.getElementById('confirm-password-group');
+        const confirmPasswordError = document.getElementById('confirm-password-error');
+
+        function clearConfirmError() {
+            confirmPasswordGroup.classList.remove('invalid');
+            confirmPasswordInput.classList.remove('invalid');
+            confirmPasswordError.classList.remove('show');
+        }
+        function markConfirmError(msg) {
+            confirmPasswordError.textContent = msg;
+            confirmPasswordGroup.classList.add('invalid');
+            confirmPasswordInput.classList.add('invalid');
+            confirmPasswordError.classList.add('show');
+        }
+        confirmPasswordInput.addEventListener('input', clearConfirmError);
+
+        changePassForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const newPassword = newPasswordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+
+            if (!newPassword || !confirmPassword) {
+                markConfirmError('Please fill in both password fields.');
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                markConfirmError('Passwords do not match.');
+                confirmPasswordInput.focus();
+                return;
+            }
+
+            const btn = document.getElementById('btn-changepass');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Saving…</span><i class="fas fa-spinner fa-spin"></i>';
+
+            // Same CSRF-harvest-then-real-submit pattern as the forms above —
+            // /changepassword is guarded by the same per-session Slim-Csrf pair.
+            fetch('/changepassword', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.text())
+                .then(html => {
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
+
+                    changePassForm.querySelectorAll('input[type="hidden"][data-harvested]').forEach(el => el.remove());
+                    const hiddenFields = doc.querySelectorAll('input[type="hidden"][name*="csrf"], input[type="hidden"][name="modal"]');
+                    hiddenFields.forEach(src => {
+                        const h = document.createElement('input');
+                        h.type = 'hidden';
+                        h.name = src.name;
+                        h.value = src.value;
+                        h.dataset.harvested = '1';
+                        changePassForm.appendChild(h);
+                    });
+
+                    changePassForm.submit();
+                })
+                .catch(() => {
+                    markConfirmError('Could not reach the server. Please try again.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Set New Password</span><i class="fas fa-arrow-right"></i>';
+                });
+        });
+    }
 </script>
 </body>
 </html>

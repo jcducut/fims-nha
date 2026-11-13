@@ -149,6 +149,7 @@ class UsersDelete extends Users
         $this->position_id->setVisibility();
         $this->employee_id->setVisibility();
         $this->must_change_password->setVisibility();
+        $this->rc_id->setVisibility();
     }
 
     // Constructor
@@ -670,6 +671,7 @@ class UsersDelete extends Users
         $this->position_id->setDbValue($row['position_id']);
         $this->employee_id->setDbValue($row['employee_id']);
         $this->must_change_password->setDbValue((ConvertToBool($row['must_change_password']) ? "1" : "0"));
+        $this->rc_id->setDbValue($row['rc_id']);
     }
 
     // Return a row with default values
@@ -696,6 +698,7 @@ class UsersDelete extends Users
         $row['position_id'] = $this->position_id->DefaultValue;
         $row['employee_id'] = $this->employee_id->DefaultValue;
         $row['must_change_password'] = $this->must_change_password->DefaultValue;
+        $row['rc_id'] = $this->rc_id->DefaultValue;
         return $row;
     }
 
@@ -750,6 +753,8 @@ class UsersDelete extends Users
         // employee_id
 
         // must_change_password
+
+        // rc_id
 
         // View row
         if ($this->RowType == RowType::VIEW) {
@@ -879,6 +884,9 @@ class UsersDelete extends Users
                 $this->must_change_password->ViewValue = $this->must_change_password->tagCaption(2) != "" ? $this->must_change_password->tagCaption(2) : "No";
             }
 
+            // rc_id
+            $this->rc_id->ViewValue = $this->rc_id->CurrentValue;
+
             // user_id
             $this->user_id->HrefValue = "";
             $this->user_id->TooltipValue = "";
@@ -926,6 +934,10 @@ class UsersDelete extends Users
             // must_change_password
             $this->must_change_password->HrefValue = "";
             $this->must_change_password->TooltipValue = "";
+
+            // rc_id
+            $this->rc_id->HrefValue = "";
+            $this->rc_id->TooltipValue = "";
         }
 
         // Call Row Rendered event

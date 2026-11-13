@@ -588,9 +588,6 @@ class UserLevelsEdit extends UserLevels
                 }
             }
 
-            // Set up master detail parameters
-            $this->setupMasterParms();
-
             // Load result set
             if ($this->isShow()) {
                     // Load current record
@@ -651,7 +648,7 @@ class UserLevelsEdit extends UserLevels
                     }
 
                     // Handle UseAjaxActions with return page
-                    if ($this->IsModal && $this->UseAjaxActions && !$this->getCurrentMasterTable()) {
+                    if ($this->IsModal && $this->UseAjaxActions) {
                         $this->IsModal = false;
                         if (GetPageName($returnUrl) != "UserLevelsList") {
                             Container("app.flash")->addMessage("Return-Url", $returnUrl); // Save return URL
@@ -939,55 +936,30 @@ class UserLevelsEdit extends UserLevels
 
             // system_id
             $this->system_id->setupEditAttributes();
-            if ($this->system_id->getSessionValue() != "") {
-                $this->system_id->CurrentValue = GetForeignKeyValue($this->system_id->getSessionValue());
-                $curVal = strval($this->system_id->CurrentValue);
-                if ($curVal != "") {
-                    $this->system_id->ViewValue = $this->system_id->lookupCacheOption($curVal);
-                    if ($this->system_id->ViewValue === null) { // Lookup from database
-                        $filterWrk = SearchFilter($this->system_id->Lookup->getTable()->Fields["system_id"]->searchExpression(), "=", $curVal, $this->system_id->Lookup->getTable()->Fields["system_id"]->searchDataType(), "");
-                        $sqlWrk = $this->system_id->Lookup->getSql(false, $filterWrk, '', $this, true, true);
-                        $conn = Conn();
-                        $config = $conn->getConfiguration();
-                        $config->setResultCache($this->Cache);
-                        $rswrk = $conn->executeCacheQuery($sqlWrk, [], [], $this->CacheProfile)->fetchAll();
-                        $ari = count($rswrk);
-                        if ($ari > 0) { // Lookup values found
-                            $arwrk = $this->system_id->Lookup->renderViewRow($rswrk[0]);
-                            $this->system_id->ViewValue = $this->system_id->displayValue($arwrk);
-                        } else {
-                            $this->system_id->ViewValue = FormatNumber($this->system_id->CurrentValue, $this->system_id->formatPattern());
-                        }
-                    }
-                } else {
-                    $this->system_id->ViewValue = null;
-                }
+            $curVal = trim(strval($this->system_id->CurrentValue));
+            if ($curVal != "") {
+                $this->system_id->ViewValue = $this->system_id->lookupCacheOption($curVal);
             } else {
-                $curVal = trim(strval($this->system_id->CurrentValue));
-                if ($curVal != "") {
-                    $this->system_id->ViewValue = $this->system_id->lookupCacheOption($curVal);
-                } else {
-                    $this->system_id->ViewValue = $this->system_id->Lookup !== null && is_array($this->system_id->lookupOptions()) && count($this->system_id->lookupOptions()) > 0 ? $curVal : null;
-                }
-                if ($this->system_id->ViewValue !== null) { // Load from cache
-                    $this->system_id->EditValue = array_values($this->system_id->lookupOptions());
-                } else { // Lookup from database
-                    if ($curVal == "") {
-                        $filterWrk = "0=1";
-                    } else {
-                        $filterWrk = SearchFilter($this->system_id->Lookup->getTable()->Fields["system_id"]->searchExpression(), "=", $this->system_id->CurrentValue, $this->system_id->Lookup->getTable()->Fields["system_id"]->searchDataType(), "");
-                    }
-                    $sqlWrk = $this->system_id->Lookup->getSql(true, $filterWrk, '', $this, false, true);
-                    $conn = Conn();
-                    $config = $conn->getConfiguration();
-                    $config->setResultCache($this->Cache);
-                    $rswrk = $conn->executeCacheQuery($sqlWrk, [], [], $this->CacheProfile)->fetchAll();
-                    $ari = count($rswrk);
-                    $arwrk = $rswrk;
-                    $this->system_id->EditValue = $arwrk;
-                }
-                $this->system_id->PlaceHolder = RemoveHtml($this->system_id->caption());
+                $this->system_id->ViewValue = $this->system_id->Lookup !== null && is_array($this->system_id->lookupOptions()) && count($this->system_id->lookupOptions()) > 0 ? $curVal : null;
             }
+            if ($this->system_id->ViewValue !== null) { // Load from cache
+                $this->system_id->EditValue = array_values($this->system_id->lookupOptions());
+            } else { // Lookup from database
+                if ($curVal == "") {
+                    $filterWrk = "0=1";
+                } else {
+                    $filterWrk = SearchFilter($this->system_id->Lookup->getTable()->Fields["system_id"]->searchExpression(), "=", $this->system_id->CurrentValue, $this->system_id->Lookup->getTable()->Fields["system_id"]->searchDataType(), "");
+                }
+                $sqlWrk = $this->system_id->Lookup->getSql(true, $filterWrk, '', $this, false, true);
+                $conn = Conn();
+                $config = $conn->getConfiguration();
+                $config->setResultCache($this->Cache);
+                $rswrk = $conn->executeCacheQuery($sqlWrk, [], [], $this->CacheProfile)->fetchAll();
+                $ari = count($rswrk);
+                $arwrk = $rswrk;
+                $this->system_id->EditValue = $arwrk;
+            }
+            $this->system_id->PlaceHolder = RemoveHtml($this->system_id->caption());
 
             // name
             $this->name->setupEditAttributes();
@@ -1241,9 +1213,6 @@ class UserLevelsEdit extends UserLevels
         $this->user_level_id->setDbValueDef($rsnew, $this->user_level_id->CurrentValue, $this->user_level_id->ReadOnly);
 
         // system_id
-        if ($this->system_id->getSessionValue() != "") {
-            $this->system_id->ReadOnly = true;
-        }
         $this->system_id->setDbValueDef($rsnew, $this->system_id->CurrentValue, $this->system_id->ReadOnly);
 
         // name
@@ -1272,79 +1241,6 @@ class UserLevelsEdit extends UserLevels
         if (isset($row['description'])) { // description
             $this->description->CurrentValue = $row['description'];
         }
-    }
-
-    // Set up master/detail based on QueryString
-    protected function setupMasterParms()
-    {
-        $validMaster = false;
-        $foreignKeys = [];
-        // Get the keys for master table
-        if (($master = Get(Config("TABLE_SHOW_MASTER"), Get(Config("TABLE_MASTER")))) !== null) {
-            $masterTblVar = $master;
-            if ($masterTblVar == "") {
-                $validMaster = true;
-                $this->DbMasterFilter = "";
-                $this->DbDetailFilter = "";
-            }
-            if ($masterTblVar == "systems") {
-                $validMaster = true;
-                $masterTbl = Container("systems");
-                if (($parm = Get("fk_system_id", Get("system_id"))) !== null) {
-                    $masterTbl->system_id->setQueryStringValue($parm);
-                    $this->system_id->QueryStringValue = $masterTbl->system_id->QueryStringValue; // DO NOT change, master/detail key data type can be different
-                    $this->system_id->setSessionValue($this->system_id->QueryStringValue);
-                    $foreignKeys["system_id"] = $this->system_id->QueryStringValue;
-                    if (!is_numeric($masterTbl->system_id->QueryStringValue)) {
-                        $validMaster = false;
-                    }
-                } else {
-                    $validMaster = false;
-                }
-            }
-        } elseif (($master = Post(Config("TABLE_SHOW_MASTER"), Post(Config("TABLE_MASTER")))) !== null) {
-            $masterTblVar = $master;
-            if ($masterTblVar == "") {
-                    $validMaster = true;
-                    $this->DbMasterFilter = "";
-                    $this->DbDetailFilter = "";
-            }
-            if ($masterTblVar == "systems") {
-                $validMaster = true;
-                $masterTbl = Container("systems");
-                if (($parm = Post("fk_system_id", Post("system_id"))) !== null) {
-                    $masterTbl->system_id->setFormValue($parm);
-                    $this->system_id->FormValue = $masterTbl->system_id->FormValue;
-                    $this->system_id->setSessionValue($this->system_id->FormValue);
-                    $foreignKeys["system_id"] = $this->system_id->FormValue;
-                    if (!is_numeric($masterTbl->system_id->FormValue)) {
-                        $validMaster = false;
-                    }
-                } else {
-                    $validMaster = false;
-                }
-            }
-        }
-        if ($validMaster) {
-            // Save current master table
-            $this->setCurrentMasterTable($masterTblVar);
-            $this->setSessionWhere($this->getDetailFilterFromSession());
-
-            // Reset start record counter (new master key)
-            if (!$this->isAddOrEdit() && !$this->isGridUpdate()) {
-                $this->StartRecord = 1;
-                $this->setStartRecordNumber($this->StartRecord);
-            }
-
-            // Clear previous master key from Session
-            if ($masterTblVar != "systems") {
-                if (!array_key_exists("system_id", $foreignKeys)) { // Not current foreign key
-                    $this->system_id->setSessionValue("");
-                }
-            }
-        }
-        $this->DbMasterFilter = $this->getMasterFilterFromSession(); // Get master filter from session
-        $this->DbDetailFilter = $this->getDetailFilterFromSession(); // Get detail filter from session
     }
 
     // Set up detail parms based on QueryString

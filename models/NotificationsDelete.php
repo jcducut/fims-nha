@@ -133,6 +133,8 @@ class NotificationsDelete extends Notifications
         $this->is_read->setVisibility();
         $this->created_at->setVisibility();
         $this->read_users->Visible = false;
+        $this->sender_id->setVisibility();
+        $this->event_key->setVisibility();
     }
 
     // Constructor
@@ -615,6 +617,8 @@ class NotificationsDelete extends Notifications
         $this->is_read->setDbValue((ConvertToBool($row['is_read']) ? "1" : "0"));
         $this->created_at->setDbValue($row['created_at']);
         $this->read_users->setDbValue($row['read_users']);
+        $this->sender_id->setDbValue($row['sender_id']);
+        $this->event_key->setDbValue($row['event_key']);
     }
 
     // Return a row with default values
@@ -633,6 +637,8 @@ class NotificationsDelete extends Notifications
         $row['is_read'] = $this->is_read->DefaultValue;
         $row['created_at'] = $this->created_at->DefaultValue;
         $row['read_users'] = $this->read_users->DefaultValue;
+        $row['sender_id'] = $this->sender_id->DefaultValue;
+        $row['event_key'] = $this->event_key->DefaultValue;
         return $row;
     }
 
@@ -671,6 +677,10 @@ class NotificationsDelete extends Notifications
         // created_at
 
         // read_users
+
+        // sender_id
+
+        // event_key
 
         // View row
         if ($this->RowType == RowType::VIEW) {
@@ -711,6 +721,13 @@ class NotificationsDelete extends Notifications
             $this->created_at->ViewValue = $this->created_at->CurrentValue;
             $this->created_at->ViewValue = FormatDateTime($this->created_at->ViewValue, $this->created_at->formatPattern());
 
+            // sender_id
+            $this->sender_id->ViewValue = $this->sender_id->CurrentValue;
+            $this->sender_id->ViewValue = FormatNumber($this->sender_id->ViewValue, $this->sender_id->formatPattern());
+
+            // event_key
+            $this->event_key->ViewValue = $this->event_key->CurrentValue;
+
             // id
             $this->id->HrefValue = "";
             $this->id->TooltipValue = "";
@@ -750,6 +767,14 @@ class NotificationsDelete extends Notifications
             // created_at
             $this->created_at->HrefValue = "";
             $this->created_at->TooltipValue = "";
+
+            // sender_id
+            $this->sender_id->HrefValue = "";
+            $this->sender_id->TooltipValue = "";
+
+            // event_key
+            $this->event_key->HrefValue = "";
+            $this->event_key->TooltipValue = "";
         }
 
         // Call Row Rendered event

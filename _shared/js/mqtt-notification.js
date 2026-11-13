@@ -170,20 +170,19 @@ var AppNotificationClient = (function() {
         unsubscribeFromAll();
         subscriptions = [];
 
-        // System notifications (all users)
-        subscribe('app/notifications/system/all');
-        
-        // Personal notifications
-        subscribe(`app/notifications/personal/${userInfo.userid}`);
-        
-        // Role-based notifications
+        // Topic scheme = NotificationService::topic(): app/notifications/{type}/{target}
+        // (audience types: all | system | user | userlevel | office | usergroup — see
+        // _shared/NOTIFICATION-IMPLEMENTATION-PLAN.md §3.2 / §6.1). Polling covers anything not subscribed here.
+        subscribe('app/notifications/all/all');
+        subscribe(`app/notifications/user/${userInfo.userid}`);
+
         if (userInfo.userlevel) {
-            subscribe(`app/notifications/role/${userInfo.userlevel}`);
+            subscribe(`app/notifications/userlevel/${userInfo.userlevel}`);
         }
 
-        // Parent user notifications if applicable
+        // Users whose supervisor is this user's parent (reports_to_user_id)
         if (userInfo.parentuserid) {
-            subscribe(`app/notifications/parent/${userInfo.parentuserid}`);
+            subscribe(`app/notifications/usergroup/${userInfo.parentuserid}`);
         }
 
         // Real-time DataTable events (published by backend via NotificationManager::publishEvent)

@@ -399,6 +399,25 @@ class Login extends Users
                 if ($validate) {
                     $validPwd = $Security->validateUser($this->Username->CurrentValue, $this->Password->CurrentValue); // Manual login
                     if (!$validPwd) {
+                        // A failed credential check would otherwise fall through to
+                        // the bottom of this method's "After login" section and
+                        // render the framework's own default views/Login.php
+                        // template as the POST response — a different, unbranded
+                        // page than our custom app/pages/login.php (only "/" is
+                        // rewritten to that custom page by nginx.conf; "/login"
+                        // itself still routes through this model). Redirect back
+                        // to "/" instead, flagged via query string (not a session
+                        // flash — this redirect's session write was found not to
+                        // survive into the next request in this stack) so
+                        // app/pages/login.php can show the error. Must happen
+                        // here, before the username is cleared below — the
+                        // "After login" elseif branch checks
+                        // !EmptyValue($this->Username) and would never fire once
+                        // it's wiped.
+                        if (!IsApi() && !$this->IsModal) {
+                            $this->terminate('/?login=failed');
+                            return;
+                        }
                         $this->Username->setFormValue(""); // Clear login name
                         $this->Username->addErrorMessage($Language->phrase("InvalidUidPwd")); // Invalid user name or password
                         $this->Password->addErrorMessage($Language->phrase("InvalidUidPwd")); // Invalid user name or password

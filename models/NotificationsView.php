@@ -151,6 +151,8 @@ class NotificationsView extends Notifications
         $this->is_read->setVisibility();
         $this->created_at->setVisibility();
         $this->read_users->setVisibility();
+        $this->sender_id->setVisibility();
+        $this->event_key->setVisibility();
     }
 
     // Constructor
@@ -751,6 +753,8 @@ class NotificationsView extends Notifications
         $this->is_read->setDbValue((ConvertToBool($row['is_read']) ? "1" : "0"));
         $this->created_at->setDbValue($row['created_at']);
         $this->read_users->setDbValue($row['read_users']);
+        $this->sender_id->setDbValue($row['sender_id']);
+        $this->event_key->setDbValue($row['event_key']);
     }
 
     // Return a row with default values
@@ -769,6 +773,8 @@ class NotificationsView extends Notifications
         $row['is_read'] = $this->is_read->DefaultValue;
         $row['created_at'] = $this->created_at->DefaultValue;
         $row['read_users'] = $this->read_users->DefaultValue;
+        $row['sender_id'] = $this->sender_id->DefaultValue;
+        $row['event_key'] = $this->event_key->DefaultValue;
         return $row;
     }
 
@@ -814,6 +820,10 @@ class NotificationsView extends Notifications
 
         // read_users
 
+        // sender_id
+
+        // event_key
+
         // View row
         if ($this->RowType == RowType::VIEW) {
             // id
@@ -858,6 +868,13 @@ class NotificationsView extends Notifications
 
             // read_users
             $this->read_users->ViewValue = $this->read_users->CurrentValue;
+
+            // sender_id
+            $this->sender_id->ViewValue = $this->sender_id->CurrentValue;
+            $this->sender_id->ViewValue = FormatNumber($this->sender_id->ViewValue, $this->sender_id->formatPattern());
+
+            // event_key
+            $this->event_key->ViewValue = $this->event_key->CurrentValue;
 
             // id
             $this->id->HrefValue = "";
@@ -906,6 +923,14 @@ class NotificationsView extends Notifications
             // read_users
             $this->read_users->HrefValue = "";
             $this->read_users->TooltipValue = "";
+
+            // sender_id
+            $this->sender_id->HrefValue = "";
+            $this->sender_id->TooltipValue = "";
+
+            // event_key
+            $this->event_key->HrefValue = "";
+            $this->event_key->TooltipValue = "";
         }
 
         // Call Row Rendered event

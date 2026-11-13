@@ -2651,6 +2651,13 @@ html.afims-dark[data-bs-theme="dark"] .main-sidebar .user-panel .ew-user-avatar 
 }
 /* FMD-DARK:END */
 
+/* SweetAlert2 defaults to z-index:1060 — well below this app's own modal overlays, several of which go
+   up to 9200 (e.g. app/pages/form/budget-allocation-form.php) or higher. Without this, a Swal.fire()
+   confirm/toast triggered from inside one of those modals renders BEHIND it instead of on top. */
+.swal2-container {
+  z-index: 99999999 !important;
+}
+
 /* Yellow buttons: some pages force white text on the warning fill */
 html.afims-dark[data-bs-theme="dark"] .btn-warning,
 html.afims-dark[data-bs-theme="dark"] .btn-warning:hover {

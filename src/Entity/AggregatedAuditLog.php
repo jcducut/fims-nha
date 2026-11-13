@@ -28,7 +28,6 @@ use function PHPMaker2024\FIMS\EncryptPassword;
 #[Table(schema: "uac", name: "aggregated_audit_logs")]
 class AggregatedAuditLog extends AbstractEntity
 {
-    #[Id]
     #[Column(name: "aggregated_id", type: "integer", nullable: true)]
     private ?int $aggregatedId;
 
@@ -47,7 +46,7 @@ class AggregatedAuditLog extends AbstractEntity
     #[Column(name: "\"table\"", options: ["name" => "table"], type: "string", nullable: true)]
     private ?string $table;
 
-    #[Column(name: "action_type", type: "string", nullable: true)]
+    #[Column(name: "action_type", type: "text", nullable: true)]
     private ?string $actionType;
 
     #[Column(type: "text", nullable: true)]

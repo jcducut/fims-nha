@@ -360,7 +360,11 @@ function expectedSlotCount() {
  * @param {object} docxLib  the generator's `require('docx')` — passed in so this
  *                          module stays dependency-free
  * @param {object} opts     system, document, data, fallbackBase64,
- *                          totalWidth (default 630), totalHeight (default 95)
+ *                          totalWidth (default 630), totalHeight (default 95),
+ *                          parts (optional) — explicit parts to compose instead
+ *                          of steps 1-2: same shape as the manifest's
+ *                          header_parts, but an image part carries its bytes as
+ *                          `data` (Buffer) instead of a mirror `file`
  * @returns {{children: Array, source: string}}
  */
 function buildHeaderChildren(docxLib, opts = {}) {
@@ -378,8 +382,15 @@ function buildHeaderChildren(docxLib, opts = {}) {
         center: AlignmentType.CENTER,
     })[String(a || 'center').toLowerCase()] || AlignmentType.CENTER;
 
+    const explicitParts = Array.isArray(opts.parts) && opts.parts.length ? opts.parts : null;
+
+    // ── 0. Freely placed parts (every part has x / y) ───────────────────────
+    if (explicitParts && explicitParts.every(p => Number.isFinite(Number(p.x)) && Number.isFinite(Number(p.y)))) {
+        return { source: 'placed', children: buildPlacedHeader(docxLib, explicitParts, totalWidth, opts.origin || {}) };
+    }
+
     // ── 1. Whole-header image (also covers the embedded fallback) ───────────
-    const whole = resolveHeader({
+    const whole = explicitParts ? { data: null } : resolveHeader({
         system: opts.system,
         document: opts.document,
         data: opts.data,
@@ -404,17 +415,18 @@ function buildHeaderChildren(docxLib, opts = {}) {
     }
 
     // ── 2. Composed parts ───────────────────────────────────────────────────
-    const parts = resolveHeaderParts(opts);
+    const parts = explicitParts || resolveHeaderParts(opts);
     const usable = parts.filter(p =>
         (p.kind === 'text' && (p.text?.line1 || p.text?.line2)) ||
-        (p.kind !== 'text' && p.file));
+        (p.kind !== 'text' && (p.file || p.data)));
 
     // Only compose once EVERY part is in place. A half-configured letterhead —
     // say the agency name uploaded but the logos still missing — would
     // otherwise print as a lone line of text on official documents, which is
     // worse than printing the old built-in banner.
     const expected = expectedSlotCount();
-    const complete = usable.length > 0 && (expected === 0 || usable.length >= expected);
+    // Explicit parts are the caller's complete choice — no slot count to meet.
+    const complete = usable.length > 0 && (explicitParts !== null || expected === 0 || usable.length >= expected);
 
     if (complete) {
         const NONE = { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' };
@@ -451,8 +463,12 @@ function buildHeaderChildren(docxLib, opts = {}) {
                         text: String(txt),
                         bold: !!bold,
                         font,
-                        // docx sizes are in half-points.
-                        size: Math.round((Number(sizePt) || 11) * 2),
+                        // docx sizes are in half-points. Text sizes are given for a
+                        // 630 px letterhead (like the part image sizes); scale them to
+                        // the real width (px → pt is × 0.75) so the title keeps the
+                        // same proportion as in the HTML/PDF letterhead
+                        // (DocumentBranding: size × widthPt / 630).
+                        size: Math.round((Number(sizePt) || 11) * (totalWidth * 0.75 / 630) * 2),
                         color: (color || '000000').replace(/^#/, ''),
                     })],
                     alignment: align,
@@ -462,11 +478,13 @@ function buildHeaderChildren(docxLib, opts = {}) {
                 if (t.line1) children.push(mk(t.line1, t.line1_size_pt, t.line1_bold, t.line1_color));
                 if (t.line2) children.push(mk(t.line2, t.line2_size_pt, t.line2_bold, t.line2_color));
             } else {
-                let buf = null;
-                try {
-                    buf = fs.readFileSync(path.join(BRANDING_DIR, p.file));
-                } catch (e) {
-                    buf = null;
+                let buf = Buffer.isBuffer(p.data) ? p.data : null;
+                if (!buf) {
+                    try {
+                        buf = fs.readFileSync(path.join(BRANDING_DIR, p.file));
+                    } catch (e) {
+                        buf = null;
+                    }
                 }
                 children = buf && buf.length
                     ? [new Paragraph({
@@ -523,6 +541,105 @@ function buildHeaderChildren(docxLib, opts = {}) {
     }
 
     return { source: 'none', children: [] };
+}
+
+/**
+ * A freely placed letterhead (the print preview's header designer) as Word
+ * header content. Parts are in drawing order, with x / y / box_width and
+ * render {width, height} in px at the real header width (`totalWidth`); text
+ * sizes are still given for a 630 px letterhead and are scaled here, as in the
+ * row layout above.
+ *
+ * Word has no "absolute box" for a header, so:
+ *   - an empty first paragraph exactly as tall as the letterhead holds the space;
+ *   - images float in it ("in front of text"), positioned from the page edge;
+ *   - each title is a text frame, positioned from the page edge;
+ *   - a hairline paragraph closes the header (Word wants a plain last paragraph).
+ * `origin` {left, top} (twips) is where the header area starts on the page: the
+ * left margin and the header distance from the top edge.
+ */
+function buildPlacedHeader(docxLib, parts, totalWidth, origin) {
+    const {
+        Paragraph, TextRun, ImageRun, AlignmentType, FrameAnchorType,
+        HorizontalPositionRelativeFrom, VerticalPositionRelativeFrom, TextWrappingType,
+    } = docxLib;
+    const TWIPS = 15;      // per px (and 635 EMU per twip for the image offsets)
+    const k     = totalWidth / 630;
+    const left  = Number(origin.left) || 0;
+    const top   = Number(origin.top) || 0;
+    const alignOf = a => ({ left: AlignmentType.LEFT, right: AlignmentType.RIGHT })[a] || AlignmentType.CENTER;
+
+    const floats = [];
+    const frames = [];
+    let bottom = 0;   // px
+
+    parts.forEach((p, i) => {
+        const x = Number(p.x) || 0;
+        const y = Number(p.y) || 0;
+
+        if (p.kind === 'text') {
+            const t = p.text || {};
+            const lines = [
+                [t.line1, t.line1_size_pt, t.line1_bold, t.line1_color],
+                [t.line2, t.line2_size_pt, t.line2_bold, t.line2_color],
+            ].filter(l => l[0]);
+            if (!lines.length) return;
+            const runs = [];
+            let h = 0;
+            lines.forEach(([txt, sizePt, bold, color], n) => {
+                const pt = (Number(sizePt) || 11) * k * 0.75;   // printed size
+                h += pt * 1.15 / 0.75;
+                runs.push(new TextRun({
+                    text: String(txt), bold: !!bold, font: (t.font || 'Arial'),
+                    size: Math.round(pt * 2), color: (color || '000000').replace(/^#/, ''),
+                    break: n > 0 ? 1 : undefined,
+                }));
+            });
+            bottom = Math.max(bottom, y + h);
+            frames.push(new Paragraph({
+                frame: {
+                    type: 'absolute',
+                    position: { x: Math.round(left + x * TWIPS), y: Math.round(top + y * TWIPS) },
+                    width: Math.max(1, Math.round((Number(p.box_width) || 300) * TWIPS)),
+                    anchor: { horizontal: FrameAnchorType.PAGE, vertical: FrameAnchorType.PAGE },
+                },
+                alignment: alignOf(p.align),
+                spacing: { before: 0, after: 0 },
+                children: runs,
+            }));
+            return;
+        }
+
+        const buf = Buffer.isBuffer(p.data) ? p.data : null;
+        if (!buf || !buf.length) return;
+        const w = Math.max(1, Math.round(Number(p.render?.width) || 60));
+        const h = Math.max(1, Math.round(Number(p.render?.height) || 60));
+        bottom = Math.max(bottom, y + h);
+        floats.push(new ImageRun({
+            data: buf,
+            type: typeFromBuffer(buf, 'png'),
+            transformation: { width: w, height: h },
+            floating: {
+                horizontalPosition: { relative: HorizontalPositionRelativeFrom.PAGE, offset: Math.round((left + x * TWIPS) * 635) },
+                verticalPosition:   { relative: VerticalPositionRelativeFrom.PAGE, offset: Math.round((top + y * TWIPS) * 635) },
+                allowOverlap: true,
+                behindDocument: false,
+                wrap: { type: TextWrappingType.NONE },
+                zIndex: i + 1,
+            },
+        }));
+    });
+
+    if (!floats.length && !frames.length) return [new Paragraph({ children: [] })];
+
+    return [
+        new Paragraph({
+            children: floats,
+            spacing: { before: 0, after: 0, line: Math.max(20, Math.round(bottom * TWIPS)), lineRule: 'exact' },
+        }),
+        ...frames,
+        new Paragraph({ children: [], spacing: { before: 0, after: 0, line: 20, lineRule: 'exact' } }),
+    ];
 }
 
 /**

@@ -1,1657 +1,1626 @@
-<ew-language date="2026/11/6" id="en-US" author="e.World Technology Limited">
+<ew-language date="2026/11/12" id="en-US" author="e.World Technology Limited">
   <project>
-    <phrase id="bodytitle" value="UAC - User Access Control System" />
-    <phrase id="footertext" value="&amp;copy;2024 ITBS Corporation. All rights reserved." />
-    <menu id="72">
-      <phrase id="menutext" value="api logs" />
-    </menu>
-    <menu id="73">
-      <phrase id="menutext" value="api resources" />
-    </menu>
-    <menu id="74">
-      <phrase id="menutext" value="api systems" />
-    </menu>
-    <menu id="75">
-      <phrase id="menutext" value="document asset types" />
-    </menu>
-    <menu id="76">
-      <phrase id="menutext" value="document header assets" />
-    </menu>
-    <menu id="77">
-      <phrase id="menutext" value="document header slots" />
-    </menu>
-    <menu id="78">
-      <phrase id="menutext" value="jwt sessions" />
+    <phrase id="bodytitle" value="UAC - User Access Control System"/>
+    <phrase id="footertext" value="&amp;copy;2024 ITBS Corporation. All rights reserved."/>
+    <menu id="262">
+      <phrase id="menutext" value="notification reads"/>
     </menu>
     <menu id="9">
-      <phrase id="menutext" value="Dashboard" />
+      <phrase id="menutext" value="Dashboard"/>
     </menu>
-    <menu id="3">
-      <phrase id="menutext" value="Systems" />
+    <menu id="146">
+      <phrase id="menutext" value="Budget"/>
     </menu>
-    <menu id="69">
-      <phrase id="menutext" value="Department Management" />
+    <menu id="88">
+      <phrase id="menutext" value="Memo Request"/>
+    </menu>
+    <menu id="81">
+      <phrase id="menutext" value="Budget Request"/>
+    </menu>
+    <menu id="261">
+      <phrase id="menutext" value="Budget Propose"/>
+    </menu>
+    <menu id="85">
+      <phrase id="menutext" value="Budget Revision"/>
+    </menu>
+    <menu id="147">
+      <phrase id="menutext" value="Programs &amp; Projects "/>
+    </menu>
+    <menu id="80">
+      <phrase id="menutext" value="Program"/>
+    </menu>
+    <menu id="82">
+      <phrase id="menutext" value="Sub Program"/>
+    </menu>
+    <menu id="79">
+      <phrase id="menutext" value="Projects"/>
+    </menu>
+    <menu id="148">
+      <phrase id="menutext" value="Accounting Records"/>
+    </menu>
+    <menu id="89">
+      <phrase id="menutext" value="Chart of Accounts"/>
+    </menu>
+    <menu id="90">
+      <phrase id="menutext" value="Responsibilty Center"/>
+    </menu>
+    <menu id="391">
+      <phrase id="menutext" value="Vendors" />
+    </menu>
+    <menu id="390">
+      <phrase id="menutext" value="Inventory" />
+    </menu>
+    <menu id="91">
+      <phrase id="menutext" value="IAR Module"/>
+    </menu>
+    <menu id="333">
+      <phrase id="menutext" value="Property Record" />
+    </menu>
+    <menu id="258">
+      <phrase id="menutext" value="Vouchers"/>
+    </menu>
+    <menu id="208">
+      <phrase id="menutext" value="Journal Entry Voucher"/>
+    </menu>
+    <menu id="207">
+      <phrase id="menutext" value="Disbursement Voucher"/>
+    </menu>
+    <menu id="260">
+      <phrase id="menutext" value="Check Disbursements"/>
+    </menu>
+    <menu id="332">
+      <phrase id="menutext" value="Bank Management"/>
+    </menu>
+    <menu id="331">
+      <phrase id="menutext" value="Cash Position"/>
+    </menu>
+    <menu id="330">
+      <phrase id="menutext" value="Fund Sourcing"/>
+    </menu>
+    <menu id="263">
+      <phrase id="menutext" value="SARO Registry"/>
+    </menu>
+    <menu id="264">
+      <phrase id="menutext" value="Supplemental Funds"/>
+    </menu>
+    <menu id="265">
+      <phrase id="menutext" value="Trust Funds"/>
+    </menu>
+    <menu id="266">
+      <phrase id="menutext" value="Pricing"/>
+    </menu>
+    <menu id="206">
+      <phrase id="menutext" value="Administration"/>
     </menu>
     <menu id="70">
-      <phrase id="menutext" value="Position Management" />
+      <phrase id="menutext" value="Position Management"/>
     </menu>
     <menu id="13">
-      <phrase id="menutext" value="User Access Management" />
+      <phrase id="menutext" value="User Access Management"/>
     </menu>
     <menu id="12">
-      <phrase id="menutext" value="User Level Management" />
+      <phrase id="menutext" value="User Level Management"/>
+    </menu>
+    <menu id="69">
+      <phrase id="menutext" value="Department Management"/>
+    </menu>
+    <menu id="259">
+      <phrase id="menutext" value="Change Password"/>
+    </menu>
+    <menu id="3">
+      <phrase id="menutext" value="Systems"/>
+    </menu>
+    <menu id="84">
+      <phrase id="menutext" value="aggregated audit logs"/>
+    </menu>
+    <menu id="83">
+      <phrase id="menutext" value="permission module captions"/>
+    </menu>
+    <menu id="86">
+      <phrase id="menutext" value="Budget Revision Form"/>
+    </menu>
+    <menu id="87">
+      <phrase id="menutext" value="Budget Revision Preview"/>
+    </menu>
+    <menu id="75">
+      <phrase id="menutext" value="document asset types"/>
+    </menu>
+    <menu id="76">
+      <phrase id="menutext" value="document header assets"/>
+    </menu>
+    <menu id="77">
+      <phrase id="menutext" value="document header slots"/>
+    </menu>
+    <menu id="78">
+      <phrase id="menutext" value="jwt sessions"/>
     </menu>
     <menu id="59">
-      <phrase id="menutext" value="ID Generator Management" />
-    </menu>
-    <menu id="8">
-      <phrase id="menutext" value="Audit Logs" />
+      <phrase id="menutext" value="ID Generator Management"/>
     </menu>
     <menu id="31">
-      <phrase id="menutext" value="Workflow Manager" />
+      <phrase id="menutext" value="Workflow Manager"/>
     </menu>
     <menu id="71">
-      <phrase id="menutext" value="Signatory Management" />
-    </menu>
-    <menu id="67">
-      <phrase id="menutext" value="v department hierarchy" />
-    </menu>
-    <menu id="68">
-      <phrase id="menutext" value="v user access summary" />
+      <phrase id="menutext" value="Signatory Management"/>
     </menu>
     <menu id="64">
-      <phrase id="menutext" value="department systems" />
+      <phrase id="menutext" value="department systems"/>
     </menu>
     <menu id="65">
-      <phrase id="menutext" value="offices" />
+      <phrase id="menutext" value="offices"/>
     </menu>
     <menu id="66">
-      <phrase id="menutext" value="user offices" />
+      <phrase id="menutext" value="user offices"/>
     </menu>
     <menu id="60">
-      <phrase id="menutext" value="id format configs" />
+      <phrase id="menutext" value="id format configs"/>
     </menu>
     <menu id="61">
-      <phrase id="menutext" value="id reset strategies" />
+      <phrase id="menutext" value="id reset strategies"/>
     </menu>
     <menu id="62">
-      <phrase id="menutext" value="id sequences" />
+      <phrase id="menutext" value="id sequences"/>
     </menu>
     <menu id="26">
-      <phrase id="menutext" value="chat history" />
+      <phrase id="menutext" value="chat history"/>
     </menu>
     <menu id="27">
-      <phrase id="menutext" value="chat sessions" />
+      <phrase id="menutext" value="chat sessions"/>
     </menu>
     <menu id="19">
-      <phrase id="menutext" value="file share activity" />
+      <phrase id="menutext" value="file share activity"/>
     </menu>
     <menu id="20">
-      <phrase id="menutext" value="file share permissions" />
+      <phrase id="menutext" value="file share permissions"/>
     </menu>
     <menu id="21">
-      <phrase id="menutext" value="file shares" />
+      <phrase id="menutext" value="file shares"/>
     </menu>
     <menu id="22">
-      <phrase id="menutext" value="shared folder access" />
+      <phrase id="menutext" value="shared folder access"/>
     </menu>
     <menu id="18">
-      <phrase id="menutext" value="Editor" />
+      <phrase id="menutext" value="Editor"/>
     </menu>
     <menu id="11">
-      <phrase id="menutext" value="Notification" />
+      <phrase id="menutext" value="Notification"/>
     </menu>
     <menu id="25">
-      <phrase id="menutext" value="eAssist" />
+      <phrase id="menutext" value="eAssist"/>
     </menu>
     <menu id="1">
-      <phrase id="menutext" value="Audit Logs" />
+      <phrase id="menutext" value="Audit Logs"/>
     </menu>
     <menu id="10">
-      <phrase id="menutext" value="Departments" />
+      <phrase id="menutext" value="Departments"/>
     </menu>
     <menu id="29">
-      <phrase id="menutext" value="Positions" />
+      <phrase id="menutext" value="Positions"/>
     </menu>
     <menu id="28">
-      <phrase id="menutext" value="Positions Categories" />
+      <phrase id="menutext" value="Positions Categories"/>
     </menu>
     <menu id="30">
-      <phrase id="menutext" value="plantilla items" />
+      <phrase id="menutext" value="plantilla items"/>
     </menu>
     <menu id="4">
-      <phrase id="menutext" value="User Level Assignments" />
+      <phrase id="menutext" value="User Level Assignments"/>
     </menu>
     <menu id="5">
-      <phrase id="menutext" value="user level permissions" />
+      <phrase id="menutext" value="user level permissions"/>
     </menu>
     <menu id="63">
-      <phrase id="menutext" value="Event Playground" />
+      <phrase id="menutext" value="Event Playground"/>
     </menu>
     <menu id="7">
-      <phrase id="menutext" value="Users" />
+      <phrase id="menutext" value="Users"/>
     </menu>
     <menu id="6">
-      <phrase id="menutext" value="User Levels" />
+      <phrase id="menutext" value="User Levels"/>
     </menu>
     <menu id="16">
-      <phrase id="menutext" value="File Manager" />
+      <phrase id="menutext" value="File Manager"/>
     </menu>
     <menu id="14">
-      <phrase id="menutext" value="PH Standard GeoCode" />
+      <phrase id="menutext" value="PH Standard GeoCode"/>
     </menu>
     <menu id="17">
-      <phrase id="menutext" value="BullMQ Manager" />
+      <phrase id="menutext" value="BullMQ Manager"/>
     </menu>
     <menu id="15">
-      <phrase id="menutext" value="PSGC Map" />
+      <phrase id="menutext" value="PSGC Map"/>
     </menu>
     <menu id="58">
-      <phrase id="menutext" value="Document &amp; Workflow" />
+      <phrase id="menutext" value="Document &amp; Workflow"/>
     </menu>
     <menu id="32">
-      <phrase id="menutext" value="Document Type Editor" />
+      <phrase id="menutext" value="Document Type Editor"/>
     </menu>
     <menu id="33">
-      <phrase id="menutext" value="Document Type Manager" />
+      <phrase id="menutext" value="Document Type Manager"/>
     </menu>
     <table id="audit_logs">
-      <phrase id="tblcaption" value="Audit Logs" />
+      <phrase id="tblcaption" value="Audit Logs"/>
       <field id="id">
-        <phrase id="fldcaption" value="id" />
+        <phrase id="fldcaption" value="id"/>
       </field>
       <field id="date_time">
-        <phrase id="fldcaption" value="date time" />
+        <phrase id="fldcaption" value="date time"/>
       </field>
       <field id="script">
-        <phrase id="fldcaption" value="script" />
+        <phrase id="fldcaption" value="script"/>
       </field>
       <field id="user">
-        <phrase id="fldcaption" value="user" />
+        <phrase id="fldcaption" value="user"/>
       </field>
       <field id="_action">
-        <phrase id="fldcaption" value="action" />
+        <phrase id="fldcaption" value="action"/>
       </field>
       <field id="_table">
-        <phrase id="fldcaption" value="table" />
+        <phrase id="fldcaption" value="table"/>
       </field>
       <field id="field">
-        <phrase id="fldcaption" value="field" />
+        <phrase id="fldcaption" value="field"/>
       </field>
       <field id="key_value">
-        <phrase id="fldcaption" value="key value" />
+        <phrase id="fldcaption" value="key value"/>
       </field>
       <field id="old_value">
-        <phrase id="fldcaption" value="old value" />
+        <phrase id="fldcaption" value="old value"/>
       </field>
       <field id="new_value">
-        <phrase id="fldcaption" value="new value" />
+        <phrase id="fldcaption" value="new value"/>
       </field>
     </table>
     <table id="systems">
-      <phrase id="tblcaption" value="Systems" />
+      <phrase id="tblcaption" value="Systems"/>
       <field id="system_id">
-        <phrase id="fldcaption" value="system id" />
+        <phrase id="fldcaption" value="system id"/>
       </field>
       <field id="system_name">
-        <phrase id="fldcaption" value="system name" />
+        <phrase id="fldcaption" value="system name"/>
       </field>
       <field id="system_code">
-        <phrase id="fldcaption" value="system code" />
+        <phrase id="fldcaption" value="system code"/>
       </field>
       <field id="description">
-        <phrase id="fldcaption" value="description" />
+        <phrase id="fldcaption" value="description"/>
       </field>
       <field id="level_permissions">
-        <phrase id="fldcaption" value="level permissions" />
+        <phrase id="fldcaption" value="level permissions"/>
       </field>
       <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is active"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="url">
-        <phrase id="fldcaption" value="url" />
+        <phrase id="fldcaption" value="url"/>
       </field>
     </table>
     <table id="user_level_assignments">
-      <phrase id="tblcaption" value="User Level Assignments" />
+      <phrase id="tblcaption" value="User Level Assignments"/>
       <field id="assignment_id">
-        <phrase id="fldcaption" value="assignment id" />
+        <phrase id="fldcaption" value="assignment id"/>
       </field>
       <field id="system_id">
-        <phrase id="fldcaption" value="system id" />
+        <phrase id="fldcaption" value="system id"/>
       </field>
       <field id="user_level_id">
-        <phrase id="fldcaption" value="user level id" />
+        <phrase id="fldcaption" value="user level id"/>
       </field>
       <field id="user_id">
-        <phrase id="fldcaption" value="user id" />
+        <phrase id="fldcaption" value="user id"/>
       </field>
       <field id="assigned_by">
-        <phrase id="fldcaption" value="assigned by" />
+        <phrase id="fldcaption" value="assigned by"/>
       </field>
       <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
+        <phrase id="fldcaption" value="created at"/>
       </field>
     </table>
     <table id="user_level_permissions">
-      <phrase id="tblcaption" value="user level permissions" />
+      <phrase id="tblcaption" value="user level permissions"/>
       <field id="user_level_id">
-        <phrase id="fldcaption" value="user level id" />
+        <phrase id="fldcaption" value="user level id"/>
       </field>
       <field id="table_name">
-        <phrase id="fldcaption" value="table name" />
+        <phrase id="fldcaption" value="table name"/>
       </field>
       <field id="_permission">
-        <phrase id="fldcaption" value="permission" />
+        <phrase id="fldcaption" value="permission"/>
       </field>
     </table>
     <table id="_user_levels">
-      <phrase id="tblcaption" value="User Levels" />
+      <phrase id="tblcaption" value="User Levels"/>
       <field id="user_level_id">
-        <phrase id="fldcaption" value="user level id" />
+        <phrase id="fldcaption" value="user level id"/>
       </field>
       <field id="system_id">
-        <phrase id="fldcaption" value="system id" />
+        <phrase id="fldcaption" value="system id"/>
       </field>
       <field id="name">
-        <phrase id="fldcaption" value="name" />
+        <phrase id="fldcaption" value="name"/>
       </field>
       <field id="description">
-        <phrase id="fldcaption" value="description" />
+        <phrase id="fldcaption" value="description"/>
       </field>
     </table>
     <table id="users">
-      <phrase id="tblcaption" value="Users" />
+      <phrase id="tblcaption" value="Users"/>
       <field id="user_id">
-        <phrase id="fldcaption" value="user id" />
+        <phrase id="fldcaption" value="user id"/>
       </field>
       <field id="_username">
-        <phrase id="fldcaption" value="username" />
+        <phrase id="fldcaption" value="username"/>
       </field>
       <field id="_email">
-        <phrase id="fldcaption" value="email" />
+        <phrase id="fldcaption" value="email"/>
       </field>
       <field id="password_hash">
-        <phrase id="fldcaption" value="password" />
+        <phrase id="fldcaption" value="password"/>
       </field>
       <field id="mobile_number">
-        <phrase id="fldcaption" value="mobile number" />
+        <phrase id="fldcaption" value="mobile number"/>
       </field>
       <field id="first_name">
-        <phrase id="fldcaption" value="first name" />
+        <phrase id="fldcaption" value="first name"/>
       </field>
       <field id="middle_name">
-        <phrase id="fldcaption" value="middle name" />
+        <phrase id="fldcaption" value="middle name"/>
       </field>
       <field id="last_name">
-        <phrase id="fldcaption" value="last name" />
+        <phrase id="fldcaption" value="last name"/>
       </field>
       <field id="suffix">
-        <phrase id="fldcaption" value="suffix" />
+        <phrase id="fldcaption" value="suffix"/>
       </field>
       <field id="department_id">
-        <phrase id="fldcaption" value="department" />
+        <phrase id="fldcaption" value="department"/>
       </field>
       <field id="date_created">
-        <phrase id="fldcaption" value="date created" />
+        <phrase id="fldcaption" value="date created"/>
       </field>
       <field id="last_login">
-        <phrase id="fldcaption" value="last login" />
+        <phrase id="fldcaption" value="last login"/>
       </field>
       <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is active"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="user_level_id">
-        <phrase id="fldcaption" value="user level id" />
+        <phrase id="fldcaption" value="user level id"/>
       </field>
       <field id="reports_to_user_id">
-        <phrase id="fldcaption" value="reports to" />
+        <phrase id="fldcaption" value="reports to"/>
       </field>
       <field id="photo">
-        <phrase id="fldcaption" value="photo" />
+        <phrase id="fldcaption" value="photo"/>
       </field>
       <field id="_profile">
-        <phrase id="fldcaption" value="profile" />
+        <phrase id="fldcaption" value="profile"/>
       </field>
       <field id="position_id">
-        <phrase id="fldcaption" value="position id" />
+        <phrase id="fldcaption" value="position id"/>
       </field>
       <field id="employee_id">
-        <phrase id="fldcaption" value="employee id" />
+        <phrase id="fldcaption" value="employee id"/>
       </field>
       <field id="must_change_password">
-        <phrase id="fldcaption" value="must change password" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="must change password"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
-    </table>
-    <table id="aggregated_audit_logs">
-      <phrase id="tblcaption" value="Audit Logs" />
-      <field id="aggregated_id">
-        <phrase id="fldcaption" value="ID" />
-      </field>
-      <field id="action_date">
-        <phrase id="fldcaption" value="Date" />
-      </field>
-      <field id="script">
-        <phrase id="fldcaption" value="script" />
-      </field>
-      <field id="user">
-        <phrase id="fldcaption" value="user" />
-      </field>
-      <field id="_action">
-        <phrase id="fldcaption" value="action" />
-      </field>
-      <field id="_table">
-        <phrase id="fldcaption" value="table" />
-      </field>
-      <field id="action_type">
-        <phrase id="fldcaption" value="action type" />
-      </field>
-      <field id="details">
-        <phrase id="fldcaption" value="details" />
-      </field>
-      <field id="action_count">
-        <phrase id="fldcaption" value="action count" />
+      <field id="rc_id">
+        <phrase id="fldcaption" value="rc id"/>
       </field>
     </table>
     <table id="maindashboard">
-      <phrase id="tblcaption" value="Dashboard" />
+      <phrase id="tblcaption" value="Dashboard"/>
     </table>
     <table id="departments">
-      <phrase id="tblcaption" value="Department" />
+      <phrase id="tblcaption" value="Department"/>
       <field id="department_id">
-        <phrase id="fldcaption" value="department id" />
+        <phrase id="fldcaption" value="department id"/>
       </field>
       <field id="department_name">
-        <phrase id="fldcaption" value="department name" />
+        <phrase id="fldcaption" value="department name"/>
       </field>
       <field id="description">
-        <phrase id="fldcaption" value="description" />
+        <phrase id="fldcaption" value="description"/>
       </field>
       <field id="parent_department_id">
-        <phrase id="fldcaption" value="parent department id" />
+        <phrase id="fldcaption" value="parent department id"/>
       </field>
       <field id="department_head_id">
-        <phrase id="fldcaption" value="department head id" />
+        <phrase id="fldcaption" value="department head id"/>
       </field>
       <field id="department_code">
-        <phrase id="fldcaption" value="department code" />
+        <phrase id="fldcaption" value="department code"/>
       </field>
       <field id="department_acronym">
-        <phrase id="fldcaption" value="department acronym" />
+        <phrase id="fldcaption" value="department acronym"/>
       </field>
       <field id="office_location">
-        <phrase id="fldcaption" value="office location" />
+        <phrase id="fldcaption" value="office location"/>
       </field>
       <field id="contact_number">
-        <phrase id="fldcaption" value="contact number" />
+        <phrase id="fldcaption" value="contact number"/>
       </field>
       <field id="_email">
-        <phrase id="fldcaption" value="email" />
+        <phrase id="fldcaption" value="email"/>
       </field>
       <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is active"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
+        <phrase id="fldcaption" value="created at"/>
       </field>
       <field id="updated_at">
-        <phrase id="fldcaption" value="updated at" />
+        <phrase id="fldcaption" value="updated at"/>
       </field>
       <field id="rc_id">
-        <phrase id="fldcaption" value="rc id" />
+        <phrase id="fldcaption" value="rc id"/>
       </field>
       <field id="office_id">
-        <phrase id="fldcaption" value="office id" />
+        <phrase id="fldcaption" value="office id"/>
       </field>
       <field id="department_type">
-        <phrase id="fldcaption" value="department type" />
+        <phrase id="fldcaption" value="department type"/>
       </field>
       <field id="hierarchy_level">
-        <phrase id="fldcaption" value="hierarchy level" />
+        <phrase id="fldcaption" value="hierarchy level"/>
       </field>
       <field id="is_budget_unit">
-        <phrase id="fldcaption" value="is budget unit" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is budget unit"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
     </table>
     <table id="notifications">
-      <phrase id="tblcaption" value="Notification" />
+      <phrase id="tblcaption" value="Notification"/>
       <field id="id">
-        <phrase id="fldcaption" value="id" />
+        <phrase id="fldcaption" value="id"/>
       </field>
       <field id="timestamp">
-        <phrase id="fldcaption" value="timestamp" />
+        <phrase id="fldcaption" value="timestamp"/>
       </field>
       <field id="type">
-        <phrase id="fldcaption" value="type" />
+        <phrase id="fldcaption" value="type"/>
       </field>
       <field id="target">
-        <phrase id="fldcaption" value="target" />
+        <phrase id="fldcaption" value="target"/>
       </field>
       <field id="user_id">
-        <phrase id="fldcaption" value="user id" />
+        <phrase id="fldcaption" value="user id"/>
       </field>
       <field id="subject">
-        <phrase id="fldcaption" value="subject" />
+        <phrase id="fldcaption" value="subject"/>
       </field>
       <field id="body">
-        <phrase id="fldcaption" value="body" />
+        <phrase id="fldcaption" value="body"/>
       </field>
       <field id="link">
-        <phrase id="fldcaption" value="link" />
+        <phrase id="fldcaption" value="link"/>
       </field>
       <field id="from_system">
-        <phrase id="fldcaption" value="from system" />
+        <phrase id="fldcaption" value="from system"/>
       </field>
       <field id="is_read">
-        <phrase id="fldcaption" value="is read" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is read"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
+        <phrase id="fldcaption" value="created at"/>
       </field>
       <field id="read_users">
-        <phrase id="fldcaption" value="read users" />
+        <phrase id="fldcaption" value="read users"/>
+      </field>
+      <field id="sender_id">
+        <phrase id="fldcaption" value="sender id"/>
+      </field>
+      <field id="event_key">
+        <phrase id="fldcaption" value="event key"/>
       </field>
     </table>
     <table id="usermanagement">
-      <phrase id="tblcaption" value="User Level Management" />
+      <phrase id="tblcaption" value="User Level Management"/>
     </table>
     <table id="useraccess">
-      <phrase id="tblcaption" value="User Access Management" />
+      <phrase id="tblcaption" value="User Access Management"/>
     </table>
     <table id="psgc">
-      <phrase id="tblcaption" value="PH Standard GeoCode" />
+      <phrase id="tblcaption" value="PH Standard GeoCode"/>
       <field id="code_10">
-        <phrase id="fldcaption" value="code 10" />
+        <phrase id="fldcaption" value="code 10"/>
       </field>
       <field id="name">
-        <phrase id="fldcaption" value="name" />
+        <phrase id="fldcaption" value="name"/>
       </field>
       <field id="psgc_code">
-        <phrase id="fldcaption" value="psgc code" />
+        <phrase id="fldcaption" value="psgc code"/>
       </field>
       <field id="level">
-        <phrase id="fldcaption" value="level" />
+        <phrase id="fldcaption" value="level"/>
       </field>
       <field id="od_name">
-        <phrase id="fldcaption" value="od name" />
+        <phrase id="fldcaption" value="od name"/>
       </field>
       <field id="city_class">
-        <phrase id="fldcaption" value="city class" />
+        <phrase id="fldcaption" value="city class"/>
       </field>
       <field id="income_class">
-        <phrase id="fldcaption" value="income class" />
+        <phrase id="fldcaption" value="income class"/>
       </field>
       <field id="rural_urban">
-        <phrase id="fldcaption" value="rural urban" />
+        <phrase id="fldcaption" value="rural urban"/>
       </field>
       <field id="population_2015">
-        <phrase id="fldcaption" value="population 2015" />
+        <phrase id="fldcaption" value="population 2015"/>
       </field>
       <field id="population_2020">
-        <phrase id="fldcaption" value="population 2020" />
+        <phrase id="fldcaption" value="population 2020"/>
       </field>
       <field id="status">
-        <phrase id="fldcaption" value="status" />
+        <phrase id="fldcaption" value="status"/>
       </field>
       <field id="display">
-        <phrase id="fldcaption" value="display" />
+        <phrase id="fldcaption" value="display"/>
       </field>
     </table>
     <table id="psgcmap">
-      <phrase id="tblcaption" value="PSGC Map" />
+      <phrase id="tblcaption" value="PSGC Map"/>
     </table>
     <table id="filemanager">
-      <phrase id="tblcaption" value="File Manager" />
+      <phrase id="tblcaption" value="File Manager"/>
     </table>
     <table id="bullmqmanager">
-      <phrase id="tblcaption" value="BullMQ Manager" />
+      <phrase id="tblcaption" value="BullMQ Manager"/>
     </table>
     <table id="pageeditor">
-      <phrase id="tblcaption" value="Editor" />
+      <phrase id="tblcaption" value="Editor"/>
     </table>
     <table id="file_share_activity">
-      <phrase id="tblcaption" value="file share activity" />
+      <phrase id="tblcaption" value="file share activity"/>
       <field id="activity_id">
-        <phrase id="fldcaption" value="activity id" />
+        <phrase id="fldcaption" value="activity id"/>
       </field>
       <field id="share_id">
-        <phrase id="fldcaption" value="share id" />
+        <phrase id="fldcaption" value="share id"/>
       </field>
       <field id="user_id">
-        <phrase id="fldcaption" value="user id" />
+        <phrase id="fldcaption" value="user id"/>
       </field>
       <field id="activity_type">
-        <phrase id="fldcaption" value="activity type" />
+        <phrase id="fldcaption" value="activity type"/>
       </field>
       <field id="activity_details">
-        <phrase id="fldcaption" value="activity details" />
+        <phrase id="fldcaption" value="activity details"/>
       </field>
       <field id="ip_address">
-        <phrase id="fldcaption" value="ip address" />
+        <phrase id="fldcaption" value="ip address"/>
       </field>
       <field id="user_agent">
-        <phrase id="fldcaption" value="user agent" />
+        <phrase id="fldcaption" value="user agent"/>
       </field>
       <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
+        <phrase id="fldcaption" value="created at"/>
       </field>
     </table>
     <table id="file_share_permissions">
-      <phrase id="tblcaption" value="file share permissions" />
+      <phrase id="tblcaption" value="file share permissions"/>
       <field id="permission_id">
-        <phrase id="fldcaption" value="permission id" />
+        <phrase id="fldcaption" value="permission id"/>
       </field>
       <field id="share_id">
-        <phrase id="fldcaption" value="share id" />
+        <phrase id="fldcaption" value="share id"/>
       </field>
       <field id="user_id">
-        <phrase id="fldcaption" value="user id" />
+        <phrase id="fldcaption" value="user id"/>
       </field>
       <field id="permission_level">
-        <phrase id="fldcaption" value="permission level" />
+        <phrase id="fldcaption" value="permission level"/>
       </field>
       <field id="granted_by">
-        <phrase id="fldcaption" value="granted by" />
+        <phrase id="fldcaption" value="granted by"/>
       </field>
       <field id="granted_at">
-        <phrase id="fldcaption" value="granted at" />
+        <phrase id="fldcaption" value="granted at"/>
       </field>
       <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is active"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
     </table>
     <table id="file_shares">
-      <phrase id="tblcaption" value="file shares" />
+      <phrase id="tblcaption" value="file shares"/>
       <field id="share_id">
-        <phrase id="fldcaption" value="share id" />
+        <phrase id="fldcaption" value="share id"/>
       </field>
       <field id="owner_user_id">
-        <phrase id="fldcaption" value="owner user id" />
+        <phrase id="fldcaption" value="owner user id"/>
       </field>
       <field id="file_path">
-        <phrase id="fldcaption" value="file path" />
+        <phrase id="fldcaption" value="file path"/>
       </field>
       <field id="file_name">
-        <phrase id="fldcaption" value="file name" />
+        <phrase id="fldcaption" value="file name"/>
       </field>
       <field id="file_type">
-        <phrase id="fldcaption" value="file type" />
+        <phrase id="fldcaption" value="file type"/>
       </field>
       <field id="share_type">
-        <phrase id="fldcaption" value="share type" />
+        <phrase id="fldcaption" value="share type"/>
       </field>
       <field id="share_token">
-        <phrase id="fldcaption" value="share token" />
+        <phrase id="fldcaption" value="share token"/>
       </field>
       <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is active"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
+        <phrase id="fldcaption" value="created at"/>
       </field>
       <field id="expires_at">
-        <phrase id="fldcaption" value="expires at" />
+        <phrase id="fldcaption" value="expires at"/>
       </field>
       <field id="description">
-        <phrase id="fldcaption" value="description" />
+        <phrase id="fldcaption" value="description"/>
       </field>
       <field id="download_enabled">
-        <phrase id="fldcaption" value="download enabled" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="download enabled"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="edit_enabled">
-        <phrase id="fldcaption" value="edit enabled" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="edit enabled"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
     </table>
     <table id="shared_folder_access">
-      <phrase id="tblcaption" value="shared folder access" />
+      <phrase id="tblcaption" value="shared folder access"/>
       <field id="access_id">
-        <phrase id="fldcaption" value="access id" />
+        <phrase id="fldcaption" value="access id"/>
       </field>
       <field id="user_id">
-        <phrase id="fldcaption" value="user id" />
+        <phrase id="fldcaption" value="user id"/>
       </field>
       <field id="share_id">
-        <phrase id="fldcaption" value="share id" />
+        <phrase id="fldcaption" value="share id"/>
       </field>
       <field id="last_accessed">
-        <phrase id="fldcaption" value="last accessed" />
+        <phrase id="fldcaption" value="last accessed"/>
       </field>
       <field id="is_favorite">
-        <phrase id="fldcaption" value="is favorite" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is favorite"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
     </table>
     <table id="aiassistant">
-      <phrase id="tblcaption" value="eAssist Chat Playground" />
+      <phrase id="tblcaption" value="eAssist Chat Playground"/>
     </table>
     <table id="chat_history">
-      <phrase id="tblcaption" value="chat history" />
+      <phrase id="tblcaption" value="chat history"/>
       <field id="id">
-        <phrase id="fldcaption" value="id" />
+        <phrase id="fldcaption" value="id"/>
       </field>
       <field id="user_id">
-        <phrase id="fldcaption" value="user id" />
+        <phrase id="fldcaption" value="user id"/>
       </field>
       <field id="session_id">
-        <phrase id="fldcaption" value="session id" />
+        <phrase id="fldcaption" value="session id"/>
       </field>
       <field id="user_message">
-        <phrase id="fldcaption" value="user message" />
+        <phrase id="fldcaption" value="user message"/>
       </field>
       <field id="ai_response">
-        <phrase id="fldcaption" value="ai response" />
+        <phrase id="fldcaption" value="ai response"/>
       </field>
       <field id="files">
-        <phrase id="fldcaption" value="files" />
+        <phrase id="fldcaption" value="files"/>
       </field>
       <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
+        <phrase id="fldcaption" value="created at"/>
       </field>
       <field id="updated_at">
-        <phrase id="fldcaption" value="updated at" />
+        <phrase id="fldcaption" value="updated at"/>
       </field>
     </table>
     <table id="chat_sessions">
-      <phrase id="tblcaption" value="chat sessions" />
+      <phrase id="tblcaption" value="chat sessions"/>
       <field id="id">
-        <phrase id="fldcaption" value="id" />
+        <phrase id="fldcaption" value="id"/>
       </field>
       <field id="user_id">
-        <phrase id="fldcaption" value="user id" />
+        <phrase id="fldcaption" value="user id"/>
       </field>
       <field id="session_key">
-        <phrase id="fldcaption" value="session key" />
+        <phrase id="fldcaption" value="session key"/>
       </field>
       <field id="_title">
-        <phrase id="fldcaption" value="title" />
+        <phrase id="fldcaption" value="title"/>
       </field>
       <field id="summary">
-        <phrase id="fldcaption" value="summary" />
+        <phrase id="fldcaption" value="summary"/>
       </field>
       <field id="metadata">
-        <phrase id="fldcaption" value="metadata" />
+        <phrase id="fldcaption" value="metadata"/>
       </field>
       <field id="message_count">
-        <phrase id="fldcaption" value="message count" />
+        <phrase id="fldcaption" value="message count"/>
       </field>
       <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is active"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
+        <phrase id="fldcaption" value="created at"/>
       </field>
       <field id="updated_at">
-        <phrase id="fldcaption" value="updated at" />
+        <phrase id="fldcaption" value="updated at"/>
       </field>
       <field id="last_message_at">
-        <phrase id="fldcaption" value="last message at" />
+        <phrase id="fldcaption" value="last message at"/>
       </field>
     </table>
     <table id="position_categories">
-      <phrase id="tblcaption" value="position categories" />
+      <phrase id="tblcaption" value="position categories"/>
       <field id="position_category_id">
-        <phrase id="fldcaption" value="position category id" />
+        <phrase id="fldcaption" value="position category id"/>
       </field>
       <field id="category_name">
-        <phrase id="fldcaption" value="category name" />
+        <phrase id="fldcaption" value="category name"/>
       </field>
       <field id="description">
-        <phrase id="fldcaption" value="description" />
+        <phrase id="fldcaption" value="description"/>
       </field>
       <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is active"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
+        <phrase id="fldcaption" value="created at"/>
       </field>
     </table>
     <table id="positions">
-      <phrase id="tblcaption" value="positions" />
+      <phrase id="tblcaption" value="positions"/>
       <field id="position_id">
-        <phrase id="fldcaption" value="position id" />
+        <phrase id="fldcaption" value="position id"/>
       </field>
       <field id="position_category_id">
-        <phrase id="fldcaption" value="position category id" />
+        <phrase id="fldcaption" value="position category id"/>
       </field>
       <field id="position_code">
-        <phrase id="fldcaption" value="position code" />
+        <phrase id="fldcaption" value="position code"/>
       </field>
       <field id="position_title">
-        <phrase id="fldcaption" value="position title" />
+        <phrase id="fldcaption" value="position title"/>
       </field>
       <field id="position_level">
-        <phrase id="fldcaption" value="position level" />
+        <phrase id="fldcaption" value="position level"/>
       </field>
       <field id="job_description">
-        <phrase id="fldcaption" value="job description" />
+        <phrase id="fldcaption" value="job description"/>
       </field>
       <field id="salary_grade">
-        <phrase id="fldcaption" value="salary grade" />
+        <phrase id="fldcaption" value="salary grade"/>
       </field>
       <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is active"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="created_by">
-        <phrase id="fldcaption" value="created by" />
+        <phrase id="fldcaption" value="created by"/>
       </field>
       <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
+        <phrase id="fldcaption" value="created at"/>
       </field>
       <field id="updated_at">
-        <phrase id="fldcaption" value="updated at" />
+        <phrase id="fldcaption" value="updated at"/>
       </field>
       <field id="step_increment">
-        <phrase id="fldcaption" value="step increment" />
+        <phrase id="fldcaption" value="step increment"/>
       </field>
       <field id="qualification_standards">
-        <phrase id="fldcaption" value="qualification standards" />
+        <phrase id="fldcaption" value="qualification standards"/>
       </field>
       <field id="competency_requirements">
-        <phrase id="fldcaption" value="competency requirements" />
+        <phrase id="fldcaption" value="competency requirements"/>
       </field>
     </table>
     <table id="plantilla_items">
-      <phrase id="tblcaption" value="plantilla items" />
+      <phrase id="tblcaption" value="plantilla items"/>
       <field id="plantilla_item_id">
-        <phrase id="fldcaption" value="plantilla item id" />
+        <phrase id="fldcaption" value="plantilla item id"/>
       </field>
       <field id="department_id">
-        <phrase id="fldcaption" value="department id" />
+        <phrase id="fldcaption" value="department id"/>
       </field>
       <field id="position_id">
-        <phrase id="fldcaption" value="position id" />
+        <phrase id="fldcaption" value="position id"/>
       </field>
       <field id="item_number">
-        <phrase id="fldcaption" value="item number" />
+        <phrase id="fldcaption" value="item number"/>
       </field>
       <field id="item_description">
-        <phrase id="fldcaption" value="item description" />
+        <phrase id="fldcaption" value="item description"/>
       </field>
       <field id="authorized_count">
-        <phrase id="fldcaption" value="authorized count" />
+        <phrase id="fldcaption" value="authorized count"/>
       </field>
       <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is active"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="effective_date">
-        <phrase id="fldcaption" value="effective date" />
+        <phrase id="fldcaption" value="effective date"/>
       </field>
       <field id="abolition_date">
-        <phrase id="fldcaption" value="abolition date" />
+        <phrase id="fldcaption" value="abolition date"/>
       </field>
       <field id="annual_budget_allocation">
-        <phrase id="fldcaption" value="annual budget allocation" />
+        <phrase id="fldcaption" value="annual budget allocation"/>
       </field>
       <field id="monthly_salary_allocation">
-        <phrase id="fldcaption" value="monthly salary allocation" />
+        <phrase id="fldcaption" value="monthly salary allocation"/>
       </field>
       <field id="remarks">
-        <phrase id="fldcaption" value="remarks" />
+        <phrase id="fldcaption" value="remarks"/>
       </field>
       <field id="created_by">
-        <phrase id="fldcaption" value="created by" />
+        <phrase id="fldcaption" value="created by"/>
       </field>
       <field id="approved_by">
-        <phrase id="fldcaption" value="approved by" />
+        <phrase id="fldcaption" value="approved by"/>
       </field>
       <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
+        <phrase id="fldcaption" value="created at"/>
       </field>
       <field id="updated_at">
-        <phrase id="fldcaption" value="updated at" />
+        <phrase id="fldcaption" value="updated at"/>
       </field>
     </table>
     <table id="workflowmanager">
-      <phrase id="tblcaption" value="Workflow Manager" />
+      <phrase id="tblcaption" value="Workflow Manager"/>
     </table>
     <table id="documenttypeeditor">
-      <phrase id="tblcaption" value="Document Type Editor" />
+      <phrase id="tblcaption" value="Document Type Editor"/>
     </table>
     <table id="documenttypemanager">
-      <phrase id="tblcaption" value="Document Type Manager" />
+      <phrase id="tblcaption" value="Document Type Manager"/>
     </table>
     <table id="idgenerator">
-      <phrase id="tblcaption" value="ID Generator Management" />
+      <phrase id="tblcaption" value="ID Generator Management"/>
     </table>
     <table id="departmentmanagement">
-      <phrase id="tblcaption" value="Department Management" />
+      <phrase id="tblcaption" value="Department Management"/>
     </table>
     <table id="id_format_configs">
-      <phrase id="tblcaption" value="id format configs" />
+      <phrase id="tblcaption" value="id format configs"/>
       <field id="config_id">
-        <phrase id="fldcaption" value="config id" />
+        <phrase id="fldcaption" value="config id"/>
       </field>
       <field id="module_code">
-        <phrase id="fldcaption" value="module code" />
+        <phrase id="fldcaption" value="module code"/>
       </field>
       <field id="document_type">
-        <phrase id="fldcaption" value="document type" />
+        <phrase id="fldcaption" value="document type"/>
       </field>
       <field id="config_name">
-        <phrase id="fldcaption" value="config name" />
+        <phrase id="fldcaption" value="config name"/>
       </field>
       <field id="description">
-        <phrase id="fldcaption" value="description" />
+        <phrase id="fldcaption" value="description"/>
       </field>
       <field id="use_prefix">
-        <phrase id="fldcaption" value="use prefix" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="use prefix"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="prefix_value">
-        <phrase id="fldcaption" value="prefix value" />
+        <phrase id="fldcaption" value="prefix value"/>
       </field>
       <field id="use_year">
-        <phrase id="fldcaption" value="use year" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="use year"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="year_format">
-        <phrase id="fldcaption" value="year format" />
+        <phrase id="fldcaption" value="year format"/>
       </field>
       <field id="use_fiscal_year">
-        <phrase id="fldcaption" value="use fiscal year" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="use fiscal year"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="use_month">
-        <phrase id="fldcaption" value="use month" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="use month"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="month_format">
-        <phrase id="fldcaption" value="month format" />
+        <phrase id="fldcaption" value="month format"/>
       </field>
       <field id="use_department">
-        <phrase id="fldcaption" value="use department" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="use department"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="department_field">
-        <phrase id="fldcaption" value="department field" />
+        <phrase id="fldcaption" value="department field"/>
       </field>
       <field id="sequence_length">
-        <phrase id="fldcaption" value="sequence length" />
+        <phrase id="fldcaption" value="sequence length"/>
       </field>
       <field id="sequence_start">
-        <phrase id="fldcaption" value="sequence start" />
+        <phrase id="fldcaption" value="sequence start"/>
       </field>
       <field id="use_suffix">
-        <phrase id="fldcaption" value="use suffix" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="use suffix"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="suffix_value">
-        <phrase id="fldcaption" value="suffix value" />
+        <phrase id="fldcaption" value="suffix value"/>
       </field>
       <field id="separator">
-        <phrase id="fldcaption" value="separator" />
+        <phrase id="fldcaption" value="separator"/>
       </field>
       <field id="reset_strategy">
-        <phrase id="fldcaption" value="reset strategy" />
+        <phrase id="fldcaption" value="reset strategy"/>
       </field>
       <field id="validation_regex">
-        <phrase id="fldcaption" value="validation regex" />
+        <phrase id="fldcaption" value="validation regex"/>
       </field>
       <field id="example_output">
-        <phrase id="fldcaption" value="example output" />
+        <phrase id="fldcaption" value="example output"/>
       </field>
       <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is active"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="effective_date">
-        <phrase id="fldcaption" value="effective date" />
+        <phrase id="fldcaption" value="effective date"/>
       </field>
       <field id="obsolete_date">
-        <phrase id="fldcaption" value="obsolete date" />
+        <phrase id="fldcaption" value="obsolete date"/>
       </field>
       <field id="created_by">
-        <phrase id="fldcaption" value="created by" />
+        <phrase id="fldcaption" value="created by"/>
       </field>
       <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
+        <phrase id="fldcaption" value="created at"/>
       </field>
       <field id="updated_at">
-        <phrase id="fldcaption" value="updated at" />
+        <phrase id="fldcaption" value="updated at"/>
       </field>
       <field id="partition_by_month">
-        <phrase id="fldcaption" value="partition by month" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="partition by month"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
     </table>
     <table id="id_reset_strategies">
-      <phrase id="tblcaption" value="id reset strategies" />
+      <phrase id="tblcaption" value="id reset strategies"/>
       <field id="strategy_code">
-        <phrase id="fldcaption" value="strategy code" />
+        <phrase id="fldcaption" value="strategy code"/>
       </field>
       <field id="strategy_name">
-        <phrase id="fldcaption" value="strategy name" />
+        <phrase id="fldcaption" value="strategy name"/>
       </field>
       <field id="description">
-        <phrase id="fldcaption" value="description" />
+        <phrase id="fldcaption" value="description"/>
       </field>
       <field id="sort_order">
-        <phrase id="fldcaption" value="sort order" />
+        <phrase id="fldcaption" value="sort order"/>
       </field>
     </table>
     <table id="id_sequences">
-      <phrase id="tblcaption" value="id sequences" />
+      <phrase id="tblcaption" value="id sequences"/>
       <field id="sequence_id">
-        <phrase id="fldcaption" value="sequence id" />
+        <phrase id="fldcaption" value="sequence id"/>
       </field>
       <field id="config_id">
-        <phrase id="fldcaption" value="config id" />
+        <phrase id="fldcaption" value="config id"/>
       </field>
       <field id="year_value">
-        <phrase id="fldcaption" value="year value" />
+        <phrase id="fldcaption" value="year value"/>
       </field>
       <field id="month_value">
-        <phrase id="fldcaption" value="month value" />
+        <phrase id="fldcaption" value="month value"/>
       </field>
       <field id="quarter_value">
-        <phrase id="fldcaption" value="quarter value" />
+        <phrase id="fldcaption" value="quarter value"/>
       </field>
       <field id="department_code">
-        <phrase id="fldcaption" value="department code" />
+        <phrase id="fldcaption" value="department code"/>
       </field>
       <field id="current_sequence">
-        <phrase id="fldcaption" value="current sequence" />
+        <phrase id="fldcaption" value="current sequence"/>
       </field>
       <field id="last_generated_id">
-        <phrase id="fldcaption" value="last generated id" />
+        <phrase id="fldcaption" value="last generated id"/>
       </field>
       <field id="last_generated_at">
-        <phrase id="fldcaption" value="last generated at" />
+        <phrase id="fldcaption" value="last generated at"/>
       </field>
       <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
+        <phrase id="fldcaption" value="created at"/>
       </field>
       <field id="updated_at">
-        <phrase id="fldcaption" value="updated at" />
+        <phrase id="fldcaption" value="updated at"/>
       </field>
     </table>
     <table id="eventplayground">
-      <phrase id="tblcaption" value="Event Playground" />
+      <phrase id="tblcaption" value="Event Playground"/>
     </table>
     <table id="department_systems">
-      <phrase id="tblcaption" value="department systems" />
+      <phrase id="tblcaption" value="department systems"/>
       <field id="department_system_id">
-        <phrase id="fldcaption" value="department system id" />
+        <phrase id="fldcaption" value="department system id"/>
       </field>
       <field id="department_id">
-        <phrase id="fldcaption" value="department id" />
+        <phrase id="fldcaption" value="department id"/>
       </field>
       <field id="system_id">
-        <phrase id="fldcaption" value="system id" />
+        <phrase id="fldcaption" value="system id"/>
       </field>
       <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is active"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="access_level">
-        <phrase id="fldcaption" value="access level" />
+        <phrase id="fldcaption" value="access level"/>
       </field>
       <field id="assigned_by">
-        <phrase id="fldcaption" value="assigned by" />
+        <phrase id="fldcaption" value="assigned by"/>
       </field>
       <field id="assigned_at">
-        <phrase id="fldcaption" value="assigned at" />
+        <phrase id="fldcaption" value="assigned at"/>
       </field>
     </table>
     <table id="offices">
-      <phrase id="tblcaption" value="offices" />
+      <phrase id="tblcaption" value="offices"/>
       <field id="office_id">
-        <phrase id="fldcaption" value="office id" />
+        <phrase id="fldcaption" value="office id"/>
       </field>
       <field id="office_name">
-        <phrase id="fldcaption" value="office name" />
+        <phrase id="fldcaption" value="office name"/>
       </field>
       <field id="office_code">
-        <phrase id="fldcaption" value="office code" />
+        <phrase id="fldcaption" value="office code"/>
       </field>
       <field id="office_type">
-        <phrase id="fldcaption" value="office type" />
+        <phrase id="fldcaption" value="office type"/>
       </field>
       <field id="location">
-        <phrase id="fldcaption" value="location" />
+        <phrase id="fldcaption" value="location"/>
       </field>
       <field id="address">
-        <phrase id="fldcaption" value="address" />
+        <phrase id="fldcaption" value="address"/>
       </field>
       <field id="region">
-        <phrase id="fldcaption" value="region" />
+        <phrase id="fldcaption" value="region"/>
       </field>
       <field id="province">
-        <phrase id="fldcaption" value="province" />
+        <phrase id="fldcaption" value="province"/>
       </field>
       <field id="city_municipality">
-        <phrase id="fldcaption" value="city municipality" />
+        <phrase id="fldcaption" value="city municipality"/>
       </field>
       <field id="office_contact_number">
-        <phrase id="fldcaption" value="office contact number" />
+        <phrase id="fldcaption" value="office contact number"/>
       </field>
       <field id="office_email">
-        <phrase id="fldcaption" value="office email" />
+        <phrase id="fldcaption" value="office email"/>
       </field>
       <field id="office_telephone">
-        <phrase id="fldcaption" value="office telephone" />
+        <phrase id="fldcaption" value="office telephone"/>
       </field>
       <field id="office_fax">
-        <phrase id="fldcaption" value="office fax" />
+        <phrase id="fldcaption" value="office fax"/>
       </field>
       <field id="parent_office_id">
-        <phrase id="fldcaption" value="parent office id" />
+        <phrase id="fldcaption" value="parent office id"/>
       </field>
       <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is active"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="date_opened">
-        <phrase id="fldcaption" value="date opened" />
+        <phrase id="fldcaption" value="date opened"/>
       </field>
       <field id="date_closed">
-        <phrase id="fldcaption" value="date closed" />
+        <phrase id="fldcaption" value="date closed"/>
       </field>
       <field id="created_by">
-        <phrase id="fldcaption" value="created by" />
+        <phrase id="fldcaption" value="created by"/>
       </field>
       <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
+        <phrase id="fldcaption" value="created at"/>
       </field>
       <field id="modified_by">
-        <phrase id="fldcaption" value="modified by" />
+        <phrase id="fldcaption" value="modified by"/>
       </field>
       <field id="modified_at">
-        <phrase id="fldcaption" value="modified at" />
+        <phrase id="fldcaption" value="modified at"/>
       </field>
       <field id="remarks">
-        <phrase id="fldcaption" value="remarks" />
+        <phrase id="fldcaption" value="remarks"/>
       </field>
       <field id="metadata">
-        <phrase id="fldcaption" value="metadata" />
+        <phrase id="fldcaption" value="metadata"/>
       </field>
       <field id="rc_id">
-        <phrase id="fldcaption" value="rc id" />
+        <phrase id="fldcaption" value="rc id"/>
       </field>
       <field id="region_code">
-        <phrase id="fldcaption" value="region code" />
+        <phrase id="fldcaption" value="region code"/>
       </field>
     </table>
     <table id="user_offices">
-      <phrase id="tblcaption" value="user offices" />
+      <phrase id="tblcaption" value="user offices"/>
       <field id="user_office_id">
-        <phrase id="fldcaption" value="user office id" />
+        <phrase id="fldcaption" value="user office id"/>
       </field>
       <field id="user_id">
-        <phrase id="fldcaption" value="user id" />
+        <phrase id="fldcaption" value="user id"/>
       </field>
       <field id="office_id">
-        <phrase id="fldcaption" value="office id" />
+        <phrase id="fldcaption" value="office id"/>
       </field>
       <field id="is_primary">
-        <phrase id="fldcaption" value="is primary" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is primary"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="access_start_date">
-        <phrase id="fldcaption" value="access start date" />
+        <phrase id="fldcaption" value="access start date"/>
       </field>
       <field id="access_end_date">
-        <phrase id="fldcaption" value="access end date" />
+        <phrase id="fldcaption" value="access end date"/>
       </field>
       <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is active"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="assigned_by">
-        <phrase id="fldcaption" value="assigned by" />
+        <phrase id="fldcaption" value="assigned by"/>
       </field>
       <field id="assigned_at">
-        <phrase id="fldcaption" value="assigned at" />
-      </field>
-    </table>
-    <table id="v_department_hierarchy">
-      <phrase id="tblcaption" value="v department hierarchy" />
-      <field id="department_id">
-        <phrase id="fldcaption" value="department id" />
-      </field>
-      <field id="department_name">
-        <phrase id="fldcaption" value="department name" />
-      </field>
-      <field id="department_code">
-        <phrase id="fldcaption" value="department code" />
-      </field>
-      <field id="department_type">
-        <phrase id="fldcaption" value="department type" />
-      </field>
-      <field id="hierarchy_level">
-        <phrase id="fldcaption" value="hierarchy level" />
-      </field>
-      <field id="parent_department_id">
-        <phrase id="fldcaption" value="parent department id" />
-      </field>
-      <field id="is_budget_unit">
-        <phrase id="fldcaption" value="is budget unit" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
-      </field>
-      <field id="rc_code">
-        <phrase id="fldcaption" value="rc code" />
-      </field>
-      <field id="rc_name">
-        <phrase id="fldcaption" value="rc name" />
-      </field>
-      <field id="office_name">
-        <phrase id="fldcaption" value="office name" />
-      </field>
-      <field id="office_code">
-        <phrase id="fldcaption" value="office code" />
-      </field>
-      <field id="full_path">
-        <phrase id="fldcaption" value="full path" />
-      </field>
-      <field id="depth">
-        <phrase id="fldcaption" value="depth" />
-      </field>
-      <field id="path_ids">
-        <phrase id="fldcaption" value="path ids" />
-      </field>
-    </table>
-    <table id="v_user_access_summary">
-      <phrase id="tblcaption" value="v user access summary" />
-      <field id="user_id">
-        <phrase id="fldcaption" value="user id" />
-      </field>
-      <field id="_username">
-        <phrase id="fldcaption" value="username" />
-      </field>
-      <field id="_email">
-        <phrase id="fldcaption" value="email" />
-      </field>
-      <field id="full_name">
-        <phrase id="fldcaption" value="full name" />
-      </field>
-      <field id="department_name">
-        <phrase id="fldcaption" value="department name" />
-      </field>
-      <field id="department_code">
-        <phrase id="fldcaption" value="department code" />
-      </field>
-      <field id="department_type">
-        <phrase id="fldcaption" value="department type" />
-      </field>
-      <field id="rc_code">
-        <phrase id="fldcaption" value="rc code" />
-      </field>
-      <field id="rc_name">
-        <phrase id="fldcaption" value="rc name" />
-      </field>
-      <field id="office_name">
-        <phrase id="fldcaption" value="office name" />
-      </field>
-      <field id="office_code">
-        <phrase id="fldcaption" value="office code" />
-      </field>
-      <field id="roles">
-        <phrase id="fldcaption" value="roles" />
-      </field>
-      <field id="accessible_systems">
-        <phrase id="fldcaption" value="accessible systems" />
-      </field>
-      <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
-      </field>
-      <field id="last_login">
-        <phrase id="fldcaption" value="last login" />
-      </field>
-      <field id="date_created">
-        <phrase id="fldcaption" value="date created" />
+        <phrase id="fldcaption" value="assigned at"/>
       </field>
     </table>
     <table id="positionmanagement">
-      <phrase id="tblcaption" value="PositionManagement" />
+      <phrase id="tblcaption" value="PositionManagement"/>
     </table>
     <table id="signatorymanagement">
-      <phrase id="tblcaption" value="Signatory Management" />
-    </table>
-    <table id="api_logs">
-      <phrase id="tblcaption" value="api logs" />
-      <field id="log_id">
-        <phrase id="fldcaption" value="log id" />
-      </field>
-      <field id="resource_id">
-        <phrase id="fldcaption" value="resource id" />
-      </field>
-      <field id="mode_used">
-        <phrase id="fldcaption" value="mode used" />
-      </field>
-      <field id="http_status">
-        <phrase id="fldcaption" value="http status" />
-      </field>
-      <field id="duration_ms">
-        <phrase id="fldcaption" value="duration ms" />
-      </field>
-      <field id="success">
-        <phrase id="fldcaption" value="success" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
-      </field>
-      <field id="_message">
-        <phrase id="fldcaption" value="message" />
-      </field>
-      <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
-      </field>
-    </table>
-    <table id="api_resources">
-      <phrase id="tblcaption" value="api resources" />
-      <field id="resource_id">
-        <phrase id="fldcaption" value="resource id" />
-      </field>
-      <field id="system_id">
-        <phrase id="fldcaption" value="system id" />
-      </field>
-      <field id="resource_key">
-        <phrase id="fldcaption" value="resource key" />
-      </field>
-      <field id="caption">
-        <phrase id="fldcaption" value="caption" />
-      </field>
-      <field id="http_method">
-        <phrase id="fldcaption" value="http method" />
-      </field>
-      <field id="path_template">
-        <phrase id="fldcaption" value="path template" />
-      </field>
-      <field id="mode">
-        <phrase id="fldcaption" value="mode" />
-      </field>
-      <field id="required_fields">
-        <phrase id="fldcaption" value="required fields" />
-      </field>
-      <field id="field_map">
-        <phrase id="fldcaption" value="field map" />
-      </field>
-      <field id="sample_payload">
-        <phrase id="fldcaption" value="sample payload" />
-      </field>
-      <field id="request_body">
-        <phrase id="fldcaption" value="request body" />
-      </field>
-      <field id="data_path">
-        <phrase id="fldcaption" value="data path" />
-      </field>
-      <field id="base_url">
-        <phrase id="fldcaption" value="base url" />
-      </field>
-      <field id="auth_token">
-        <phrase id="fldcaption" value="auth token" />
-      </field>
-      <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
-      </field>
-      <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
-      </field>
-      <field id="updated_at">
-        <phrase id="fldcaption" value="updated at" />
-      </field>
-    </table>
-    <table id="api_systems">
-      <phrase id="tblcaption" value="api systems" />
-      <field id="system_id">
-        <phrase id="fldcaption" value="system id" />
-      </field>
-      <field id="system_code">
-        <phrase id="fldcaption" value="system code" />
-      </field>
-      <field id="system_name">
-        <phrase id="fldcaption" value="system name" />
-      </field>
-      <field id="base_url">
-        <phrase id="fldcaption" value="base url" />
-      </field>
-      <field id="auth_type">
-        <phrase id="fldcaption" value="auth type" />
-      </field>
-      <field id="auth_token">
-        <phrase id="fldcaption" value="auth token" />
-      </field>
-      <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
-      </field>
-      <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
-      </field>
-      <field id="updated_at">
-        <phrase id="fldcaption" value="updated at" />
-      </field>
+      <phrase id="tblcaption" value="Signatory Management"/>
     </table>
     <table id="document_asset_types">
-      <phrase id="tblcaption" value="document asset types" />
+      <phrase id="tblcaption" value="document asset types"/>
       <field id="document_asset_type_id">
-        <phrase id="fldcaption" value="document asset type id" />
+        <phrase id="fldcaption" value="document asset type id"/>
       </field>
       <field id="category">
-        <phrase id="fldcaption" value="category" />
+        <phrase id="fldcaption" value="category"/>
       </field>
       <field id="type_code">
-        <phrase id="fldcaption" value="type code" />
+        <phrase id="fldcaption" value="type code"/>
       </field>
       <field id="type_name">
-        <phrase id="fldcaption" value="type name" />
+        <phrase id="fldcaption" value="type name"/>
       </field>
       <field id="default_render_width">
-        <phrase id="fldcaption" value="default render width" />
+        <phrase id="fldcaption" value="default render width"/>
       </field>
       <field id="default_render_height">
-        <phrase id="fldcaption" value="default render height" />
+        <phrase id="fldcaption" value="default render height"/>
       </field>
       <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is active"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
+        <phrase id="fldcaption" value="created at"/>
       </field>
     </table>
     <table id="document_header_assets">
-      <phrase id="tblcaption" value="document header assets" />
+      <phrase id="tblcaption" value="document header assets"/>
       <field id="header_asset_id">
-        <phrase id="fldcaption" value="header asset id" />
+        <phrase id="fldcaption" value="header asset id"/>
       </field>
       <field id="asset_code">
-        <phrase id="fldcaption" value="asset code" />
+        <phrase id="fldcaption" value="asset code"/>
       </field>
       <field id="asset_name">
-        <phrase id="fldcaption" value="asset name" />
+        <phrase id="fldcaption" value="asset name"/>
       </field>
       <field id="document_asset_type_id">
-        <phrase id="fldcaption" value="document asset type id" />
+        <phrase id="fldcaption" value="document asset type id"/>
       </field>
       <field id="scope_system_code">
-        <phrase id="fldcaption" value="scope system code" />
+        <phrase id="fldcaption" value="scope system code"/>
       </field>
       <field id="scope_document_code">
-        <phrase id="fldcaption" value="scope document code" />
+        <phrase id="fldcaption" value="scope document code"/>
       </field>
       <field id="file_name">
-        <phrase id="fldcaption" value="file name" />
+        <phrase id="fldcaption" value="file name"/>
       </field>
       <field id="mime_type">
-        <phrase id="fldcaption" value="mime type" />
+        <phrase id="fldcaption" value="mime type"/>
       </field>
       <field id="file_size">
-        <phrase id="fldcaption" value="file size" />
+        <phrase id="fldcaption" value="file size"/>
       </field>
       <field id="checksum_sha256">
-        <phrase id="fldcaption" value="checksum sha 256" />
+        <phrase id="fldcaption" value="checksum sha 256"/>
       </field>
       <field id="image_width">
-        <phrase id="fldcaption" value="image width" />
+        <phrase id="fldcaption" value="image width"/>
       </field>
       <field id="image_height">
-        <phrase id="fldcaption" value="image height" />
+        <phrase id="fldcaption" value="image height"/>
       </field>
       <field id="render_width">
-        <phrase id="fldcaption" value="render width" />
+        <phrase id="fldcaption" value="render width"/>
       </field>
       <field id="render_height">
-        <phrase id="fldcaption" value="render height" />
+        <phrase id="fldcaption" value="render height"/>
       </field>
       <field id="image_data">
-        <phrase id="fldcaption" value="image data" />
+        <phrase id="fldcaption" value="image data"/>
       </field>
       <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is active"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="notes">
-        <phrase id="fldcaption" value="notes" />
+        <phrase id="fldcaption" value="notes"/>
       </field>
       <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
+        <phrase id="fldcaption" value="created at"/>
       </field>
       <field id="updated_at">
-        <phrase id="fldcaption" value="updated at" />
+        <phrase id="fldcaption" value="updated at"/>
       </field>
       <field id="created_by">
-        <phrase id="fldcaption" value="created by" />
+        <phrase id="fldcaption" value="created by"/>
       </field>
       <field id="updated_by">
-        <phrase id="fldcaption" value="updated by" />
+        <phrase id="fldcaption" value="updated by"/>
       </field>
       <field id="header_slot_id">
-        <phrase id="fldcaption" value="header slot id" />
+        <phrase id="fldcaption" value="header slot id"/>
       </field>
       <field id="part_kind">
-        <phrase id="fldcaption" value="part kind" />
+        <phrase id="fldcaption" value="part kind"/>
       </field>
       <field id="column_pct">
-        <phrase id="fldcaption" value="column pct" />
+        <phrase id="fldcaption" value="column pct"/>
       </field>
       <field id="align">
-        <phrase id="fldcaption" value="align" />
+        <phrase id="fldcaption" value="align"/>
       </field>
       <field id="text_line1">
-        <phrase id="fldcaption" value="text line 1" />
+        <phrase id="fldcaption" value="text line 1"/>
       </field>
       <field id="text_line2">
-        <phrase id="fldcaption" value="text line 2" />
+        <phrase id="fldcaption" value="text line 2"/>
       </field>
       <field id="font_name">
-        <phrase id="fldcaption" value="font name" />
+        <phrase id="fldcaption" value="font name"/>
       </field>
       <field id="line1_size_pt">
-        <phrase id="fldcaption" value="line 1 size pt" />
+        <phrase id="fldcaption" value="line 1 size pt"/>
       </field>
       <field id="line2_size_pt">
-        <phrase id="fldcaption" value="line 2 size pt" />
+        <phrase id="fldcaption" value="line 2 size pt"/>
       </field>
       <field id="line1_bold">
-        <phrase id="fldcaption" value="line 1 bold" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="line 1 bold"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="line2_bold">
-        <phrase id="fldcaption" value="line 2 bold" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="line 2 bold"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="line1_color">
-        <phrase id="fldcaption" value="line 1 color" />
+        <phrase id="fldcaption" value="line 1 color"/>
       </field>
       <field id="line2_color">
-        <phrase id="fldcaption" value="line 2 color" />
+        <phrase id="fldcaption" value="line 2 color"/>
       </field>
     </table>
     <table id="document_header_slots">
-      <phrase id="tblcaption" value="document header slots" />
+      <phrase id="tblcaption" value="document header slots"/>
       <field id="header_slot_id">
-        <phrase id="fldcaption" value="header slot id" />
+        <phrase id="fldcaption" value="header slot id"/>
       </field>
       <field id="slot_code">
-        <phrase id="fldcaption" value="slot code" />
+        <phrase id="fldcaption" value="slot code"/>
       </field>
       <field id="slot_name">
-        <phrase id="fldcaption" value="slot name" />
+        <phrase id="fldcaption" value="slot name"/>
       </field>
       <field id="part_kind">
-        <phrase id="fldcaption" value="part kind" />
+        <phrase id="fldcaption" value="part kind"/>
       </field>
       <field id="display_order">
-        <phrase id="fldcaption" value="display order" />
+        <phrase id="fldcaption" value="display order"/>
       </field>
       <field id="default_column_pct">
-        <phrase id="fldcaption" value="default column pct" />
+        <phrase id="fldcaption" value="default column pct"/>
       </field>
       <field id="default_render_width">
-        <phrase id="fldcaption" value="default render width" />
+        <phrase id="fldcaption" value="default render width"/>
       </field>
       <field id="default_render_height">
-        <phrase id="fldcaption" value="default render height" />
+        <phrase id="fldcaption" value="default render height"/>
       </field>
       <field id="default_align">
-        <phrase id="fldcaption" value="default align" />
+        <phrase id="fldcaption" value="default align"/>
       </field>
       <field id="is_active">
-        <phrase id="fldcaption" value="is active" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Yes" />
-        <phrase id="fldtagvalue2" value="0" />
-        <phrase id="fldtagcaption2" value="No" />
+        <phrase id="fldcaption" value="is active"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
       </field>
       <field id="created_at">
-        <phrase id="fldcaption" value="created at" />
+        <phrase id="fldcaption" value="created at"/>
       </field>
     </table>
     <table id="jwt_sessions">
-      <phrase id="tblcaption" value="jwt sessions" />
+      <phrase id="tblcaption" value="jwt sessions"/>
       <field id="session_id">
-        <phrase id="fldcaption" value="session id" />
+        <phrase id="fldcaption" value="session id"/>
       </field>
       <field id="token_hash">
-        <phrase id="fldcaption" value="token hash" />
+        <phrase id="fldcaption" value="token hash"/>
       </field>
       <field id="user_id">
-        <phrase id="fldcaption" value="user id" />
+        <phrase id="fldcaption" value="user id"/>
       </field>
       <field id="system">
-        <phrase id="fldcaption" value="system" />
+        <phrase id="fldcaption" value="system"/>
       </field>
       <field id="issued_at">
-        <phrase id="fldcaption" value="issued at" />
+        <phrase id="fldcaption" value="issued at"/>
       </field>
       <field id="expires_at">
-        <phrase id="fldcaption" value="expires at" />
+        <phrase id="fldcaption" value="expires at"/>
       </field>
       <field id="client_ip">
-        <phrase id="fldcaption" value="client ip" />
+        <phrase id="fldcaption" value="client ip"/>
       </field>
       <field id="user_agent">
-        <phrase id="fldcaption" value="user agent" />
+        <phrase id="fldcaption" value="user agent"/>
       </field>
       <field id="revoked_at">
-        <phrase id="fldcaption" value="revoked at" />
+        <phrase id="fldcaption" value="revoked at"/>
       </field>
       <field id="revoke_reason">
-        <phrase id="fldcaption" value="revoke reason" />
+        <phrase id="fldcaption" value="revoke reason"/>
       </field>
+    </table>
+    <table id="project_page">
+      <phrase id="tblcaption" value="Project List"/>
+    </table>
+    <table id="program_page">
+      <phrase id="tblcaption" value="Program Setup"/>
+    </table>
+    <table id="budget_req_page">
+      <phrase id="tblcaption" value="Budget Request"/>
+    </table>
+    <table id="sub_program_page">
+      <phrase id="tblcaption" value="Sub Program Setup"/>
+    </table>
+    <table id="chart_of_accounts_page">
+      <phrase id="tblcaption" value="Chart of Accounts"/>
+    </table>
+    <table id="responsibility_center_page">
+      <phrase id="tblcaption" value="Responsibilty Center"/>
+    </table>
+    <table id="permission_module_captions">
+      <phrase id="tblcaption" value="permission module captions"/>
+      <field id="table_name">
+        <phrase id="fldcaption" value="table name"/>
+      </field>
+      <field id="caption">
+        <phrase id="fldcaption" value="caption"/>
+      </field>
+      <field id="is_hidden">
+        <phrase id="fldcaption" value="is hidden"/>
+        <phrase id="fldtagvalue1" value="1"/>
+        <phrase id="fldtagcaption1" value="Yes"/>
+        <phrase id="fldtagvalue2" value="0"/>
+        <phrase id="fldtagcaption2" value="No"/>
+      </field>
+      <field id="updated_at">
+        <phrase id="fldcaption" value="updated at"/>
+      </field>
+    </table>
+    <table id="aggregated_audit_logs">
+      <phrase id="tblcaption" value="aggregated audit logs"/>
+      <field id="aggregated_id">
+        <phrase id="fldcaption" value="aggregated id"/>
+      </field>
+      <field id="action_date">
+        <phrase id="fldcaption" value="action date"/>
+      </field>
+      <field id="script">
+        <phrase id="fldcaption" value="script"/>
+      </field>
+      <field id="user">
+        <phrase id="fldcaption" value="user"/>
+      </field>
+      <field id="_action">
+        <phrase id="fldcaption" value="action"/>
+      </field>
+      <field id="_table">
+        <phrase id="fldcaption" value="table"/>
+      </field>
+      <field id="action_type">
+        <phrase id="fldcaption" value="action type"/>
+      </field>
+      <field id="details">
+        <phrase id="fldcaption" value="details"/>
+      </field>
+      <field id="action_count">
+        <phrase id="fldcaption" value="action count"/>
+      </field>
+    </table>
+    <table id="budget_revision_page">
+      <phrase id="tblcaption" value="Budget Revision"/>
+    </table>
+    <table id="budget_rev_form">
+      <phrase id="tblcaption" value="Budget Revision Form"/>
+    </table>
+    <table id="budget_rev_review">
+      <phrase id="tblcaption" value="Budget Revision Preview"/>
+    </table>
+    <table id="memo_req_page">
+      <phrase id="tblcaption" value="Memo Request"/>
+    </table>
+    <table id="iarmodule">
+      <phrase id="tblcaption" value="IAR Module"/>
+    </table>
+    <table id="voucher">
+      <phrase id="tblcaption" value="Disbursement Voucher"/>
+    </table>
+    <table id="journalentryvoucher">
+      <phrase id="tblcaption" value="Journal Entry Voucher"/>
+    </table>
+    <table id="changepass">
+      <phrase id="tblcaption" value="Change Password"/>
+    </table>
+    <table id="checkdisbursements">
+      <phrase id="tblcaption" value="Check Disbursements"/>
+    </table>
+    <table id="budget_prop_page">
+      <phrase id="tblcaption" value="Budget Propose"/>
+    </table>
+    <table id="notification_reads">
+      <phrase id="tblcaption" value="notification reads"/>
+      <field id="notification_id">
+        <phrase id="fldcaption" value="notification id"/>
+      </field>
+      <field id="user_id">
+        <phrase id="fldcaption" value="user id"/>
+      </field>
+      <field id="read_at">
+        <phrase id="fldcaption" value="read at"/>
+      </field>
+    </table>
+    <table id="saro_registry_page">
+      <phrase id="tblcaption" value="SARO Registry"/>
+    </table>
+    <table id="supplemental_funds_page">
+      <phrase id="tblcaption" value="Supplemental Funds"/>
+    </table>
+    <table id="trust_funds_page">
+      <phrase id="tblcaption" value="Trust Funds"/>
+    </table>
+    <table id="pricing_page">
+      <phrase id="tblcaption" value="Pricing"/>
+    </table>
+    <table id="cash_position_page">
+      <phrase id="tblcaption" value="Cash Position"/>
+    </table>
+    <table id="bank_management_page">
+      <phrase id="tblcaption" value="Bank Management Page"/>
+    </table>
+    <table id="property_record_page">
+      <phrase id="tblcaption" value="Property Record" />
+    </table>
+    <table id="vendors_page">
+      <phrase id="tblcaption" value="Vendors" />
     </table>
   </project>
 </ew-language>

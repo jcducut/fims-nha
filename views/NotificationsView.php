@@ -184,6 +184,28 @@ loadjs.ready("head", function () {
 </td>
     </tr>
 <?php } ?>
+<?php if ($Page->sender_id->Visible) { // sender_id ?>
+    <tr id="r_sender_id"<?= $Page->sender_id->rowAttributes() ?>>
+        <td class="<?= $Page->TableLeftColumnClass ?>"><span id="elh_notifications_sender_id"><?= $Page->sender_id->caption() ?></span></td>
+        <td data-name="sender_id"<?= $Page->sender_id->cellAttributes() ?>>
+<span id="el_notifications_sender_id">
+<span<?= $Page->sender_id->viewAttributes() ?>>
+<?= $Page->sender_id->getViewValue() ?></span>
+</span>
+</td>
+    </tr>
+<?php } ?>
+<?php if ($Page->event_key->Visible) { // event_key ?>
+    <tr id="r_event_key"<?= $Page->event_key->rowAttributes() ?>>
+        <td class="<?= $Page->TableLeftColumnClass ?>"><span id="elh_notifications_event_key"><?= $Page->event_key->caption() ?></span></td>
+        <td data-name="event_key"<?= $Page->event_key->cellAttributes() ?>>
+<span id="el_notifications_event_key">
+<span<?= $Page->event_key->viewAttributes() ?>>
+<?= $Page->event_key->getViewValue() ?></span>
+</span>
+</td>
+    </tr>
+<?php } ?>
 </table>
 </form>
 </main>

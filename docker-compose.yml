@@ -32,8 +32,12 @@ services:
         if [ -f /var/www/html/composer.json ] && [ ! -f /var/www/html/vendor/autoload.php ]; then
           echo "[bootstrap] installing composer deps"
           cd /var/www/html && composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader || true
-          chown -R www-data:www-data /var/www/html/vendor 2>/dev/null || true
         fi
+        # Always re-assert ownership, not just on first install: a manual
+        # `composer install`/`require` run as root (e.g. while debugging)
+        # leaves files root-owned forever otherwise, since the block above
+        # only fires once per named volume (autoload.php already exists).
+        chown -R www-data:www-data /var/www/html/vendor 2>/dev/null || true
         chown -R www-data:www-data /var/www/html/temp_uploads 2>/dev/null || true
         chmod -R 775 /var/www/html/temp_uploads 2>/dev/null || true
         exec php-fpm
@@ -116,6 +120,37 @@ services:
       - fims-network
 
   # ---------------------------------------------------------
+  # EMQX (MQTT broker for real-time notification push)
+  # MQTT -> localhost:1883   MQTT/WebSocket -> ws://localhost:8083/mqtt
+  # Dashboard + REST API -> http://localhost:18083 (default login admin / public,
+  # you are asked to change it on first login; create API keys under System > API Keys)
+  # The in-app bell works by polling even when this broker is down.
+  # ---------------------------------------------------------
+  emqx:
+    image: emqx/emqx:latest
+    container_name: fims-nha-emqx
+    restart: unless-stopped
+    ports:
+      - "1883:1883"     # MQTT
+      - "8083:8083"     # MQTT over WebSocket (browser)
+      - "8084:8084"     # MQTT over WebSocket + TLS
+      - "8883:8883"     # MQTT + TLS
+      - "18083:18083"   # Dashboard / REST API
+    environment:
+      EMQX_NAME: fims
+      EMQX_HOST: 127.0.0.1
+    volumes:
+      - fims-emqx-data:/opt/emqx/data
+      - fims-emqx-log:/opt/emqx/log
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx", "ctl", "status"]
+      interval: 10s
+      timeout: 10s
+      retries: 6
+    networks:
+      - fims-network
+
+  # ---------------------------------------------------------
   # Adminer (visual database browser)
   # Open http://localhost:8091, pick "PostgreSQL",
   # Server: postgres  User: postgres  Password: 123456  DB: fims
@@ -138,6 +173,8 @@ volumes:
   fims-postgres-data:
   fims-redis-data:
   fims-minio-data:
+  fims-emqx-data:
+  fims-emqx-log:
   # Named volumes for module vendor/ directories — live in Docker's native
   # filesystem (fast). Populated by composer install on first startup.
   fims-vendor:

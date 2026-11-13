@@ -177,6 +177,12 @@ $Page->ListOptions->render("header", "left");
 <?php if ($Page->created_at->Visible) { // created_at ?>
         <th data-name="created_at" class="<?= $Page->created_at->headerCellClass() ?>"><div id="elh_notifications_created_at" class="notifications_created_at"><?= $Page->renderFieldHeader($Page->created_at) ?></div></th>
 <?php } ?>
+<?php if ($Page->sender_id->Visible) { // sender_id ?>
+        <th data-name="sender_id" class="<?= $Page->sender_id->headerCellClass() ?>"><div id="elh_notifications_sender_id" class="notifications_sender_id"><?= $Page->renderFieldHeader($Page->sender_id) ?></div></th>
+<?php } ?>
+<?php if ($Page->event_key->Visible) { // event_key ?>
+        <th data-name="event_key" class="<?= $Page->event_key->headerCellClass() ?>"><div id="elh_notifications_event_key" class="notifications_event_key"><?= $Page->renderFieldHeader($Page->event_key) ?></div></th>
+<?php } ?>
 <?php
 // Render list options (header, right)
 $Page->ListOptions->render("header", "right");
@@ -283,6 +289,22 @@ $Page->ListOptions->render("body", "left", $Page->RowCount);
 <span id="el<?= $Page->RowIndex == '$rowindex$' ? '$rowindex$' : $Page->RowCount ?>_notifications_created_at" class="el_notifications_created_at">
 <span<?= $Page->created_at->viewAttributes() ?>>
 <?= $Page->created_at->getViewValue() ?></span>
+</span>
+</td>
+    <?php } ?>
+    <?php if ($Page->sender_id->Visible) { // sender_id ?>
+        <td data-name="sender_id"<?= $Page->sender_id->cellAttributes() ?>>
+<span id="el<?= $Page->RowIndex == '$rowindex$' ? '$rowindex$' : $Page->RowCount ?>_notifications_sender_id" class="el_notifications_sender_id">
+<span<?= $Page->sender_id->viewAttributes() ?>>
+<?= $Page->sender_id->getViewValue() ?></span>
+</span>
+</td>
+    <?php } ?>
+    <?php if ($Page->event_key->Visible) { // event_key ?>
+        <td data-name="event_key"<?= $Page->event_key->cellAttributes() ?>>
+<span id="el<?= $Page->RowIndex == '$rowindex$' ? '$rowindex$' : $Page->RowCount ?>_notifications_event_key" class="el_notifications_event_key">
+<span<?= $Page->event_key->viewAttributes() ?>>
+<?= $Page->event_key->getViewValue() ?></span>
 </span>
 </td>
     <?php } ?>

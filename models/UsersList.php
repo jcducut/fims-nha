@@ -173,6 +173,7 @@ class UsersList extends Users
         $this->position_id->setVisibility();
         $this->employee_id->setVisibility();
         $this->must_change_password->setVisibility();
+        $this->rc_id->setVisibility();
     }
 
     // Constructor
@@ -1127,6 +1128,7 @@ class UsersList extends Users
         $filterList = Concat($filterList, $this->position_id->AdvancedSearch->toJson(), ","); // Field position_id
         $filterList = Concat($filterList, $this->employee_id->AdvancedSearch->toJson(), ","); // Field employee_id
         $filterList = Concat($filterList, $this->must_change_password->AdvancedSearch->toJson(), ","); // Field must_change_password
+        $filterList = Concat($filterList, $this->rc_id->AdvancedSearch->toJson(), ","); // Field rc_id
         if ($this->BasicSearch->Keyword != "") {
             $wrk = "\"" . Config("TABLE_BASIC_SEARCH") . "\":\"" . JsEncode($this->BasicSearch->Keyword) . "\",\"" . Config("TABLE_BASIC_SEARCH_TYPE") . "\":\"" . JsEncode($this->BasicSearch->Type) . "\"";
             $filterList = Concat($filterList, $wrk, ",");
@@ -1325,6 +1327,14 @@ class UsersList extends Users
         $this->must_change_password->AdvancedSearch->SearchValue2 = @$filter["y_must_change_password"];
         $this->must_change_password->AdvancedSearch->SearchOperator2 = @$filter["w_must_change_password"];
         $this->must_change_password->AdvancedSearch->save();
+
+        // Field rc_id
+        $this->rc_id->AdvancedSearch->SearchValue = @$filter["x_rc_id"];
+        $this->rc_id->AdvancedSearch->SearchOperator = @$filter["z_rc_id"];
+        $this->rc_id->AdvancedSearch->SearchCondition = @$filter["v_rc_id"];
+        $this->rc_id->AdvancedSearch->SearchValue2 = @$filter["y_rc_id"];
+        $this->rc_id->AdvancedSearch->SearchOperator2 = @$filter["w_rc_id"];
+        $this->rc_id->AdvancedSearch->save();
         $this->BasicSearch->setKeyword(@$filter[Config("TABLE_BASIC_SEARCH")]);
         $this->BasicSearch->setType(@$filter[Config("TABLE_BASIC_SEARCH_TYPE")]);
     }
@@ -1375,6 +1385,7 @@ class UsersList extends Users
         $searchFlds[] = &$this->photo;
         $searchFlds[] = &$this->_profile;
         $searchFlds[] = &$this->employee_id;
+        $searchFlds[] = &$this->rc_id;
         $searchKeyword = $default ? $this->BasicSearch->KeywordDefault : $this->BasicSearch->Keyword;
         $searchType = $default ? $this->BasicSearch->TypeDefault : $this->BasicSearch->Type;
 
@@ -1465,6 +1476,7 @@ class UsersList extends Users
             $this->updateSort($this->position_id); // position_id
             $this->updateSort($this->employee_id); // employee_id
             $this->updateSort($this->must_change_password); // must_change_password
+            $this->updateSort($this->rc_id); // rc_id
             $this->setStartRecordNumber(1); // Reset start position
         }
 
@@ -1517,6 +1529,7 @@ class UsersList extends Users
                 $this->position_id->setSort("");
                 $this->employee_id->setSort("");
                 $this->must_change_password->setSort("");
+                $this->rc_id->setSort("");
             }
 
             // Reset start position
@@ -1561,13 +1574,6 @@ class UsersList extends Users
         $item->OnLeft = false;
         $item->ShowInButtonGroup = false;
 
-        // "detail_aggregated_audit_logs"
-        $item = &$this->ListOptions->add("detail_aggregated_audit_logs");
-        $item->CssClass = "text-nowrap";
-        $item->Visible = $Security->allowList(CurrentProjectID() . 'aggregated_audit_logs');
-        $item->OnLeft = false;
-        $item->ShowInButtonGroup = false;
-
         // Multiple details
         if ($this->ShowMultipleDetails) {
             $item = &$this->ListOptions->add("details");
@@ -1581,7 +1587,6 @@ class UsersList extends Users
         // Set up detail pages
         $pages = new SubPages();
         $pages->add("user_level_assignments");
-        $pages->add("aggregated_audit_logs");
         $this->DetailPages = $pages;
 
         // List actions
@@ -1780,44 +1785,6 @@ class UsersList extends Users
                 $opt->Visible = false;
             }
         }
-
-        // "detail_aggregated_audit_logs"
-        $opt = $this->ListOptions["detail_aggregated_audit_logs"];
-        if ($Security->allowList(CurrentProjectID() . 'aggregated_audit_logs') && $this->showOptionLink()) {
-            $body = $Language->phrase("DetailLink") . $Language->tablePhrase("aggregated_audit_logs", "TblCaption");
-            $body = "<a class=\"btn btn-default ew-row-link ew-detail" . ($this->ListOptions->UseDropDownButton ? " dropdown-toggle" : "") . "\" data-action=\"list\" href=\"" . HtmlEncode("AggregatedAuditLogsList?" . Config("TABLE_SHOW_MASTER") . "=users&" . GetForeignKeyUrl("fk_user_id", $this->user_id->CurrentValue) . "") . "\">" . $body . "</a>";
-            $links = "";
-            $detailPage = Container("AggregatedAuditLogsGrid");
-            if ($detailPage->DetailView && $Security->canView() && $this->showOptionLink("view") && $Security->allowView(CurrentProjectID() . 'users')) {
-                $caption = $Language->phrase("MasterDetailViewLink", null);
-                $url = $this->getViewUrl(Config("TABLE_SHOW_DETAIL") . "=aggregated_audit_logs");
-                $links .= "<li><a class=\"dropdown-item ew-row-link ew-detail-view\" data-action=\"view\" data-caption=\"" . HtmlTitle($caption) . "\" href=\"" . HtmlEncode($url) . "\">" . $caption . "</a></li>";
-                if ($detailViewTblVar != "") {
-                    $detailViewTblVar .= ",";
-                }
-                $detailViewTblVar .= "aggregated_audit_logs";
-            }
-            if ($detailPage->DetailEdit && $Security->canEdit() && $this->showOptionLink("edit") && $Security->allowEdit(CurrentProjectID() . 'users')) {
-                $caption = $Language->phrase("MasterDetailEditLink", null);
-                $url = $this->getEditUrl(Config("TABLE_SHOW_DETAIL") . "=aggregated_audit_logs");
-                $links .= "<li><a class=\"dropdown-item ew-row-link ew-detail-edit\" data-action=\"edit\" data-caption=\"" . HtmlTitle($caption) . "\" href=\"" . HtmlEncode($url) . "\">" . $caption . "</a></li>";
-                if ($detailEditTblVar != "") {
-                    $detailEditTblVar .= ",";
-                }
-                $detailEditTblVar .= "aggregated_audit_logs";
-            }
-            if ($links != "") {
-                $body .= "<button type=\"button\" class=\"dropdown-toggle btn btn-default ew-detail\" data-bs-toggle=\"dropdown\"></button>";
-                $body .= "<ul class=\"dropdown-menu\">" . $links . "</ul>";
-            } else {
-                $body = preg_replace('/\b\s+dropdown-toggle\b/', "", $body);
-            }
-            $body = "<div class=\"btn-group btn-group-sm ew-btn-group\">" . $body . "</div>";
-            $opt->Body = $body;
-            if ($this->ShowMultipleDetails) {
-                $opt->Visible = false;
-            }
-        }
         if ($this->ShowMultipleDetails) {
             $body = "<div class=\"btn-group btn-group-sm ew-btn-group\">";
             $links = "";
@@ -1886,18 +1853,6 @@ class UsersList extends Users
             }
             $detailTableLink .= "user_level_assignments";
         }
-        $item = &$option->add("detailadd_aggregated_audit_logs");
-        $url = $this->getAddUrl(Config("TABLE_SHOW_DETAIL") . "=aggregated_audit_logs");
-        $detailPage = Container("AggregatedAuditLogsGrid");
-        $caption = $Language->phrase("Add") . "&nbsp;" . $this->tableCaption() . "/" . $detailPage->tableCaption();
-        $item->Body = "<a class=\"ew-detail-add-group ew-detail-add\" title=\"" . HtmlTitle($caption) . "\" data-caption=\"" . HtmlTitle($caption) . "\" href=\"" . HtmlEncode(GetUrl($url)) . "\">" . $caption . "</a>";
-        $item->Visible = ($detailPage->DetailAdd && $Security->allowAdd(CurrentProjectID() . 'users') && $Security->canAdd());
-        if ($item->Visible) {
-            if ($detailTableLink != "") {
-                $detailTableLink .= ",";
-            }
-            $detailTableLink .= "aggregated_audit_logs";
-        }
 
         // Add multiple details
         if ($this->ShowMultipleDetails) {
@@ -1935,6 +1890,7 @@ class UsersList extends Users
             $this->createColumnOption($option, "position_id");
             $this->createColumnOption($option, "employee_id");
             $this->createColumnOption($option, "must_change_password");
+            $this->createColumnOption($option, "rc_id");
         }
         if (UserProfile::$FORCE_LOGOUT_USER) {
             $this->ListActions["forcelogoutuser"] = new ForceLogoutUserAction();
@@ -2415,6 +2371,7 @@ class UsersList extends Users
         $this->position_id->setDbValue($row['position_id']);
         $this->employee_id->setDbValue($row['employee_id']);
         $this->must_change_password->setDbValue((ConvertToBool($row['must_change_password']) ? "1" : "0"));
+        $this->rc_id->setDbValue($row['rc_id']);
     }
 
     // Return a row with default values
@@ -2441,6 +2398,7 @@ class UsersList extends Users
         $row['position_id'] = $this->position_id->DefaultValue;
         $row['employee_id'] = $this->employee_id->DefaultValue;
         $row['must_change_password'] = $this->must_change_password->DefaultValue;
+        $row['rc_id'] = $this->rc_id->DefaultValue;
         return $row;
     }
 
@@ -2520,6 +2478,8 @@ class UsersList extends Users
         // employee_id
 
         // must_change_password
+
+        // rc_id
 
         // View row
         if ($this->RowType == RowType::VIEW) {
@@ -2649,6 +2609,9 @@ class UsersList extends Users
                 $this->must_change_password->ViewValue = $this->must_change_password->tagCaption(2) != "" ? $this->must_change_password->tagCaption(2) : "No";
             }
 
+            // rc_id
+            $this->rc_id->ViewValue = $this->rc_id->CurrentValue;
+
             // user_id
             $this->user_id->HrefValue = "";
             $this->user_id->TooltipValue = "";
@@ -2696,6 +2659,10 @@ class UsersList extends Users
             // must_change_password
             $this->must_change_password->HrefValue = "";
             $this->must_change_password->TooltipValue = "";
+
+            // rc_id
+            $this->rc_id->HrefValue = "";
+            $this->rc_id->TooltipValue = "";
         }
 
         // Call Row Rendered event

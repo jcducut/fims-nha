@@ -35,17 +35,17 @@ class Notification extends AbstractEntity
     #[Column(type: "datetimetz", nullable: true)]
     private ?DateTime $timestamp;
 
-    #[Column(type: "string", nullable: true)]
-    private ?string $type;
+    #[Column(type: "string")]
+    private string $type;
 
-    #[Column(type: "string", nullable: true)]
-    private ?string $target;
+    #[Column(type: "string")]
+    private string $target;
 
     #[Column(name: "user_id", type: "integer", nullable: true)]
     private ?int $userId;
 
-    #[Column(type: "string", nullable: true)]
-    private ?string $subject;
+    #[Column(type: "string")]
+    private string $subject;
 
     #[Column(type: "text", nullable: true)]
     private ?string $body;
@@ -53,17 +53,23 @@ class Notification extends AbstractEntity
     #[Column(type: "string", nullable: true)]
     private ?string $link;
 
-    #[Column(name: "from_system", type: "string", nullable: true)]
-    private ?string $fromSystem;
+    #[Column(name: "from_system", type: "string")]
+    private string $fromSystem;
 
     #[Column(name: "is_read", type: "boolean", nullable: true)]
     private ?bool $isRead;
 
-    #[Column(name: "created_at", type: "datetimetz", nullable: true)]
-    private ?DateTime $createdAt;
+    #[Column(name: "created_at", type: "datetimetz")]
+    private DateTime $createdAt;
 
     #[Column(name: "read_users", type: "text", nullable: true)]
     private ?string $readUsers;
+
+    #[Column(name: "sender_id", type: "integer", nullable: true)]
+    private ?int $senderId;
+
+    #[Column(name: "event_key", type: "string", unique: true, nullable: true)]
+    private ?string $eventKey;
 
     public function getId(): string
     {
@@ -87,23 +93,23 @@ class Notification extends AbstractEntity
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): string
     {
         return HtmlDecode($this->type);
     }
 
-    public function setType(?string $value): static
+    public function setType(string $value): static
     {
         $this->type = RemoveXss($value);
         return $this;
     }
 
-    public function getTarget(): ?string
+    public function getTarget(): string
     {
         return HtmlDecode($this->target);
     }
 
-    public function setTarget(?string $value): static
+    public function setTarget(string $value): static
     {
         $this->target = RemoveXss($value);
         return $this;
@@ -120,12 +126,12 @@ class Notification extends AbstractEntity
         return $this;
     }
 
-    public function getSubject(): ?string
+    public function getSubject(): string
     {
         return HtmlDecode($this->subject);
     }
 
-    public function setSubject(?string $value): static
+    public function setSubject(string $value): static
     {
         $this->subject = RemoveXss($value);
         return $this;
@@ -153,12 +159,12 @@ class Notification extends AbstractEntity
         return $this;
     }
 
-    public function getFromSystem(): ?string
+    public function getFromSystem(): string
     {
         return HtmlDecode($this->fromSystem);
     }
 
-    public function setFromSystem(?string $value): static
+    public function setFromSystem(string $value): static
     {
         $this->fromSystem = RemoveXss($value);
         return $this;
@@ -175,12 +181,12 @@ class Notification extends AbstractEntity
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTime
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(?DateTime $value): static
+    public function setCreatedAt(DateTime $value): static
     {
         $this->createdAt = $value;
         return $this;
@@ -194,6 +200,28 @@ class Notification extends AbstractEntity
     public function setReadUsers(?string $value): static
     {
         $this->readUsers = RemoveXss($value);
+        return $this;
+    }
+
+    public function getSenderId(): ?int
+    {
+        return $this->senderId;
+    }
+
+    public function setSenderId(?int $value): static
+    {
+        $this->senderId = $value;
+        return $this;
+    }
+
+    public function getEventKey(): ?string
+    {
+        return HtmlDecode($this->eventKey);
+    }
+
+    public function setEventKey(?string $value): static
+    {
+        $this->eventKey = RemoveXss($value);
         return $this;
     }
 }
